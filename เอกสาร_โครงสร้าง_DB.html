@@ -3,207 +3,356 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>โครงสร้างฐานข้อมูล — QoSLab</title>
+<title>โครงสร้างฐานข้อมูล — NETLab</title>
+<link rel="stylesheet" href="styles/tokens.css?v=2">
+<link rel="stylesheet" href="styles/shared.css?v=1">
+<script src="scripts/theme.js?v=1"></script>
 <style>
-:root{
-  --bg:#0A0B0D;--panel:#131518;--panel2:#1B1E23;--border:#2B2F37;
-  --cyan:#3D8BFF;--cyan-d:#2563C9;--cyan-wash:rgba(61,139,255,.15);
-  --green:#46B87C;--green-l:#16261D;--green-wash:rgba(70,184,124,.15);--green-border:#234230;
-  --amber:#E5B93F;--amber-l:#2E2408;--amber-wash:rgba(229,185,63,.15);
-  --purple:#7B8CDE;--purple-wash:rgba(123,140,222,.15);
-  --text:#ECEEF1;--text2:#9BA3AF;--text3:#6B7280;
-  --font:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
-  --mono:'Cascadia Code','Consolas','Courier New',monospace;
-}
-:root[data-theme="light"]{
-  --bg:#FFFFFF;--panel:#FFFFFF;--panel2:#F3F5F7;--border:#DDE1E6;
-  --cyan:#2563C9;--cyan-d:#1D4FA3;--cyan-wash:rgba(37,99,201,.12);
-  --green:#1F9D5C;--green-l:#E3F6EC;--green-wash:rgba(31,157,92,.12);--green-border:#BEE8D2;
-  --amber:#97720A;--amber-l:#FBF1D9;--amber-wash:rgba(151,114,10,.12);
-  --purple:#5563B0;--purple-wash:rgba(85,99,176,.12);
-  --text:#12151A;--text2:#4B5563;--text3:#6B7280;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0A0B0D;--panel:#131518;--panel2:#1B1E23;--border:#2B2F37;
-    --cyan:#3D8BFF;--cyan-d:#2563C9;--cyan-wash:rgba(61,139,255,.15);
-    --green:#46B87C;--green-l:#16261D;--green-wash:rgba(70,184,124,.15);--green-border:#234230;
-    --amber:#E5B93F;--amber-l:#2E2408;--amber-wash:rgba(229,185,63,.15);
-    --purple:#7B8CDE;--purple-wash:rgba(123,140,222,.15);
-    --text:#ECEEF1;--text2:#9BA3AF;--text3:#6B7280;
-  }
-}
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:var(--font);margin:0;padding:0;line-height:1.6}
-.wrap{max-width:880px;margin:0 auto;padding:56px 28px 80px}
-
-.eyebrow{font-size:13.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan)}
-h1{font-size:32px;font-weight:800;letter-spacing:-0.02em;margin:10px 0 8px;text-wrap:balance}
-.sub{color:var(--text2);font-size:15.5px;max-width:60ch}
-.meta-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
-.meta-item{font-size:12.5px;color:var(--text3)}
-.meta-item b{display:block;color:var(--text);font-size:14px;font-weight:600;margin-top:2px}
-
-h2{font-size:20px;font-weight:700;letter-spacing:-0.01em;margin:56px 0 6px}
-.h2-sub{color:var(--text3);font-size:13.5px;margin-bottom:22px}
-
-p{color:var(--text2);font-size:14.5px;max-width:68ch}
-
-.diagram-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:20px;overflow-x:auto}
-.diagram-card svg{display:block;margin:0 auto;max-width:100%;height:auto}
-figcaption{margin-top:12px;font-size:14.5px;color:var(--text3);text-align:center}
-
-.schema-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px}
-@media (max-width:680px){.schema-grid{grid-template-columns:1fr}}
-.table-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.table-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--panel)}
-.table-name{font-family:var(--mono);font-weight:700;font-size:14.5px;color:var(--cyan)}
-.table-badge{font-size:13.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text3);background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:2px 7px}
-table{width:100%;border-collapse:collapse;font-size:14.5px}
-td{padding:9px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:var(--step-base);
+  line-height:1.7;margin:0;padding:var(--space-6) var(--space-5) var(--space-8)}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:var(--step-3xl);letter-spacing:-0.02em;margin:0 0 var(--space-2)}
+h2{font-size:var(--step-xl);margin:var(--space-8) 0 var(--space-3);
+  padding-bottom:var(--space-2);border-bottom:1px solid var(--border)}
+h3{font-size:var(--step-md);margin:var(--space-5) 0 var(--space-2);font-family:var(--mono)}
+.sub{color:var(--text2);margin:0 0 var(--space-5)}
+.meta{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-bottom:var(--space-6)}
+.chip{background:var(--panel2);border:1px solid var(--border);border-radius:8px;
+  padding:5px 11px;font-size:var(--step-sm);color:var(--text2)}
+.chip b{color:var(--text);font-family:var(--mono)}
+.note{background:var(--cyan-wash);border:1px solid var(--cyan-d);border-left-width:3px;
+  border-radius:8px;padding:var(--space-3) var(--space-4);margin:var(--space-4) 0;
+  font-size:var(--step-sm);color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin:var(--space-3) 0 var(--space-5);
+  font-size:var(--step-sm);background:var(--panel);border:1px solid var(--border);border-radius:9px}
+caption{text-align:left;color:var(--text3);font-size:var(--step-xs);padding-bottom:6px}
+th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--panel2);font-weight:700;font-size:var(--step-xs);text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text3)}
 tr:last-child td{border-bottom:none}
-.col-name{font-family:var(--mono);color:var(--text);white-space:nowrap}
-.col-name.pk::before{content:'key';font-size:9px;font-weight:700;color:var(--amber);background:var(--amber-wash);border-radius:4px;padding:1px 5px;margin-right:7px;vertical-align:middle;letter-spacing:.03em}
-.col-type{font-family:var(--mono);color:var(--purple);white-space:nowrap;font-size:13.5px}
-.col-desc{color:var(--text3);font-size:12.5px}
-
-.api-card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px}
-.api-line{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.verb{font-family:var(--mono);font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:6px}
-.verb.post{background:var(--green-wash);color:var(--green)}
-.verb.get{background:var(--cyan-wash);color:var(--cyan)}
-.api-path{font-family:var(--mono);font-size:14px;color:var(--text)}
-pre{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:13px 15px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;color:var(--text2);margin:0}
-pre b{color:var(--cyan);font-weight:600}
-
-.notes{display:flex;flex-direction:column;gap:14px;margin-top:8px}
-.note{display:flex;gap:14px;padding:14px 16px;background:var(--panel2);border:1px solid var(--border);border-radius:10px}
-.note-mark{flex-shrink:0;width:24px;height:24px;border-radius:6px;background:var(--cyan-wash);color:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700}
-.note-text{font-size:13.5px;color:var(--text2);line-height:1.65}
-.note-text b{color:var(--text);font-weight:600}
-
-.foot{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);color:var(--text3);font-size:13.5px}
+code,.m{font-family:var(--mono);font-size:.93em}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px}
+.col-name{font-family:var(--mono);white-space:nowrap;font-weight:700}
+.col-type{font-family:var(--mono);color:var(--cyan);white-space:nowrap}
+.cons{font-family:var(--mono);font-size:var(--step-xs);color:var(--text3);white-space:nowrap}
+.cons b{color:var(--green);font-weight:700}
+.cons i{color:var(--purple);font-style:normal;font-weight:700}
+.tbl-card{background:var(--panel);border:1px solid var(--border);border-radius:11px;
+  padding:var(--space-4) var(--space-5);margin-bottom:var(--space-5)}
+.tbl-card h3{margin-top:0}
+.tbl-card>p{color:var(--text2);font-size:var(--step-sm);margin:0 0 var(--space-3)}
+.tbl-card table{margin-bottom:var(--space-2)}
+.extra{font-size:var(--step-xs);color:var(--text3);margin:var(--space-2) 0 0}
+.extra b{color:var(--text2)}
+ol.why{padding-left:0;list-style:none;counter-reset:w;margin:0}
+ol.why li{counter-increment:w;background:var(--panel);border:1px solid var(--border);
+  border-radius:9px;padding:var(--space-3) var(--space-4);margin-bottom:var(--space-3);
+  position:relative;padding-left:46px;font-size:var(--step-sm);color:var(--text2)}
+ol.why li::before{content:counter(w);position:absolute;left:14px;top:var(--space-3);
+  width:21px;height:21px;border-radius:50%;background:var(--cyan-wash);color:var(--cyan);
+  font-weight:700;font-size:var(--step-xs);display:flex;align-items:center;justify-content:center}
+ol.why b{color:var(--text);display:block;margin-bottom:3px}
+.er{background:var(--panel);border:1px solid var(--border);border-radius:11px;
+  padding:var(--space-4);overflow-x:auto}
+.er svg{width:100%;min-width:900px;height:auto;display:block}
+.er-box{fill:var(--panel);stroke:var(--border);stroke-width:1}
+.er-head{fill:var(--panel2)}
+.er-sep{stroke:var(--border);stroke-width:1}
+.er-title{font-family:var(--mono);font-size:13px;font-weight:700;fill:var(--text)}
+.er-count{font-size:10px;fill:var(--text3);text-anchor:end}
+.er-col{font-family:var(--mono);font-size:11px;fill:var(--text2)}
+.er-pk{font-family:var(--mono);font-size:11px;fill:var(--cyan);font-weight:700}
+.er-fk{font-family:var(--mono);font-size:11px;fill:var(--purple)}
+.er-type{font-family:var(--mono);font-size:9.5px;fill:var(--text3);text-anchor:end}
+.er-link{fill:none;stroke:var(--cyan);stroke-width:1.5}
+.er-dash{stroke:var(--text3);stroke-dasharray:5 4}
+.er-linklabel{font-size:9.5px;fill:var(--text3);text-anchor:middle}
+.er-card{font-family:var(--mono);font-size:10px;font-weight:700;fill:var(--cyan)}
+.legend{display:flex;flex-wrap:wrap;gap:var(--space-4);margin-top:var(--space-3);
+  font-size:var(--step-xs);color:var(--text3)}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:15px;height:2px;border-radius:1px}
+footer{margin-top:var(--space-8);padding-top:var(--space-4);border-top:1px solid var(--border);
+  color:var(--text3);font-size:var(--step-xs)}
+.topline{display:flex;justify-content:flex-end;margin-bottom:var(--space-3)}
+/* Printing always uses the light palette, whatever the reader has on screen —
+   the declarations below are lifted from tokens.css's [data-theme="light"] block
+   when this page is generated, so they cannot drift from the real light theme. */
+@media print{
+  :root,:root[data-theme="dark"],:root[data-theme="light"]{--bg:#F2F5F9;--panel:#FFFFFF;--panel2:#E7ECF3;--border:#C2CBD9;--cyan:#2563C9;--cyan-d:#1D4FA3;--cyan-wash:rgba(37,99,201,.12);--green:#157A47;--green-l:#DFF3E8;--green-wash:rgba(21,122,71,.12);--green-border:#B3DEC7;--amber:#8A6908;--amber-l:#F8EFD6;--amber-wash:rgba(138,105,8,.12);--red:#BC2E26;--red-l:#F9E2E0;--red-border:#F0BFBB;--purple:#4E5CA8;--purple-wash:rgba(78,92,168,.12);--text:#1A1F27;--text2:#4A5360;--text3:#5E6775;--overlay:rgba(242,245,249,.96);--prompt-c:#0B6B79;--explain-text:#146C3E;--btn-text:#FFFFFF;}
+  body{background:#fff;padding:0;font-size:10.5pt}
+  .er{border:none;padding:0}
+  .er svg{min-width:0}
+  .theme-toggle,.topline{display:none}
+  h2{page-break-after:avoid}
+  .tbl-card,ol.why li,table,.er{page-break-inside:avoid}
+  a{text-decoration:none;color:inherit}
+}
+@media(max-width:760px){
+  body{padding:var(--space-5) var(--space-4) var(--space-7)}
+  .cons,.col-type{white-space:normal}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-
-  <div class="eyebrow">QoSLab — Sprint 1</div>
-  <h1>โครงสร้างฐานข้อมูล (Progress Tracking)</h1>
-  <p class="sub">SQLite แบบไฟล์เดียว ไม่ใช้ ORM — ออกแบบให้หน้า Dashboard ของนักศึกษาแสดงความคืบหน้าจริง แทนที่ mock data เดิม</p>
-  <div class="meta-row">
-    <div class="meta-item">ไฟล์<b>db.py</b></div>
-    <div class="meta-item">ที่เก็บข้อมูล<b>qoslab.db (SQLite)</b></div>
-    <div class="meta-item">จำนวนตาราง<b>2 ตาราง</b></div>
-    <div class="meta-item">สถานะ<b>ใช้งานจริงแล้ว (Lab 4, Lab 5)</b></div>
-  </div>
-
-  <h2>กลไกการทำงาน</h2>
-  <div class="h2-sub">1 การเรียก API เขียนข้อมูลลง 2 ตารางพร้อมกัน</div>
-  <div class="diagram-card">
-    <figure style="margin:0">
-      <svg viewBox="0 0 780 300" role="img" aria-label="แผนภาพแสดงการที่ POST /progress หนึ่งครั้งเขียนข้อมูลลงตาราง progress (อัปเดตความคืบหน้าของ Lab นั้น) และตาราง activity (บวกเวลาเข้าวันที่ปัจจุบัน) พร้อมกัน โดยทั้งสองตารางเชื่อมกันด้วย student_id">
-        <defs>
-          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M1 1L9 5L1 9" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          </marker>
-        </defs>
-
-        <rect x="290" y="14" width="200" height="46" rx="8" fill="none" stroke="currentColor" stroke-width="1.4"/>
-        <text x="390" y="33" text-anchor="middle" font-size="12.5" font-weight="700" fill="currentColor" font-family="Cascadia Code, monospace">lab4.html / lab5.html</text>
-        <text x="390" y="49" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".6">ทำ Step สำเร็จ → saveProgress()</text>
-
-        <line x1="390" y1="60" x2="390" y2="98" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)"/>
-        <text x="404" y="83" font-size="10.5" fill="currentColor" opacity=".7">POST /progress</text>
-
-        <rect x="270" y="100" width="240" height="46" rx="8" fill="none" stroke="#3D8BFF" stroke-width="1.6"/>
-        <text x="390" y="119" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3D8BFF" font-family="Cascadia Code, monospace">upsert_progress()</text>
-        <text x="390" y="135" text-anchor="middle" font-size="10" fill="#3D8BFF" opacity=".75">db.py</text>
-
-        <line x1="330" y1="146" x2="200" y2="196" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)"/>
-        <line x1="450" y1="146" x2="580" y2="196" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)"/>
-
-        <text x="230" y="172" font-size="10.5" fill="currentColor" opacity=".7">steps_done / wrong_count</text>
-        <text x="230" y="185" font-size="10.5" fill="currentColor" opacity=".7">+= time_spent_sec</text>
-        <text x="545" y="172" font-size="10.5" fill="currentColor" opacity=".7" text-anchor="end">seconds += elapsed</text>
-        <text x="545" y="185" font-size="10.5" fill="currentColor" opacity=".7" text-anchor="end">(วันนี้)</text>
-
-        <rect x="90" y="198" width="220" height="82" rx="8" fill="rgba(61,139,255,.08)" stroke="#3D8BFF" stroke-width="1.6"/>
-        <text x="200" y="221" text-anchor="middle" font-size="14" font-weight="700" fill="#3D8BFF" font-family="Cascadia Code, monospace">progress</text>
-        <text x="200" y="240" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".75">PK: student_id + lab_id</text>
-        <text x="200" y="255" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".6">1 แถว = ความคืบหน้าสะสม</text>
-        <text x="200" y="269" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".6">ของนักศึกษา 1 คน ใน 1 Lab</text>
-
-        <rect x="470" y="198" width="220" height="82" rx="8" fill="rgba(70,184,124,.08)" stroke="#46B87C" stroke-width="1.6"/>
-        <text x="580" y="221" text-anchor="middle" font-size="14" font-weight="700" fill="#46B87C" font-family="Cascadia Code, monospace">activity</text>
-        <text x="580" y="240" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".75">PK: student_id + day</text>
-        <text x="580" y="255" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".6">1 แถว = เวลาฝึกสะสม</text>
-        <text x="580" y="269" text-anchor="middle" font-size="10.5" fill="currentColor" opacity=".6">ของนักศึกษา 1 คน ใน 1 วัน</text>
-
-        <line x1="310" y1="239" x2="470" y2="239" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
-        <text x="390" y="233" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".55">เชื่อมกันด้วย student_id</text>
-      </svg>
-      <figcaption>ทุกครั้งที่นักศึกษาทำ Step สำเร็จในหน้า Lab ระบบยิง <b>POST /progress</b> ครั้งเดียว แต่ backend เขียนข้อมูลลง 2 ตารางพร้อมกัน — ตาราง <b>progress</b> อัปเดตสถานะ Lab นั้น และตาราง <b>activity</b> บวกเวลาเข้า "วันนี้" เพื่อเอาไปวาดกราฟ Practice Hours รายสัปดาห์</figcaption>
-    </figure>
-  </div>
-
-  <h2>รายละเอียดตาราง</h2>
-  <div class="h2-sub">คอลัมน์ ชนิดข้อมูล และ Primary Key ของแต่ละตาราง</div>
-  <div class="schema-grid">
-    <div class="table-card">
-      <div class="table-head"><span class="table-name">progress</span><span class="table-badge">9 คอลัมน์</span></div>
-      <table>
-        <tr><td class="col-name pk">student_id</td><td class="col-type">TEXT</td><td class="col-desc">รหัสนักศึกษา (จาก email)</td></tr>
-        <tr><td class="col-name pk">lab_id</td><td class="col-type">INTEGER</td><td class="col-desc">เลข Lab เช่น 4, 5</td></tr>
-        <tr><td class="col-name">steps_done</td><td class="col-type">INTEGER</td><td class="col-desc">จำนวน Step ที่ทำสำเร็จ</td></tr>
-        <tr><td class="col-name">total_steps</td><td class="col-type">INTEGER</td><td class="col-desc">จำนวน Step ทั้งหมดของ Lab</td></tr>
-        <tr><td class="col-name">wrong_count</td><td class="col-type">INTEGER</td><td class="col-desc">จำนวนครั้งที่ตอบผิดสะสม</td></tr>
-        <tr><td class="col-name">time_spent_sec</td><td class="col-type">INTEGER</td><td class="col-desc">เวลาที่ใช้สะสม (วินาที)</td></tr>
-        <tr><td class="col-name">completed</td><td class="col-type">INTEGER</td><td class="col-desc">0/1 — ทำ Lab นี้จบหรือยัง</td></tr>
-        <tr><td class="col-name">started_at</td><td class="col-type">TEXT</td><td class="col-desc">เวลาที่เริ่ม Lab นี้ครั้งแรก</td></tr>
-        <tr><td class="col-name">updated_at</td><td class="col-type">TEXT</td><td class="col-desc">เวลาบันทึกล่าสุด</td></tr>
-      </table>
-    </div>
-    <div class="table-card">
-      <div class="table-head"><span class="table-name">activity</span><span class="table-badge">3 คอลัมน์</span></div>
-      <table>
-        <tr><td class="col-name pk">student_id</td><td class="col-type">TEXT</td><td class="col-desc">รหัสนักศึกษา</td></tr>
-        <tr><td class="col-name pk">day</td><td class="col-type">TEXT</td><td class="col-desc">วันที่ รูปแบบ YYYY-MM-DD</td></tr>
-        <tr><td class="col-name">seconds</td><td class="col-type">INTEGER</td><td class="col-desc">เวลาฝึกสะสมของวันนั้น</td></tr>
-      </table>
-    </div>
-  </div>
-
-  <h2>API ที่เปิดให้ Frontend เรียก</h2>
-  <div class="h2-sub">ทั้งสอง endpoint อยู่ใน main.py</div>
-  <div class="api-card">
-    <div class="api-line"><span class="verb post">POST</span><span class="api-path">/progress</span></div>
-    <pre>{
-  <b>"studentId"</b>: "6606022610021",
-  <b>"labId"</b>: 4,
-  <b>"stepsDone"</b>: 17, <b>"totalSteps"</b>: 17,
-  <b>"wrongDelta"</b>: 0, <b>"elapsedSec"</b>: 53,
-  <b>"completed"</b>: true
-}</pre>
-  </div>
-  <div class="api-card">
-    <div class="api-line"><span class="verb get">GET</span><span class="api-path">/progress/{studentId}</span></div>
-    <pre>{
-  <b>"labs"</b>: [ { "lab_id": 4, "steps_done": 17, "completed": 1, ... } ],
-  <b>"weeklyActivity"</b>: [ { "day": "2026-08-12", "seconds": 53 }, ... ]
-}</pre>
-  </div>
-
-  <h2>เหตุผลการออกแบบ</h2>
-  <div class="notes">
-    <div class="note"><div class="note-mark">1</div><div class="note-text"><b>SQLite ไฟล์เดียว ไม่ใช้ ORM</b> — ข้อมูลที่เก็บมีแค่ 2 ตาราง ความสัมพันธ์เรียบง่าย ใช้ sqlite3 มาตรฐานของ Python พอ ไม่ต้องเพิ่ม dependency ตรงตามที่ระบุไว้ใน ทก.01 (§2.7.6)</div></div>
-    <div class="note"><div class="note-mark">2</div><div class="note-text"><b>wrong_count และ time_spent_sec เป็นค่า "บวกสะสม" ไม่ใช่ค่าล่าสุด</b> — ทุกครั้งที่บันทึก backend จะบวกทับของเดิม ไม่เขียนทับ เพราะนักศึกษาอาจปิดหน้าเว็บแล้วกลับมาทำต่อหลายรอบ ต้องนับรวมทุกรอบ ไม่ใช่แค่รอบล่าสุด</div></div>
-    <div class="note"><div class="note-mark">3</div><div class="note-text"><b>แยกตาราง activity ออกจาก progress</b> — progress เก็บสถานะ "ล่าสุด" ต่อ Lab (แถวเดียวอัปเดตทับ) ส่วน activity ต้องเก็บ "ประวัติรายวัน" (แถวใหม่ทุกวัน) เพื่อวาดกราฟ Practice Hours ย้อนหลัง 7 วันในหน้า Dashboard ถ้ารวมสองอย่างในตารางเดียวจะคำนวณกราฟยากและข้อมูลซ้ำซ้อน</div></div>
-    <div class="note"><div class="note-mark">4</div><div class="note-text"><b>ส่งค่าตอนทำ Step สำเร็จ + ตอนออกจากหน้า (pagehide)</b> — ไม่ส่งทุก keystroke เพื่อไม่ให้ยิง request ถี่เกินไป แต่กันเวลาหายถ้านักศึกษาปิดแท็บกลางคันโดยยังไม่ทำ Step สำเร็จ</div></div>
-  </div>
-
-  <div class="foot">QoSLab — ระบบเรียนรู้เนื้อหาปฏิบัติการวิศวกรรมสารสนเทศและเครือข่ายแบบโต้ตอบด้วยปัญญาประดิษฐ์ · เอกสารประกอบ Sprint 1</div>
-
+<div class="topline"><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="สลับโหมดสว่าง/มืด">🌙</button></div>
+<h1>โครงสร้างฐานข้อมูล</h1>
+<p class="sub">NETLab — ระบบเรียนรู้เนื้อหาปฏิบัติการวิศวกรรมสารสนเทศและเครือข่ายแบบโต้ตอบด้วยปัญญาประดิษฐ์</p>
+<div class="meta">
+<span class="chip">ระบบจัดการฐานข้อมูล <b>SQLite</b></span>
+<span class="chip">ไฟล์ <b>netlab.db</b></span>
+<span class="chip"><b>5</b> ตาราง</span>
+<span class="chip"><b>41</b> คอลัมน์</span>
+<span class="chip">โมดูลที่จัดการ <b>db.py</b></span>
+</div>
+<div class="note">เอกสารนี้สร้างจากสคีมาจริงของไฟล์ <code>netlab.db</code> โดยอ่านผ่านคำสั่ง <code>PRAGMA</code> ไม่ได้พิมพ์ด้วยมือ — ชื่อตาราง คอลัมน์ ชนิดข้อมูล และเงื่อนไขทั้งหมด จึงตรงกับฐานข้อมูลที่ใช้งานอยู่เสมอ <span class="m">(สร้างเมื่อ 01/10/2026 15:07)</span></div>
+<h2>1. ความสอดคล้องกับข้อเสนอโครงงาน</h2>
+<p class="sub">หัวข้อ §2.4.9 ของข้อเสนอโครงงาน (ทก.01) ระบุว่า SQLite ถูกนำมาใช้จัดเก็บข้อมูลสี่ประเภท แต่ละประเภทมีตารางรองรับตรงกัน</p>
+<table><caption>ตารางที่ 1 — ข้อมูลที่ข้อเสนอโครงงานระบุ เทียบกับตารางที่พัฒนาขึ้น</caption><thead><tr><th>ข้อมูลที่ §2.4.9 ระบุ</th><th>ตารางที่รองรับ</th><th>สิ่งที่เก็บ</th></tr></thead><tbody>
+<tr><td>ข้อมูลผู้ใช้งาน</td><td class="col-name">users</td><td>รหัสนักศึกษา อีเมล ชื่อ รูปโปรไฟล์ สิทธิ์ และเวลาเข้าสู่ระบบ</td></tr>
+<tr><td>ความคืบหน้าของนักศึกษาในแต่ละ Lab</td><td class="col-name">progress + activity</td><td>progress เก็บสถานะต่อ Lab, activity เก็บเวลาฝึกรายวันสำหรับกราฟ</td></tr>
+<tr><td>ผลคะแนนแบบทดสอบ</td><td class="col-name">quiz_attempts</td><td>คะแนน เต็ม และครั้งที่เท่าไรของทุกชุดคำถาม</td></tr>
+<tr><td>ประวัติการโต้ตอบกับ AI Tutor</td><td class="col-name">ai_chat_logs</td><td>คำถาม คำตอบ โมเดลที่ใช้ และบริบทตอนถาม</td></tr>
+</tbody></table>
+<div class="note">นอกจากนี้ยังออกแบบเผื่อขอบเขตที่เหลือไว้แล้วสองจุด — คอลัมน์ <code>course_id</code> แยกรายวิชาปฏิบัติการฯ 1 และ 2 ออกจากกัน (ภาคเรียนที่ 2 ข้อ 1.1) และคอลัมน์ <code>difficulty</code> กับ <code>hints_used</code> รองรับระดับความยาก 3 ระดับ (ภาคเรียนที่ 2 ข้อ 1.2) โดยยังไม่เปิดใช้งานในภาคเรียนนี้</div>
+<h2>2. แผนภาพความสัมพันธ์ของข้อมูล (ER Diagram)</h2>
+<p class="sub">ตาราง <code>users</code> เป็นศูนย์กลาง อีกสี่ตารางอ้างถึงนักศึกษาผ่าน <code>student_id</code> โดยสองตารางบังคับด้วย FOREIGN KEY และอีกสองตารางเชื่อมด้วยข้อตกลงร่วมกัน</p>
+<div class="er"><svg viewBox="0 0 1020 596" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="แผนภาพความสัมพันธ์ของตารางในฐานข้อมูล">
+<path class="er-link er-dash" d="M 482 195 V 233 H 132 V 300"/>
+<text class="er-card" x="488" y="208">1</text>
+<text class="er-card" x="138" y="295">N</text>
+<text class="er-linklabel" x="307" y="228">ไม่บังคับ</text>
+<path class="er-link er-dash" d="M 534 195 V 249 H 384 V 300"/>
+<text class="er-card" x="540" y="208">1</text>
+<text class="er-card" x="390" y="295">N</text>
+<text class="er-linklabel" x="459" y="244">ไม่บังคับ</text>
+<path class="er-link" d="M 586 195 V 265 H 636 V 300"/>
+<text class="er-card" x="592" y="208">1</text>
+<text class="er-card" x="642" y="295">N</text>
+<text class="er-linklabel" x="611" y="260">FOREIGN KEY</text>
+<path class="er-link" d="M 637 195 V 281 H 888 V 300"/>
+<text class="er-card" x="643" y="208">1</text>
+<text class="er-card" x="894" y="295">N</text>
+<text class="er-linklabel" x="763" y="276">FOREIGN KEY</text>
+<rect class="er-box" x="392" y="24" width="236" height="171" rx="7"/>
+<rect class="er-head" x="392" y="24" width="236" height="30"/>
+<text class="er-title" x="402" y="44">users</text>
+<text class="er-count" x="618" y="44">7 คอลัมน์</text>
+<line class="er-sep" x1="392" y1="54" x2="628" y2="54"/>
+<text class="er-pk" x="402" y="68">▪ student_id</text>
+<text class="er-type" x="618" y="68">TEXT</text>
+<text class="er-col" x="402" y="87">  email</text>
+<text class="er-type" x="618" y="87">TEXT</text>
+<text class="er-col" x="402" y="106">  name</text>
+<text class="er-type" x="618" y="106">TEXT</text>
+<text class="er-col" x="402" y="125">  picture</text>
+<text class="er-type" x="618" y="125">TEXT</text>
+<text class="er-col" x="402" y="144">  role</text>
+<text class="er-type" x="618" y="144">TEXT</text>
+<text class="er-col" x="402" y="163">  created_at</text>
+<text class="er-type" x="618" y="163">TEXT</text>
+<text class="er-col" x="402" y="182">  last_login_at</text>
+<text class="er-type" x="618" y="182">TEXT</text>
+<rect class="er-box" x="14" y="300" width="236" height="266" rx="7"/>
+<rect class="er-head" x="14" y="300" width="236" height="30"/>
+<text class="er-title" x="24" y="320">progress</text>
+<text class="er-count" x="240" y="320">12 คอลัมน์</text>
+<line class="er-sep" x1="14" y1="330" x2="250" y2="330"/>
+<text class="er-pk" x="24" y="344">▪ student_id</text>
+<text class="er-type" x="240" y="344">TEXT</text>
+<text class="er-pk" x="24" y="363">▪ course_id</text>
+<text class="er-type" x="240" y="363">TEXT</text>
+<text class="er-pk" x="24" y="382">▪ lab_id</text>
+<text class="er-type" x="240" y="382">INTEGER</text>
+<text class="er-pk" x="24" y="401">▪ difficulty</text>
+<text class="er-type" x="240" y="401">TEXT</text>
+<text class="er-col" x="24" y="420">  steps_done</text>
+<text class="er-type" x="240" y="420">INTEGER</text>
+<text class="er-col" x="24" y="439">  total_steps</text>
+<text class="er-type" x="240" y="439">INTEGER</text>
+<text class="er-col" x="24" y="458">  wrong_count</text>
+<text class="er-type" x="240" y="458">INTEGER</text>
+<text class="er-col" x="24" y="477">  hints_used</text>
+<text class="er-type" x="240" y="477">INTEGER</text>
+<text class="er-col" x="24" y="496">  time_spent_sec</text>
+<text class="er-type" x="240" y="496">INTEGER</text>
+<text class="er-col" x="24" y="515">  completed</text>
+<text class="er-type" x="240" y="515">INTEGER</text>
+<text class="er-col" x="24" y="534">  started_at</text>
+<text class="er-type" x="240" y="534">TEXT</text>
+<text class="er-col" x="24" y="553">  updated_at</text>
+<text class="er-type" x="240" y="553">TEXT</text>
+<rect class="er-box" x="266" y="300" width="236" height="95" rx="7"/>
+<rect class="er-head" x="266" y="300" width="236" height="30"/>
+<text class="er-title" x="276" y="320">activity</text>
+<text class="er-count" x="492" y="320">3 คอลัมน์</text>
+<line class="er-sep" x1="266" y1="330" x2="502" y2="330"/>
+<text class="er-pk" x="276" y="344">▪ student_id</text>
+<text class="er-type" x="492" y="344">TEXT</text>
+<text class="er-pk" x="276" y="363">▪ day</text>
+<text class="er-type" x="492" y="363">TEXT</text>
+<text class="er-col" x="276" y="382">  seconds</text>
+<text class="er-type" x="492" y="382">INTEGER</text>
+<rect class="er-box" x="518" y="300" width="236" height="209" rx="7"/>
+<rect class="er-head" x="518" y="300" width="236" height="30"/>
+<text class="er-title" x="528" y="320">quiz_attempts</text>
+<text class="er-count" x="744" y="320">9 คอลัมน์</text>
+<line class="er-sep" x1="518" y1="330" x2="754" y2="330"/>
+<text class="er-pk" x="528" y="344">▪ id</text>
+<text class="er-type" x="744" y="344">INTEGER</text>
+<text class="er-fk" x="528" y="363">▫ student_id</text>
+<text class="er-type" x="744" y="363">TEXT</text>
+<text class="er-col" x="528" y="382">  course_id</text>
+<text class="er-type" x="744" y="382">TEXT</text>
+<text class="er-col" x="528" y="401">  lab_id</text>
+<text class="er-type" x="744" y="401">INTEGER</text>
+<text class="er-col" x="528" y="420">  quiz_key</text>
+<text class="er-type" x="744" y="420">TEXT</text>
+<text class="er-col" x="528" y="439">  score</text>
+<text class="er-type" x="744" y="439">INTEGER</text>
+<text class="er-col" x="528" y="458">  max_score</text>
+<text class="er-type" x="744" y="458">INTEGER</text>
+<text class="er-col" x="528" y="477">  attempt_no</text>
+<text class="er-type" x="744" y="477">INTEGER</text>
+<text class="er-col" x="528" y="496">  created_at</text>
+<text class="er-type" x="744" y="496">TEXT</text>
+<rect class="er-box" x="770" y="300" width="236" height="228" rx="7"/>
+<rect class="er-head" x="770" y="300" width="236" height="30"/>
+<text class="er-title" x="780" y="320">ai_chat_logs</text>
+<text class="er-count" x="996" y="320">10 คอลัมน์</text>
+<line class="er-sep" x1="770" y1="330" x2="1006" y2="330"/>
+<text class="er-pk" x="780" y="344">▪ id</text>
+<text class="er-type" x="996" y="344">INTEGER</text>
+<text class="er-fk" x="780" y="363">▫ student_id</text>
+<text class="er-type" x="996" y="363">TEXT</text>
+<text class="er-col" x="780" y="382">  course_id</text>
+<text class="er-type" x="996" y="382">TEXT</text>
+<text class="er-col" x="780" y="401">  lab_id</text>
+<text class="er-type" x="996" y="401">INTEGER</text>
+<text class="er-col" x="780" y="420">  task_type</text>
+<text class="er-type" x="996" y="420">TEXT</text>
+<text class="er-col" x="780" y="439">  model_used</text>
+<text class="er-type" x="996" y="439">TEXT</text>
+<text class="er-col" x="780" y="458">  user_message</text>
+<text class="er-type" x="996" y="458">TEXT</text>
+<text class="er-col" x="780" y="477">  ai_response</text>
+<text class="er-type" x="996" y="477">TEXT</text>
+<text class="er-col" x="780" y="496">  wrong_count_at_time</text>
+<text class="er-type" x="996" y="496">INTEGER</text>
+<text class="er-col" x="780" y="515">  created_at</text>
+<text class="er-type" x="996" y="515">TEXT</text>
+</svg>
+<div class="legend"><span><b class="m" style="color:var(--cyan)">▪</b> Primary Key</span><span><b class="m" style="color:var(--purple)">▫</b> Foreign Key</span><span><i class="sw" style="background:var(--cyan)"></i> บังคับด้วย FOREIGN KEY</span><span><i class="sw" style="background:var(--text3)"></i> เชื่อมด้วย student_id แต่ไม่ได้บังคับ</span></div></div>
+<div class="note">เส้นทึบคือความสัมพันธ์ที่ฐานข้อมูลบังคับจริง — บันทึกคะแนนหรือบทสนทนาของรหัสนักศึกษา ที่ไม่มีในตาราง <code>users</code> ไม่ได้ ส่วนเส้นประคือตารางที่ใช้ <code>student_id</code> ร่วมกัน แต่ไม่ได้ประกาศ FOREIGN KEY ไว้ เพื่อให้ยังบันทึกความคืบหน้าได้แม้ยังไม่มีข้อมูลผู้ใช้ เช่นตอนทดสอบระบบในเครื่องพัฒนา</div>
+<h2>3. พจนานุกรมข้อมูล (Data Dictionary)</h2>
+<p class="sub">รายละเอียดทุกคอลัมน์ของทั้ง 5 ตาราง พร้อมชนิดข้อมูลและเงื่อนไขที่ฐานข้อมูลบังคับ</p>
+<div class="tbl-card">
+<h3>users</h3>
+<p>นักศึกษาและอาจารย์ที่เข้าสู่ระบบด้วยอีเมลมหาวิทยาลัย หนึ่งแถวต่อหนึ่งคน</p>
+<table><caption>ตารางที่ 2 — คอลัมน์ของตาราง users</caption><thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>เงื่อนไข</th><th>ความหมาย</th></tr></thead><tbody>
+<tr><td class="col-name">student_id</td><td class="col-type">TEXT</td><td class="cons"><b>PK</b></td><td>รหัสนักศึกษา แยกมาจากหน้าอีเมลโดยตัดตัว s ออก เช่น s6606022610021 → 6606022610021</td></tr>
+<tr><td class="col-name">email</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>อีเมลมหาวิทยาลัยที่ใช้เข้าสู่ระบบ บังคับไม่ซ้ำ</td></tr>
+<tr><td class="col-name">name</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>ชื่อ-นามสกุล ดึงจากบัญชี Google</td></tr>
+<tr><td class="col-name">picture</td><td class="col-type">TEXT</td><td class="cons">—</td><td>URL รูปโปรไฟล์จาก Google อาจว่างถ้าบัญชีไม่มีรูป</td></tr>
+<tr><td class="col-name">role</td><td class="col-type">TEXT</td><td class="cons">NOT NULL · DEFAULT 'student'</td><td>สิทธิ์การใช้งาน student หรือ teacher — การเข้าสู่ระบบซ้ำไม่ทับค่านี้ สิทธิ์ที่ตั้งไว้จึงไม่หาย</td></tr>
+<tr><td class="col-name">created_at</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>เวลาที่เข้าสู่ระบบครั้งแรก (UTC, ISO 8601)</td></tr>
+<tr><td class="col-name">last_login_at</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>เวลาที่เข้าสู่ระบบครั้งล่าสุด (UTC, ISO 8601)</td></tr>
+</tbody></table>
+<p class="extra"><b>Primary Key:</b> <span class="m">(student_id)</span></p>
+</div>
+<div class="tbl-card">
+<h3>progress</h3>
+<p>ความคืบหน้าสะสม หนึ่งแถวต่อ นักศึกษา × Lab × ระดับความยาก</p>
+<table><caption>ตารางที่ 3 — คอลัมน์ของตาราง progress</caption><thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>เงื่อนไข</th><th>ความหมาย</th></tr></thead><tbody>
+<tr><td class="col-name">student_id</td><td class="col-type">TEXT</td><td class="cons"><b>PK</b> · NOT NULL</td><td>รหัสนักศึกษา เชื่อมกับตาราง users</td></tr>
+<tr><td class="col-name">course_id</td><td class="col-type">TEXT</td><td class="cons"><b>PK</b> · NOT NULL · DEFAULT 'netlab1'</td><td>รายวิชา netlab1 = ปฏิบัติการฯ 1 (11 Labs), netlab2 = ปฏิบัติการฯ 2 (12 Labs) — กันเลข Lab ชนกันข้ามวิชา</td></tr>
+<tr><td class="col-name">lab_id</td><td class="col-type">INTEGER</td><td class="cons"><b>PK</b> · NOT NULL</td><td>เลข Lab 1–11</td></tr>
+<tr><td class="col-name">difficulty</td><td class="col-type">TEXT</td><td class="cons"><b>PK</b> · NOT NULL · DEFAULT 'basic' · CHECK(difficulty IN ('basic', 'medium', 'hard'))</td><td>ระดับความยาก basic / medium / hard — อยู่ใน Primary Key เพราะการทำ Lab เดิมคนละระดับคือการทำคนละครั้ง</td></tr>
+<tr><td class="col-name">steps_done</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · DEFAULT 0 · CHECK(steps_done &gt;= 0) · CHECK(steps_done &lt;= total_steps)</td><td>จำนวนขั้นตอนที่ทำสำเร็จ (ค่าสัมบูรณ์ เขียนทับทุกครั้ง)</td></tr>
+<tr><td class="col-name">total_steps</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · DEFAULT 0 · CHECK(total_steps &gt;= 0) · CHECK(steps_done &lt;= total_steps)</td><td>จำนวนขั้นตอนทั้งหมดของ Lab นั้น</td></tr>
+<tr><td class="col-name">wrong_count</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · DEFAULT 0 · CHECK(wrong_count &gt;= 0)</td><td>จำนวนครั้งที่ตอบผิดสะสม (บวกทับ ไม่เขียนทับ)</td></tr>
+<tr><td class="col-name">hints_used</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · DEFAULT 0 · CHECK(hints_used &gt;= 0)</td><td>จำนวนครั้งที่กดปุ่ม Hint สะสม (บวกทับ) — คนละอย่างกับตอบผิด เพราะกด Hint แล้วตอบถูกครั้งแรกก็ได้</td></tr>
+<tr><td class="col-name">time_spent_sec</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · DEFAULT 0 · CHECK(time_spent_sec &gt;= 0)</td><td>เวลาที่ใช้สะสมเป็นวินาที (บวกทับ)</td></tr>
+<tr><td class="col-name">completed</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · DEFAULT 0 · CHECK(completed IN (0, 1))</td><td>0 = ยังไม่จบ, 1 = ทำ Lab นี้จบแล้ว — ตั้งแล้วไม่ถูกลบ</td></tr>
+<tr><td class="col-name">started_at</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>เวลาที่เริ่ม Lab นี้ครั้งแรก (UTC)</td></tr>
+<tr><td class="col-name">updated_at</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>เวลาที่บันทึกล่าสุด (UTC)</td></tr>
+</tbody></table>
+<p class="extra"><b>Primary Key:</b> <span class="m">(student_id, course_id, lab_id, difficulty)</span></p>
+</div>
+<div class="tbl-card">
+<h3>activity</h3>
+<p>เวลาฝึกรายวัน สำหรับกราฟ Practice Hours ย้อนหลัง 7 วัน หนึ่งแถวต่อ นักศึกษา × วัน</p>
+<table><caption>ตารางที่ 4 — คอลัมน์ของตาราง activity</caption><thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>เงื่อนไข</th><th>ความหมาย</th></tr></thead><tbody>
+<tr><td class="col-name">student_id</td><td class="col-type">TEXT</td><td class="cons"><b>PK</b> · NOT NULL</td><td>รหัสนักศึกษา</td></tr>
+<tr><td class="col-name">day</td><td class="col-type">TEXT</td><td class="cons"><b>PK</b> · NOT NULL</td><td>วันที่รูปแบบ YYYY-MM-DD นับตามปฏิทินไทย (UTC+7) ไม่ใช่ UTC เพื่อให้การฝึกช่วงหลังเที่ยงคืนลงวันเดียวกับที่นักศึกษารู้สึก</td></tr>
+<tr><td class="col-name">seconds</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · DEFAULT 0</td><td>เวลาฝึกรวมของวันนั้นเป็นวินาที (บวกทับ)</td></tr>
+</tbody></table>
+<p class="extra"><b>Primary Key:</b> <span class="m">(student_id, day)</span></p>
+</div>
+<div class="tbl-card">
+<h3>quiz_attempts</h3>
+<p>ผลการทำแบบทดสอบ เก็บทุกครั้งที่ส่งคำตอบ ไม่ใช่เฉพาะครั้งที่ผ่าน</p>
+<table><caption>ตารางที่ 5 — คอลัมน์ของตาราง quiz_attempts</caption><thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>เงื่อนไข</th><th>ความหมาย</th></tr></thead><tbody>
+<tr><td class="col-name">id</td><td class="col-type">INTEGER</td><td class="cons"><b>PK</b> · AUTOINCREMENT</td><td>เลขลำดับแถว เพิ่มเองอัตโนมัติ</td></tr>
+<tr><td class="col-name">student_id</td><td class="col-type">TEXT</td><td class="cons"><i>FK → users.student_id</i> · NOT NULL</td><td>รหัสนักศึกษา — มี FOREIGN KEY บังคับว่าต้องมีอยู่ในตาราง users</td></tr>
+<tr><td class="col-name">course_id</td><td class="col-type">TEXT</td><td class="cons">NOT NULL · DEFAULT 'netlab1'</td><td>รายวิชา เช่นเดียวกับตาราง progress</td></tr>
+<tr><td class="col-name">lab_id</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL</td><td>เลข Lab ที่ทำแบบทดสอบ</td></tr>
+<tr><td class="col-name">quiz_key</td><td class="col-type">TEXT</td><td class="cons">NOT NULL · DEFAULT 'pretest'</td><td>ชื่อชุดคำถาม เช่น pretest (แบบทดสอบก่อนเรียนใน Lab 4-11) หรือ quiz_stepN / review_stepN (แบบทดสอบระหว่างบทใน Lab 1-3)</td></tr>
+<tr><td class="col-name">score</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · CHECK(score &gt;= 0) · CHECK(score &lt;= max_score)</td><td>จำนวนข้อที่ตอบถูก</td></tr>
+<tr><td class="col-name">max_score</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · CHECK(max_score &gt;= 0) · CHECK(score &lt;= max_score)</td><td>จำนวนข้อทั้งหมดของชุดนั้น</td></tr>
+<tr><td class="col-name">attempt_no</td><td class="col-type">INTEGER</td><td class="cons">NOT NULL · DEFAULT 1</td><td>ครั้งที่เท่าไรของชุดคำถามนี้ นับให้อัตโนมัติ — บอกได้ว่านักศึกษาต้องลองกี่รอบจึงผ่าน</td></tr>
+<tr><td class="col-name">created_at</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>เวลาที่ส่งคำตอบ (UTC)</td></tr>
+</tbody></table>
+<p class="extra"><b>Primary Key:</b> <span class="m">(id)</span></p>
+<p class="extra"><b>Index:</b> <span class="m">idx_quiz_attempts_student (student_id, course_id, lab_id)</span></p>
+</div>
+<div class="tbl-card">
+<h3>ai_chat_logs</h3>
+<p>ประวัติการโต้ตอบกับ AI Tutor หนึ่งแถวต่อหนึ่งคำถาม-คำตอบ</p>
+<table><caption>ตารางที่ 6 — คอลัมน์ของตาราง ai_chat_logs</caption><thead><tr><th>คอลัมน์</th><th>ชนิด</th><th>เงื่อนไข</th><th>ความหมาย</th></tr></thead><tbody>
+<tr><td class="col-name">id</td><td class="col-type">INTEGER</td><td class="cons"><b>PK</b> · AUTOINCREMENT</td><td>เลขลำดับแถว เพิ่มเองอัตโนมัติ</td></tr>
+<tr><td class="col-name">student_id</td><td class="col-type">TEXT</td><td class="cons"><i>FK → users.student_id</i></td><td>รหัสนักศึกษา — ว่างได้ กรณีผู้เยี่ยมชมที่ยังไม่เข้าสู่ระบบ ระบบยังตอบคำถามให้แต่ไม่ผูกกับใคร</td></tr>
+<tr><td class="col-name">course_id</td><td class="col-type">TEXT</td><td class="cons">NOT NULL · DEFAULT 'netlab1'</td><td>รายวิชา</td></tr>
+<tr><td class="col-name">lab_id</td><td class="col-type">INTEGER</td><td class="cons">—</td><td>Lab ที่กำลังทำอยู่ตอนถาม</td></tr>
+<tr><td class="col-name">task_type</td><td class="col-type">TEXT</td><td class="cons">—</td><td>ชนิดคำถามที่ระบบจำแนกได้ hint / explain / chat ใช้เลือกโมเดล</td></tr>
+<tr><td class="col-name">model_used</td><td class="col-type">TEXT</td><td class="cons">—</td><td>ชื่อโมเดลที่ตอบคำถามนั้นจริง</td></tr>
+<tr><td class="col-name">user_message</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>ข้อความที่นักศึกษาพิมพ์</td></tr>
+<tr><td class="col-name">ai_response</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>คำตอบที่ AI Tutor ตอบกลับ</td></tr>
+<tr><td class="col-name">wrong_count_at_time</td><td class="col-type">INTEGER</td><td class="cons">—</td><td>จำนวนครั้งที่ตอบผิดในขณะที่ถาม — ใช้ตรวจว่าระบบรัดเฉลยตามกฎหรือไม่</td></tr>
+<tr><td class="col-name">created_at</td><td class="col-type">TEXT</td><td class="cons">NOT NULL</td><td>เวลาที่ถาม (UTC)</td></tr>
+</tbody></table>
+<p class="extra"><b>Primary Key:</b> <span class="m">(id)</span></p>
+<p class="extra"><b>Index:</b> <span class="m">idx_chat_logs_student (student_id, course_id)</span></p>
+</div>
+<h2>4. คำสั่งที่เขียนและอ่านฐานข้อมูล</h2>
+<p class="sub">ทุกคำสั่งอยู่ในไฟล์ <code>main.py</code> และเรียกใช้ฟังก์ชันในไฟล์ <code>db.py</code> ไม่มีจุดใดในระบบที่เขียน SQL ตรงจากหน้าเว็บ</p>
+<table><caption>ตารางที่ 7 — คำสั่ง (API endpoint) และตารางที่เกี่ยวข้อง</caption><thead><tr><th>วิธี</th><th>เส้นทาง</th><th>หน้าที่</th><th>ตารางที่แตะ</th></tr></thead><tbody>
+<tr><td class="m"><b>POST</b></td><td class="col-name">/auth/google</td><td>ตรวจ Google ID token + โดเมน @email.kmutnb.ac.th แล้วบันทึกลง users และออก session token</td><td class="m">users</td></tr>
+<tr><td class="m"><b>POST</b></td><td class="col-name">/progress</td><td>บันทึกความคืบหน้า เขียน 2 ตารางพร้อมกันในการเรียกครั้งเดียว</td><td class="m">progress, activity</td></tr>
+<tr><td class="m"><b>GET</b></td><td class="col-name">/progress/{studentId}</td><td>อ่านความคืบหน้าทุก Lab + เวลาฝึก 7 วันย้อนหลัง สำหรับหน้า Dashboard</td><td class="m">progress, activity</td></tr>
+<tr><td class="m"><b>POST</b></td><td class="col-name">/quiz-score</td><td>บันทึกคะแนนแบบทดสอบ ทั้งตอนผ่านและไม่ผ่าน</td><td class="m">quiz_attempts</td></tr>
+<tr><td class="m"><b>POST</b></td><td class="col-name">/chat</td><td>ส่งคำถามไปยัง AI Tutor แล้วบันทึกบทสนทนา</td><td class="m">ai_chat_logs</td></tr>
+</tbody></table>
+<div class="note">คำสั่งที่อ่านหรือเขียนข้อมูลของนักศึกษาต้องแนบ session token ที่ลงลายมือชื่อแล้วมาด้วย เซิร์ฟเวอร์ถอดรหัสนักศึกษาออกจาก token เองและไม่เชื่อรหัสที่หน้าเว็บส่งมา</div>
+<h2>5. เหตุผลการออกแบบ</h2>
+<ol class="why">
+<li><b>SQLite ไฟล์เดียว ไม่ใช้ ORM</b>ความสัมพันธ์ของข้อมูลเรียบง่าย ใช้โมดูล sqlite3 ที่มาพร้อม Python ได้เลย ไม่ต้องเพิ่ม dependency และตรงตามที่ระบุไว้ในข้อเสนอโครงงาน §2.7.6 ฐานข้อมูลทั้งหมดอยู่ในไฟล์เดียวชื่อ netlab.db ย้ายเครื่องหรือสำรองข้อมูลทำได้ด้วยการคัดลอกไฟล์</li>
+<li><b>ค่าที่เป็นการสะสมใช้วิธีบวกทับ ไม่เขียนทับ</b>wrong_count, hints_used และ time_spent_sec ถูกส่งมาเป็น "ส่วนต่าง" แล้ว backend บวกเข้ากับของเดิม เพราะนักศึกษาอาจปิดหน้าเว็บแล้วกลับมาทำต่อหลายรอบ ต้องนับรวมทุกรอบไม่ใช่แค่รอบล่าสุด ส่วน steps_done กับ total_steps เป็นค่าสัมบูรณ์ เพราะเป็นสถานะไม่ใช่การสะสม</li>
+<li><b>แยกตาราง activity ออกจาก progress</b>progress เก็บสถานะล่าสุดต่อ Lab (แถวเดิมอัปเดตทับ) ส่วน activity ต้องเก็บประวัติรายวัน (แถวใหม่ทุกวัน) เพื่อวาดกราฟย้อนหลัง 7 วัน ถ้ารวมไว้ตารางเดียวจะคำนวณกราฟยากและข้อมูลซ้ำซ้อน</li>
+<li><b>difficulty อยู่ใน Primary Key ไม่ใช่คอลัมน์ธรรมดา</b>ขอบเขตภาคเรียนที่ 2 ข้อ 1.2 กำหนดระดับความยาก 3 ระดับ ถ้า Primary Key ไม่มี difficulty นักศึกษาที่ทำ Lab เดิมคนละระดับจะได้คีย์ซ้ำ แถวที่สองจะเขียนทับแถวแรก ทดสอบแล้วได้ผลลัพธ์ที่ขัดแย้งกับตัวเอง คือแถวที่บอกว่าทำได้ 5 จาก 30 ขั้นตอน แต่ยังติดสถานะว่าผ่านแล้ว จึงออกแบบให้แต่ละระดับมีแถวของตัวเองตั้งแต่ต้น</li>
+<li><b>เวลาเก็บเป็น UTC แต่การนับวันใช้ปฏิทินไทย</b>ทุก timestamp เก็บเป็น UTC เพื่อให้เทียบกันได้ไม่สับสน แต่คอลัมน์ activity.day ใช้วันที่ตามเวลาไทย (UTC+7) เพราะถ้านับวันแบบ UTC การฝึกช่วงเที่ยงคืนถึงเจ็ดโมงเช้า ซึ่งเป็นช่วงที่นักศึกษาฝึกจริง จะไปลงแท่งของวันก่อนหน้าในกราฟ</li>
+<li><b>เซิร์ฟเวอร์ไม่เชื่อรหัสนักศึกษาที่หน้าเว็บส่งมา</b>ทุกการอ่านและเขียนข้อมูลของนักศึกษาต้องแนบ session token ที่เซ็นด้วย HMAC มาด้วย แล้วเซิร์ฟเวอร์ถอดรหัสนักศึกษาออกจาก token เอง ถ้าไม่ทำเช่นนี้ ใครก็ส่งคะแนนในชื่อคนอื่นได้</li>
+<li><b>บันทึกตอนทำขั้นตอนสำเร็จ และตอนออกจากหน้าเว็บ</b>ไม่ส่งทุกการกดแป้นเพื่อไม่ให้ยิง request ถี่เกินไป แต่ดักจังหวะปิดแท็บไว้ด้วย เพื่อไม่ให้เวลาที่ฝึกไปแล้วหายถ้านักศึกษาปิดหน้าเว็บกลางคัน</li>
+</ol>
+<h2>6. ส่วนที่ยังไม่ได้พัฒนา</h2>
+<p class="sub">ทั้งสามรายการอยู่ในขอบเขตภาคเรียนที่ 2 และเพิ่มได้ภายหลังโดยไม่ต้องแก้ตารางที่มีอยู่</p>
+<table><caption>ตารางที่ 8 — ส่วนที่เหลือตามขอบเขตภาคเรียนที่ 2</caption><thead><tr><th>สิ่งที่ยังไม่มี</th><th>รองรับขอบเขตข้อใด</th><th>ผลกระทบ</th></tr></thead><tbody>
+<tr><td class="col-name">classrooms และ enrollments</td><td>ขอบเขตภาคเรียน 2 ข้อ 2.2 — อาจารย์สร้างห้องเรียนและให้นักศึกษาเข้าร่วม</td><td>เพิ่มเป็นตารางใหม่ได้ ไม่กระทบตารางเดิม</td></tr>
+<tr><td class="col-name">คำสั่งอ่านข้อมูลนักศึกษาหลายคนพร้อมกัน</td><td>ขอบเขตภาคเรียน 2 ข้อ 2.3 — อาจารย์ดูความคืบหน้าทั้งห้อง</td><td>ข้อมูลที่ต้องใช้มีอยู่ครบในตาราง progress แล้ว ขาดเพียงคำสั่งอ่าน</td></tr>
+<tr><td class="col-name">difficulty ในตาราง quiz_attempts</td><td>ถ้าต้องการแยกคะแนนแบบทดสอบตามระดับความยากด้วย</td><td>ยังไม่จำเป็น เพราะชุดคำถามไม่ได้เปลี่ยนตามระดับ</td></tr>
+</tbody></table>
+<footer>NETLab · เอกสารประกอบปริญญานิพนธ์ · สร้างจากสคีมาของ netlab.db เมื่อ 01/10/2026 15:07</footer>
 </div>
 </body>
 </html>

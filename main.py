@@ -1,5 +1,5 @@
 """
-QoSLab AI Backend — FastAPI + OpenRouter API
+NETLab AI Backend — FastAPI + OpenRouter API
 Model routing:
   hint/เร็ว  → deepseek/deepseek-v4-flash
   chat       → google/gemini-2.5-flash
@@ -8,16 +8,17 @@ Model routing:
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
-import httpx, os, re, logging
-from datetime import datetime
+import httpx, os, re, logging, sqlite3
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
 import db
+import session
 
-load_dotenv("/opt/qoslab/.env")
+load_dotenv("/opt/qoslab/.env")  # prod path — เซิร์ฟเวอร์จริงยังใช้โฟลเดอร์นี้อยู่ ไม่เปลี่ยนตาม rename นี้
 load_dotenv()  # fallback: .env ข้าง main.py เอง (สำหรับรัน local/Windows)
 
 # ─── Config ────────────────────────────────────────────────
@@ -32,10 +33,10 @@ ALLOWED_EMAIL_DOMAIN = os.getenv("ALLOWED_EMAIL_DOMAIN", "email.kmutnb.ac.th").l
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("qoslab")
+log = logging.getLogger("netlab")
 
 # ─── App ───────────────────────────────────────────────────
-app = FastAPI(title="QoSLab API", version="3.1.0")
+app = FastAPI(title="NETLab API", version="3.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -54,23 +55,36 @@ class ChatRequest(BaseModel):
     system: Optional[str] = None
     max_tokens: int = 120
     task_type: Optional[str] = None
+    token: Optional[str] = None       # session token — None for guests, chat still works but isn't logged to a student
+    labId: Optional[int] = None
+    courseId: str = "netlab1"
 
 class GoogleAuthRequest(BaseModel):
     credential: str
 
 class ProgressUpdate(BaseModel):
-    studentId: str
+    token: str                        # session token — server derives the real studentId from this
+    studentId: str                    # cross-checked against the token's studentId, not trusted alone
     labId: int
-    stepsDone: int
-    totalSteps: int
-    wrongDelta: int = 0
-    elapsedSec: int = 0
+    stepsDone: int = Field(ge=0)
+    totalSteps: int = Field(ge=0)
+    wrongDelta: int = Field(default=0, ge=0)
+    elapsedSec: int = Field(default=0, ge=0, le=3600)  # one /progress ping never covers more than an hour
     completed: bool = False
     courseId: str = "netlab1"  # disambiguates lab_id across courses (Network Eng. Lab I vs II)
 
+
+class QuizScoreRequest(BaseModel):
+    token: str
+    labId: int
+    score: int = Field(ge=0)
+    maxScore: int = Field(ge=0)
+    courseId: str = "netlab1"
+    quizKey: str = "pretest"
+
 # ─── System prompt ─────────────────────────────────────────
-QOS_SYSTEM = (
-    "คุณคือ AI Tutor สำหรับระบบเรียนรู้ QoS และ Cisco IOS "
+SYSTEM_PROMPT = (
+    "คุณคือ AI Tutor สำหรับระบบเรียนรู้ NETLab และ Cisco IOS "
     "ตอบเป็นภาษาไทย กระชับ เข้าใจง่าย เหมาะกับนักศึกษา "
     "ให้คำแนะนำทีละขั้น ห้ามเฉลยคำตอบเต็มทันที "
     "แม้ผู้ใช้จะขอเฉลยตรงๆ ก็ห้ามให้คำตอบเต็ม เว้นแต่ทำผิดครบจำนวนครั้งตามกฎที่กำหนดเท่านั้น "
@@ -129,7 +143,7 @@ def inject_hint_guard(system: str, wrong_count: int) -> str:
             f"ให้เฉลย command ได้เฉพาะ Step ปัจจุบันที่ผู้ใช้ติดอยู่เท่านั้น "
             f"ห้ามเฉลยหรือบอก command ของ Step ถัดไปที่ยังไม่ถึงล่วงหน้าเด็ดขาด]"
         )
-    return (system or QOS_SYSTEM) + guard
+    return (system or SYSTEM_PROMPT) + guard
 
 # Models that emit a hidden <reasoning> pass before the answer. Keep this list
 # in sync with .env — a model here needs a far larger max_tokens than the task
@@ -170,7 +184,7 @@ async def call_openrouter(
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
         "HTTP-Referer": "http://localhost",
-        "X-Title": "QoSLab",
+        "X-Title": "NETLab",
     }
 
     async with httpx.AsyncClient(timeout=30) as client:
@@ -207,6 +221,13 @@ def extract_student_id(local_part: str) -> Optional[str]:
     m = re.match(r"^[sS](\d+)$", local_part)
     return m.group(1) if m else None
 
+# ─── Helper: verify session token, return its studentId or raise ───
+def require_student(token: Optional[str]) -> str:
+    student_id = session.verify_token(token or "")
+    if not student_id:
+        raise HTTPException(401, detail="Session หมดอายุหรือไม่ถูกต้อง กรุณาเข้าสู่ระบบใหม่")
+    return student_id
+
 # ─── Endpoint: /auth/google ─────────────────────────────────
 @app.post("/auth/google")
 async def auth_google(req: GoogleAuthRequest):
@@ -214,8 +235,13 @@ async def auth_google(req: GoogleAuthRequest):
         raise HTTPException(500, detail="GOOGLE_CLIENT_ID not set in .env")
 
     try:
+        # clock_skew_in_seconds defaults to 0 in google-auth, so even a 1-second
+        # difference between this server's clock and Google's rejects the token
+        # with "Token used too early" — 10s tolerates normal drift without
+        # meaningfully weakening the check.
         payload = google_id_token.verify_oauth2_token(
-            req.credential, google_requests.Request(), GOOGLE_CLIENT_ID
+            req.credential, google_requests.Request(), GOOGLE_CLIENT_ID,
+            clock_skew_in_seconds=10,
         )
     except ValueError as e:
         raise HTTPException(401, detail=f"Invalid Google token: {str(e)}")
@@ -235,37 +261,75 @@ async def auth_google(req: GoogleAuthRequest):
     if not student_id:
         raise HTTPException(403, detail="รูปแบบอีเมลไม่ตรงกับรหัสนักศึกษา (คาดว่าเป็น s ตามด้วยรหัสนักศึกษา)")
 
+    name = payload.get("name") or email
+    picture = payload.get("picture")
+    try:
+        db.upsert_user(student_id, email, name, picture)
+    except sqlite3.IntegrityError:
+        # users.email is UNIQUE, so an email already bound to a different
+        # student_id fails here. Login is the worst place to surface a raw 500,
+        # and the student can do nothing about it on their own.
+        log.error(f"upsert_user conflict: student_id={student_id} email={email}")
+        raise HTTPException(409, detail="อีเมลนี้ถูกผูกกับรหัสนักศึกษาอื่นในระบบแล้ว กรุณาติดต่อผู้สอน")
+
     return {
         "ok": True,
+        "token": session.issue_token(student_id),
         "profile": {
-            "name": payload.get("name") or email,
+            "name": name,
             "email": email,
             "studentId": student_id,
-            "picture": payload.get("picture"),
+            "picture": picture,
         },
     }
 
 # ─── Endpoint: /progress ────────────────────────────────────
 @app.post("/progress")
 async def save_progress(req: ProgressUpdate):
+    token_student_id = require_student(req.token)
+    if token_student_id != req.studentId:
+        raise HTTPException(403, detail="studentId ไม่ตรงกับ session token")
     db.upsert_progress(
-        req.studentId, req.labId, req.stepsDone, req.totalSteps,
+        token_student_id, req.labId, req.stepsDone, req.totalSteps,
         req.wrongDelta, req.elapsedSec, req.completed,
         course_id=req.courseId,
     )
     return {"ok": True}
 
 @app.get("/progress/{student_id}")
-async def read_progress(student_id: str, course_id: str | None = None):
+async def read_progress(student_id: str, token: str, course_id: str | None = None):
+    token_student_id = require_student(token)
+    if token_student_id != student_id:
+        raise HTTPException(403, detail="token ไม่ตรงกับ studentId ที่ขอดู")
     return {
         "labs": db.get_progress_for_student(student_id, course_id=course_id),
         "weeklyActivity": db.get_weekly_activity(student_id),
     }
 
+# ─── Endpoint: /quiz-score ───────────────────────────────────
+@app.post("/quiz-score")
+async def save_quiz_score(req: QuizScoreRequest):
+    student_id = require_student(req.token)
+    try:
+        db.save_quiz_attempt(
+            student_id, req.labId, req.score, req.maxScore,
+            course_id=req.courseId, quiz_key=req.quizKey,
+        )
+    except sqlite3.IntegrityError:
+        # quiz_attempts.student_id FK-references users. A session token stays
+        # valid for 7 days while the database file under it can be replaced — a
+        # fresh deploy, a backup restored from before this student first signed
+        # in, or a wiped dev DB. The token is then genuine but names a student
+        # the database has never seen, and the insert fails. That is a stale
+        # session rather than a server fault, so return 401 and let the frontend
+        # send them back through sign-in, which re-creates the user row.
+        raise HTTPException(401, detail="Session ไม่ตรงกับข้อมูลในระบบ กรุณาเข้าสู่ระบบใหม่")
+    return {"ok": True}
+
 # ─── Endpoint: /chat ───────────────────────────────────────
 @app.post("/chat")
 async def chat(req: ChatRequest):
-    system_prompt = req.system or QOS_SYSTEM
+    system_prompt = req.system or SYSTEM_PROMPT
     wrong_count   = extract_wrong_count(system_prompt)
     task          = req.task_type or detect_task(system_prompt, req.messages)
     model         = select_model(task, wrong_count)
@@ -284,8 +348,22 @@ async def chat(req: ChatRequest):
 
     log.info(f"task={task} model={model} wrong={wrong_count} tokens={max_tokens}")
 
+    student_id = session.verify_token(req.token or "")  # None for guests — chat still works, just not logged to a student
+    last_user_msg = next((m.content for m in reversed(req.messages) if m.role == "user"), "")
+
+    def log_it(reply: str, used_model: str):
+        try:
+            db.log_chat(
+                student_id, last_user_msg, reply,
+                course_id=req.courseId, lab_id=req.labId,
+                task_type=task, model_used=used_model, wrong_count_at_time=wrong_count,
+            )
+        except Exception as e:
+            log.warning(f"log_chat failed: {e}")
+
     try:
         reply = await call_openrouter(messages, system_prompt, max_tokens, model)
+        log_it(reply, model)
         return {
             "content": reply,
             "model": model,
@@ -297,6 +375,7 @@ async def chat(req: ChatRequest):
         log.warning(f"Timeout {model} → fallback {MODEL_FAST}")
         try:
             reply = await call_openrouter(messages, system_prompt, 80, MODEL_FAST)
+            log_it(reply, MODEL_FAST)
             return {"content": reply, "model": MODEL_FAST, "task": task, "done": True}
         except Exception as e2:
             raise HTTPException(504, detail=f"Timeout: {str(e2)}")
@@ -318,7 +397,7 @@ async def health():
             "fast":     MODEL_FAST,
             "fallback": MODEL_FALLBACK,
         },
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 # ─── Endpoint: /models ─────────────────────────────────────

@@ -12,18 +12,35 @@ body{min-height:100vh}
 .brand{font-size:20px}
 
 /* ── Hero ── */
-.hero{background:linear-gradient(180deg,var(--panel2),var(--bg));border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6);overflow:hidden;position:relative}
-.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
-.hero-bg img{width:100%;height:100%;object-fit:cover;display:block;filter:blur(1px) saturate(.85);
-  -webkit-mask-image:linear-gradient(to left, black 10%, transparent 55%);
-  mask-image:linear-gradient(to left, black 10%, transparent 55%);opacity:.28}
-.hero-inner{position:relative;z-index:1;max-width:none;margin:0}
-.hero-content{max-width:640px;text-align:left}
-.hero-eyebrow{font-size:var(--step-xs);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
-.hero-title{font-size:42px;font-weight:800;letter-spacing:-0.02em;margin:0 0 var(--space-3);line-height:1.2;text-wrap:balance}
-.hero-sub{font-size:var(--step-lg);color:var(--text2);max-width:560px;line-height:1.75}
+.hero{background:var(--panel2);border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6)}
+.hero-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:var(--space-8);
+  align-items:center;max-width:1240px;margin:0 auto}
+.hero-content{max-width:52ch}
+.hero-title{font-size:34px;font-weight:800;letter-spacing:-0.02em;margin:0 0 var(--space-3);line-height:1.25;text-wrap:balance}
+.hero-sub{font-size:var(--step-md);color:var(--text2);line-height:1.8}
+.hero-sub b{color:var(--text);font-weight:600}
 .hero-actions{margin-top:var(--space-6);display:flex;gap:var(--space-3);flex-wrap:wrap}
-.hero-actions .btn-primary,.hero-actions .btn-secondary{padding:14px 26px;font-size:var(--step-base)}
+.hero-actions .btn-primary,.hero-actions .btn-secondary{padding:13px 24px;font-size:var(--step-base)}
+
+/* Console: same chrome and the same colour roles as the labs' own terminal
+   (.t-prompt / .t-ok), so the hero is showing the real component, not a mockup
+   of one. Flat at rest per the Overlay-Only Rule — no shadow. */
+.hero-term{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  font-family:var(--mono);min-width:0}
+.ht-bar{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);
+  padding:9px var(--space-4);background:var(--panel2);border-bottom:1px solid var(--border)}
+/* --text2, not --text3: ink-faint measures 3.46:1 on panel2 in the dark
+   theme, which PRODUCT.md calls out as borderline and AA rejects at this size */
+.ht-name{font-family:var(--font);font-size:var(--step-xs);color:var(--text2)}
+.ht-name b{color:var(--text2);font-weight:600;font-family:var(--mono)}
+.ht-body{padding:var(--space-4);min-height:232px;font-size:var(--step-sm);line-height:1.85}
+.ht-line{white-space:pre-wrap;word-break:break-word}
+.ht-prompt{color:var(--prompt-c);font-weight:600}
+.ht-ok{color:var(--green)}
+.ht-caret{display:inline-block;width:7px;height:1.05em;background:var(--cyan);vertical-align:-2px;
+  animation:htblink 1.1s steps(1) infinite}
+@keyframes htblink{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){.ht-caret{animation:none}}
 
 /* ── Reference: rail + panel ── */
 .wrap{max-width:none;margin:0;padding:var(--space-6) var(--space-6) var(--space-8)}
@@ -57,7 +74,7 @@ body{min-height:100vh}
 .ref-panel-doclink{margin-top:var(--space-6);max-width:1100px;position:relative;z-index:1}
 
 .topic-list{list-style:none;display:flex;flex-direction:column;gap:var(--space-3)}
-.topic-list li{font-size:var(--step-base);color:var(--text2);line-height:1.75;padding:14px 18px 14px 34px;position:relative;background:var(--panel2);border-radius:10px;border-left:3px solid var(--border)}
+.topic-list li{font-size:var(--step-base);color:var(--text2);line-height:1.75;padding:14px 18px 14px 34px;position:relative;background:var(--panel2);border-radius:10px;border:1px solid var(--border)}
 .topic-list li::before{content:'▸';position:absolute;left:14px;top:14px;color:var(--cyan);font-size:var(--step-base)}
 .topic-list li:has(code){border-left-color:var(--cyan-d)}
 .topic-list li b{color:var(--text)}
@@ -71,7 +88,7 @@ body{min-height:100vh}
 .ref-table code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:.94em}
 .ref-table .rt-ok{color:var(--green);font-weight:700}
 .ref-table .rt-no{color:var(--red);font-weight:700}
-.ios-reply{font-family:var(--mono);font-size:var(--step-sm);background:var(--panel2);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:7px;padding:10px 13px;margin:var(--space-3) 0;line-height:1.6;white-space:pre-wrap}
+.ios-reply{font-family:var(--mono);font-size:var(--step-sm);background:var(--amber-wash);border:1px solid var(--amber);border-radius:7px;padding:10px 13px;margin:var(--space-3) 0;line-height:1.6;white-space:pre-wrap}
 .topic-cmds{display:flex;flex-direction:column;gap:var(--space-3);flex:1;min-width:260px}
 .cmd-row{display:flex;align-items:baseline;gap:var(--space-3);font-size:var(--step-base);background:var(--panel2);border-radius:8px;padding:var(--space-3) var(--space-4)}
 .cmd-row code{font-family:var(--mono);font-size:var(--step-base);color:var(--cyan);flex-shrink:0;min-width:190px}
@@ -89,6 +106,12 @@ body{min-height:100vh}
 
 .footer-note{max-width:none}
 
+@media (max-width:980px){
+  /* stack before the prose column narrows past a comfortable measure */
+  .hero-inner{grid-template-columns:1fr;gap:var(--space-6)}
+  .hero{padding:var(--space-7) var(--space-5)}
+  .ht-body{min-height:0}
+}
 @media (max-width:760px){
   .ref-mobile-bar{display:block}
   .ref-body{grid-template-columns:1fr}
@@ -102,7 +125,10 @@ body{min-height:100vh}
 }
 @media (max-width:640px){
   .hero{padding:var(--space-5) var(--space-4)}
-  .hero-title{font-size:23px}
+  .hero-title{font-size:25px}
+  .hero-sub{font-size:var(--step-base)}
+  .ht-body{font-size:var(--step-xs);padding:var(--space-3)}
+  .hero-actions .btn-primary,.hero-actions .btn-secondary{width:100%;text-align:center}
   .cmd-row{flex-direction:column;gap:2px}
   .cmd-row code{min-width:0}
 }
@@ -127,20 +153,30 @@ body{min-height:100vh}
 </div>
 
 <div class="hero">
-  <div class="hero-bg"><img src="assets/topic-images/hero-network-dashboard.png" alt=""></div>
   <div class="hero-inner">
     <div class="hero-content">
-      <div class="hero-title">NET<span style="color:var(--cyan)">Lab</span> for INE</div>
-      <div class="hero-sub">ระบบนี้ช่วยลดช่องว่างความรู้พื้นฐาน ให้ผู้เรียนฝึกปฏิบัติได้ทุกที่ทุกเวลาผ่านเว็บเบราว์เซอร์ ยกระดับการเรียนการสอนวิชา Network Engineering Lab ให้มีประสิทธิภาพมากขึ้น</div>
+      <h1 class="hero-title">ฝึกคำสั่ง Cisco IOS จนขึ้นใจ</h1>
+      <p class="hero-sub">เราเตอร์จำลองในเบราว์เซอร์ สำหรับวิชาปฏิบัติการวิศวกรรมสารสนเทศและเครือข่าย 1
+        <b>พิมพ์ผิดกี่ครั้งก็ได้ ไม่มีอุปกรณ์เสียหาย</b> และ AI Tutor จะใบ้ทีละขั้น
+        แต่ยังไม่เฉลยจนกว่าคุณจะลองด้วยตัวเองแล้วจริงๆ</p>
 
       <div class="hero-actions" id="heroActionsLoggedIn" style="display:none">
-        <a class="btn-primary" href="labs.html">เริ่มทำ Lab →</a>
+        <a class="btn-primary" href="labs.html">เริ่มทำ Lab</a>
         <a class="btn-secondary" href="dashboard.html">ดูความคืบหน้า</a>
       </div>
 
       <div class="hero-actions" id="heroActionsLoggedOut">
-        <a class="btn-primary" href="login.html">เข้าสู่ระบบ →</a>
+        <a class="btn-primary" href="login.html">เข้าสู่ระบบ</a>
       </div>
+    </div>
+
+    <div class="hero-term">
+      <div class="ht-bar">
+        <span class="ht-name"><b>R1</b> console</span>
+        <span class="ht-name">Lab 4 · Basic Configuration</span>
+      </div>
+      <div class="ht-body" id="heroTerm" role="img"
+        aria-label="ตัวอย่างการตั้งค่า interface บนเราเตอร์ R1 ด้วยคำสั่ง Cisco IOS: enable, configure terminal, interface g0/0, ip address 192.168.10.1 255.255.255.0 แล้ว no shutdown จนพอร์ตขึ้นสถานะ up"></div>
     </div>
   </div>
 </div>
@@ -538,6 +574,88 @@ window.addEventListener('popstate', function(){
 (function initTopic(){
   var id = (location.hash || '').slice(1) || 'cmd';
   selectTopic(id, {silent:true});
+})();
+</script>
+<script>
+/* The hero console types the sequence Lab 4 actually teaches, with Lab 4's own
+   address, so the first thing a visitor sees is true rather than illustrative.
+   Characters are written as text nodes, never innerHTML, so nothing here can
+   become an injection point if the sequence is ever edited.
+   With reduced motion the whole session is printed at once: the information is
+   the point, the typing is not. */
+(function(){
+  var term = document.getElementById('heroTerm');
+  if(!term) return;
+
+  var SESSION = [
+    {p:'R1>',            c:'enable'},
+    {p:'R1#',            c:'configure terminal'},
+    {p:'R1(config)#',    c:'interface g0/0'},
+    {p:'R1(config-if)#', c:'ip address 192.168.10.1 255.255.255.0'},
+    {p:'R1(config-if)#', c:'no shutdown'},
+    {ok:'%LINK-5-CHANGED: Interface GigabitEthernet0/0, changed state to up'}
+  ];
+
+  function row(step){
+    var line = document.createElement('div');
+    line.className = 'ht-line';
+    if(step.ok){
+      var ok = document.createElement('span');
+      ok.className = 'ht-ok';
+      ok.textContent = step.ok;
+      line.appendChild(ok);
+      return {line:line, target:null};
+    }
+    var pr = document.createElement('span');
+    pr.className = 'ht-prompt';
+    pr.textContent = step.p + ' ';
+    var cmd = document.createElement('span');
+    line.appendChild(pr);
+    line.appendChild(cmd);
+    return {line:line, target:cmd};
+  }
+
+  function printAll(){
+    SESSION.forEach(function(s){
+      var r = row(s);
+      if(r.target) r.target.textContent = s.c;
+      term.appendChild(r.line);
+    });
+  }
+
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  if(still && still.matches){ printAll(); return; }
+
+  var caret = document.createElement('span');
+  caret.className = 'ht-caret';
+  var i = 0;
+
+  function typeStep(){
+    if(i >= SESSION.length){
+      setTimeout(function(){
+        if(caret.parentNode) caret.parentNode.removeChild(caret);
+        term.textContent = '';
+        i = 0;
+        typeStep();
+      }, 4200);
+      return;
+    }
+    var step = SESSION[i++];
+    var r = row(step);
+    term.appendChild(r.line);
+    if(!r.target){ r.line.appendChild(caret); setTimeout(typeStep, 900); return; }
+    r.line.appendChild(caret);
+    var k = 0;
+    (function tick(){
+      if(k < step.c.length){
+        r.target.textContent += step.c.charAt(k++);
+        setTimeout(tick, 34);
+      } else {
+        setTimeout(typeStep, 460);
+      }
+    })();
+  }
+  typeStep();
 })();
 </script>
 </body>

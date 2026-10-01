@@ -314,6 +314,11 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 var API_BASE=(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
   ?'http://localhost:8000':'http://'+window.location.hostname+'/api';
 
+// ระดับความยาก (ขอบเขตภาคเรียน 2 ข้อ 1.2) — ตอนนี้มีระดับเดียว ส่งค่าคงที่ไปก่อน
+// เก็บเป็นตัวแปรไม่ใช่ค่าตรงใน payload เพื่อให้วันที่เปิดใช้จริงแก้ที่เดียวต่อไฟล์
+// ฝั่ง backend ตรวจค่านี้กับ db.DIFFICULTIES และมันเป็นส่วนหนึ่งของ primary key
+var DIFFICULTY='basic';
+
 // ── เนื้อหา Lab: สลับกันระหว่าง 'lesson' (อ่านเนื้อหา กด ถัดไป ได้เลย) กับ 'checkpoint' (ต้องตอบถูกก่อนถึงจะไปต่อ) ──
 // final:true = อยู่ในช่วงทบทวนท้ายบท (สรุปรวมทุกหัวข้อที่ผ่านมา) ต่างจาก checkpoint ระหว่างบทที่เพิ่งเรียนจบหัวข้อเดียว
 var STEPS=[
@@ -465,7 +470,7 @@ var STEPS=[
    ]}
 ];
 
-var APP={step:1,maxStep:1,stepsDone:[],wrong:0,chatHistory:[],wrongSinceSave:0,lastSaveTime:Date.now()};
+var APP={step:1,maxStep:1,stepsDone:[],wrong:0,chatHistory:[],wrongSinceSave:0,hintsSinceSave:0,lastSaveTime:Date.now()};
 var isBusy=false;
 var ddSel=null;
 var ddMap={};
@@ -497,9 +502,9 @@ window.addEventListener('pagehide',function(){
   var elapsedSec=Math.round((Date.now()-APP.lastSaveTime)/1000);
   if(elapsedSec<1&&APP.wrongSinceSave===0)return;
   var payload=JSON.stringify({
-    studentId:studentId, labId:1, courseId:'netlab1', token:getToken(),
+    studentId:studentId, labId:1, courseId:'netlab1', difficulty:DIFFICULTY, token:getToken(),
     stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
-    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:false
+    wrongDelta:APP.wrongSinceSave, hintsDelta:APP.hintsSinceSave, elapsedSec:elapsedSec, completed:false
   });
   if(navigator.sendBeacon){
     navigator.sendBeacon(API_BASE+'/progress',new Blob([payload],{type:'application/json'}));
@@ -1219,7 +1224,7 @@ function resetLab(){
   document.getElementById('nextLabChip').classList.remove('show');
   APP.step=1;APP.maxStep=1;APP.stepsDone=[];APP.wrong=0;
   STEPS.forEach(function(st){if(st.pool)st.drawn=false;});
-  APP.wrongSinceSave=0;APP.lastSaveTime=Date.now();
+  APP.wrongSinceSave=0;APP.hintsSinceSave=0;APP.lastSaveTime=Date.now();
   renderStep();renderSidebar();
 }
 
@@ -1230,11 +1235,11 @@ function saveProgress(completed){
   var now=Date.now();
   var elapsedSec=Math.round((now-APP.lastSaveTime)/1000);
   var payload={
-    studentId:studentId, labId:1, courseId:'netlab1', token:getToken(),
+    studentId:studentId, labId:1, courseId:'netlab1', difficulty:DIFFICULTY, token:getToken(),
     stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
-    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:!!completed
+    wrongDelta:APP.wrongSinceSave, hintsDelta:APP.hintsSinceSave, elapsedSec:elapsedSec, completed:!!completed
   };
-  APP.lastSaveTime=now;APP.wrongSinceSave=0;
+  APP.lastSaveTime=now;APP.wrongSinceSave=0;APP.hintsSinceSave=0;
   fetch(API_BASE+'/progress',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload)}).catch(function(){});
 }

@@ -69,9 +69,11 @@ class ProgressUpdate(BaseModel):
     stepsDone: int = Field(ge=0)
     totalSteps: int = Field(ge=0)
     wrongDelta: int = Field(default=0, ge=0)
+    hintsDelta: int = Field(default=0, ge=0)   # hint presses since the last save, not a running total
     elapsedSec: int = Field(default=0, ge=0, le=3600)  # one /progress ping never covers more than an hour
     completed: bool = False
     courseId: str = "netlab1"  # disambiguates lab_id across courses (Network Eng. Lab I vs II)
+    difficulty: str = "basic"  # basic | medium | hard — part of progress's key, see db.DIFFICULTIES
 
 
 class QuizScoreRequest(BaseModel):
@@ -289,20 +291,26 @@ async def save_progress(req: ProgressUpdate):
     token_student_id = require_student(req.token)
     if token_student_id != req.studentId:
         raise HTTPException(403, detail="studentId ไม่ตรงกับ session token")
+    if req.difficulty not in db.DIFFICULTIES:
+        raise HTTPException(400, detail="difficulty ต้องเป็น %s" % ", ".join(db.DIFFICULTIES))
     db.upsert_progress(
         token_student_id, req.labId, req.stepsDone, req.totalSteps,
         req.wrongDelta, req.elapsedSec, req.completed,
-        course_id=req.courseId,
+        course_id=req.courseId, difficulty=req.difficulty, hints_used=req.hintsDelta,
     )
     return {"ok": True}
 
 @app.get("/progress/{student_id}")
-async def read_progress(student_id: str, token: str, course_id: str | None = None):
+async def read_progress(student_id: str, token: str, course_id: str | None = None,
+                        difficulty: str | None = None):
     token_student_id = require_student(token)
     if token_student_id != student_id:
         raise HTTPException(403, detail="token ไม่ตรงกับ studentId ที่ขอดู")
+    if difficulty is not None and difficulty not in db.DIFFICULTIES:
+        raise HTTPException(400, detail="difficulty ต้องเป็น %s" % ", ".join(db.DIFFICULTIES))
     return {
-        "labs": db.get_progress_for_student(student_id, course_id=course_id),
+        "labs": db.get_progress_for_student(student_id, course_id=course_id,
+                                            difficulty=difficulty),
         "weeklyActivity": db.get_weekly_activity(student_id),
     }
 

@@ -416,6 +416,11 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 var API_BASE=(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
   ?'http://localhost:8000':'http://'+window.location.hostname+'/api';
 
+// ระดับความยาก (ขอบเขตภาคเรียน 2 ข้อ 1.2) — ตอนนี้มีระดับเดียว ส่งค่าคงที่ไปก่อน
+// เก็บเป็นตัวแปรไม่ใช่ค่าตรงใน payload เพื่อให้วันที่เปิดใช้จริงแก้ที่เดียวต่อไฟล์
+// ฝั่ง backend ตรวจค่านี้กับ db.DIFFICULTIES และมันเป็นส่วนหนึ่งของ primary key
+var DIFFICULTY='basic';
+
 function cv(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 
 function onThemeChange(){
@@ -791,7 +796,7 @@ var PRETEST=[
 ];
 
 var APP={step:1,stepsDone:[],wrong:0,mode:'exec',prompt:'Router>',chatHistory:[],cmdIdx:0,
-  wrongSinceSave:0,lastSaveTime:Date.now()};
+  wrongSinceSave:0,hintsSinceSave:0,lastSaveTime:Date.now()};
 var isBusy=false,termBusy=false,ddSel=null;
 var ddMap={};
 
@@ -820,9 +825,9 @@ window.addEventListener('pagehide',function(){
   var elapsedSec=Math.round((Date.now()-APP.lastSaveTime)/1000);
   if(elapsedSec<1&&APP.wrongSinceSave===0)return;
   var payload=JSON.stringify({
-    studentId:studentId, labId:7, courseId:'netlab1', token:getToken(),
+    studentId:studentId, labId:7, courseId:'netlab1', difficulty:DIFFICULTY, token:getToken(),
     stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
-    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:false
+    wrongDelta:APP.wrongSinceSave, hintsDelta:APP.hintsSinceSave, elapsedSec:elapsedSec, completed:false
   });
   if(navigator.sendBeacon){
     navigator.sendBeacon(API_BASE+'/progress',new Blob([payload],{type:'application/json'}));
@@ -1255,7 +1260,7 @@ function resetLab(){
   APP_PC_VALUES={};APP_PC_PINGED={};
   document.getElementById('pcCmdBackdrop').classList.remove('show');
   APP.mode=STEPS[0].mode;APP.prompt=STEPS[0].prompt;
-  APP.wrongSinceSave=0;APP.lastSaveTime=Date.now();
+  APP.wrongSinceSave=0;APP.hintsSinceSave=0;APP.lastSaveTime=Date.now();
   document.getElementById('tPrompt').textContent=APP.prompt;
   document.getElementById('terminal').innerHTML='';
   tPrint('# เริ่ม Lab ใหม่อีกครั้งครับ — พิมพ์: enable','t-info');
@@ -1439,11 +1444,11 @@ function saveProgress(completed){
   var now=Date.now();
   var elapsedSec=Math.round((now-APP.lastSaveTime)/1000);
   var payload={
-    studentId:studentId, labId:7, courseId:'netlab1', token:getToken(),
+    studentId:studentId, labId:7, courseId:'netlab1', difficulty:DIFFICULTY, token:getToken(),
     stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
-    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:!!completed
+    wrongDelta:APP.wrongSinceSave, hintsDelta:APP.hintsSinceSave, elapsedSec:elapsedSec, completed:!!completed
   };
-  APP.lastSaveTime=now;APP.wrongSinceSave=0;
+  APP.lastSaveTime=now;APP.wrongSinceSave=0;APP.hintsSinceSave=0;
   fetch(API_BASE+'/progress',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload)}).catch(function(){});
 }
@@ -1558,6 +1563,7 @@ function renderSidebar(){
 
 function showHint(){
   var s=STEPS[APP.step-1];if(!s)return;
+  APP.hintsSinceSave++;
   var h=(s.hints&&s.hints[APP.cmdIdx])||s.cmdHint;
   var cmdOnly=h.cmd.replace(/^\S+[#>]\s*/,'');
   var firstWord=cmdOnly.split(/\s+/)[0];

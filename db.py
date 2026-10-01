@@ -21,6 +21,13 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "netlab.db")
 # Every row saved before course_id existed belongs to this term's only course.
 DEFAULT_COURSE_ID = "netlab1"
 
+# Semester 2's scope item 1.2: Basic/Medium/Hard differ in topology size, hint
+# quota and time limit. Part of progress's primary key, not a plain column — the
+# same student retrying a lab at another level is a separate attempt, and keying
+# without it makes the second attempt overwrite the first.
+DIFFICULTIES = ("basic", "medium", "hard")
+DEFAULT_DIFFICULTY = "basic"
+
 # Practice time is bucketed by the student's own calendar day, not UTC's.
 # Thailand is UTC+7, so a UTC date pushes everything done between midnight and
 # 07:00 local — the hours students actually practise — onto the previous day's
@@ -56,15 +63,18 @@ def init_db():
                 student_id     TEXT NOT NULL,
                 course_id      TEXT NOT NULL DEFAULT 'netlab1',
                 lab_id         INTEGER NOT NULL,
+                difficulty     TEXT NOT NULL DEFAULT 'basic',
                 steps_done     INTEGER NOT NULL DEFAULT 0 CHECK(steps_done >= 0),
                 total_steps    INTEGER NOT NULL DEFAULT 0 CHECK(total_steps >= 0),
                 wrong_count    INTEGER NOT NULL DEFAULT 0 CHECK(wrong_count >= 0),
+                hints_used     INTEGER NOT NULL DEFAULT 0 CHECK(hints_used >= 0),
                 time_spent_sec INTEGER NOT NULL DEFAULT 0 CHECK(time_spent_sec >= 0),
                 completed      INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0, 1)),
                 started_at     TEXT NOT NULL,
                 updated_at     TEXT NOT NULL,
-                PRIMARY KEY (student_id, course_id, lab_id),
-                CHECK(steps_done <= total_steps)
+                PRIMARY KEY (student_id, course_id, lab_id, difficulty),
+                CHECK(steps_done <= total_steps),
+                CHECK(difficulty IN ('basic', 'medium', 'hard'))
             )
         """)
         # activity stays course-agnostic on purpose — it powers the dashboard's
@@ -136,57 +146,69 @@ def _migrate_naive_timestamps(conn):
 
 
 def _migrate_progress_table(conn):
-    """One-time, idempotent migration that brings an older `progress` table
-    up to the current schema (course_id PK + CHECK constraints). Safe to run
-    on every startup: no-ops once the table already matches. Never drops
-    data — legacy rows are backfilled (course_id) and clamped into the new
-    CHECK bounds (steps_done/wrong_count/time_spent_sec) before the old table
-    is replaced, so a pre-existing dirty row can't abort the migration."""
+    """One-time, idempotent migration that brings an older `progress` table up
+    to the current schema. Handles every earlier shape this table has had: no
+    course_id, no CHECK constraints, and no difficulty/hints_used. Safe to run
+    on every startup — it no-ops once `difficulty` is part of the primary key.
+
+    The table is rebuilt rather than altered because SQLite cannot add a column
+    to a PRIMARY KEY in place. Nothing is dropped: absent columns are backfilled
+    (course_id, difficulty, hints_used) and legacy values are clamped into the
+    new CHECK bounds before the old table goes away, so one dirty pre-existing
+    row cannot abort the migration and lose every other row with it."""
     row = conn.execute(
         "SELECT sql FROM sqlite_master WHERE type='table' AND name='progress'"
     ).fetchone()
     if row is None:
-        return  # fresh DB — init_db()'s CREATE TABLE below builds the final schema
-    if "CHECK(steps_done <= total_steps)" in row["sql"]:
-        return  # already migrated
+        return  # fresh DB — init_db()'s CREATE TABLE builds the current schema
+    if "lab_id, difficulty)" in row["sql"]:
+        return  # already current
 
     cols = [r["name"] for r in conn.execute("PRAGMA table_info(progress)").fetchall()]
-    has_course_id = "course_id" in cols
+    course_id_expr = "course_id" if "course_id" in cols else f"'{DEFAULT_COURSE_ID}'"
+    # Rows predating difficulty were all played at the one level that existed.
+    difficulty_expr = "difficulty" if "difficulty" in cols else f"'{DEFAULT_DIFFICULTY}'"
+    hints_expr = "MAX(hints_used, 0)" if "hints_used" in cols else "0"
 
-    conn.execute("ALTER TABLE progress RENAME TO progress_pre_checks")
+    conn.execute("ALTER TABLE progress RENAME TO progress_pre_difficulty")
     conn.execute("""
         CREATE TABLE progress (
             student_id     TEXT NOT NULL,
             course_id      TEXT NOT NULL DEFAULT 'netlab1',
             lab_id         INTEGER NOT NULL,
+            difficulty     TEXT NOT NULL DEFAULT 'basic',
             steps_done     INTEGER NOT NULL DEFAULT 0 CHECK(steps_done >= 0),
             total_steps    INTEGER NOT NULL DEFAULT 0 CHECK(total_steps >= 0),
             wrong_count    INTEGER NOT NULL DEFAULT 0 CHECK(wrong_count >= 0),
+            hints_used     INTEGER NOT NULL DEFAULT 0 CHECK(hints_used >= 0),
             time_spent_sec INTEGER NOT NULL DEFAULT 0 CHECK(time_spent_sec >= 0),
             completed      INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0, 1)),
             started_at     TEXT NOT NULL,
             updated_at     TEXT NOT NULL,
-            PRIMARY KEY (student_id, course_id, lab_id),
-            CHECK(steps_done <= total_steps)
+            PRIMARY KEY (student_id, course_id, lab_id, difficulty),
+            CHECK(steps_done <= total_steps),
+            CHECK(difficulty IN ('basic', 'medium', 'hard'))
         )
     """)
-    course_id_expr = "course_id" if has_course_id else f"'{DEFAULT_COURSE_ID}'"
     conn.execute(f"""
-        INSERT INTO progress (student_id, course_id, lab_id, steps_done, total_steps,
-                               wrong_count, time_spent_sec, completed, started_at, updated_at)
+        INSERT INTO progress (student_id, course_id, lab_id, difficulty, steps_done,
+                               total_steps, wrong_count, hints_used, time_spent_sec,
+                               completed, started_at, updated_at)
         SELECT student_id,
                {course_id_expr},
                lab_id,
+               {difficulty_expr},
                MIN(MAX(steps_done, 0), MAX(total_steps, 0)),
                MAX(total_steps, 0),
                MAX(wrong_count, 0),
+               {hints_expr},
                MAX(time_spent_sec, 0),
                CASE WHEN completed = 1 THEN 1 ELSE 0 END,
                started_at,
                updated_at
-        FROM progress_pre_checks
+        FROM progress_pre_difficulty
     """)
-    conn.execute("DROP TABLE progress_pre_checks")
+    conn.execute("DROP TABLE progress_pre_difficulty")
 
 
 @contextmanager
@@ -229,30 +251,37 @@ def get_user(student_id):
 
 # ─── Progress / activity ────────────────────────────────────
 def upsert_progress(student_id, lab_id, steps_done, total_steps, wrong_count, elapsed_sec, completed,
-                     course_id=DEFAULT_COURSE_ID):
+                     course_id=DEFAULT_COURSE_ID, difficulty=DEFAULT_DIFFICULTY, hints_used=0):
+    """`wrong_count`, `elapsed_sec` and `hints_used` are deltas the server adds
+    to the stored totals; `steps_done`/`total_steps` are absolute. `difficulty`
+    is part of the key, so each level keeps its own row and its own history."""
+    if difficulty not in DIFFICULTIES:
+        raise ValueError("unknown difficulty: %r" % (difficulty,))
     now = _now_iso()
     today = _today_local()
     with _connect() as conn:
         existing = conn.execute(
-            "SELECT * FROM progress WHERE student_id=? AND course_id=? AND lab_id=?",
-            (student_id, course_id, lab_id)
+            "SELECT * FROM progress WHERE student_id=? AND course_id=? AND lab_id=? AND difficulty=?",
+            (student_id, course_id, lab_id, difficulty)
         ).fetchone()
         if existing:
             conn.execute("""
                 UPDATE progress SET
                     steps_done=?, total_steps=?, wrong_count=wrong_count+?,
-                    time_spent_sec=time_spent_sec+?, completed=?, updated_at=?
-                WHERE student_id=? AND course_id=? AND lab_id=?
-            """, (steps_done, total_steps, wrong_count, elapsed_sec,
-                  1 if completed else existing["completed"], now, student_id, course_id, lab_id))
+                    hints_used=hints_used+?, time_spent_sec=time_spent_sec+?,
+                    completed=?, updated_at=?
+                WHERE student_id=? AND course_id=? AND lab_id=? AND difficulty=?
+            """, (steps_done, total_steps, wrong_count, hints_used, elapsed_sec,
+                  1 if completed else existing["completed"], now,
+                  student_id, course_id, lab_id, difficulty))
         else:
             conn.execute("""
                 INSERT INTO progress
-                    (student_id, course_id, lab_id, steps_done, total_steps, wrong_count,
-                     time_spent_sec, completed, started_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (student_id, course_id, lab_id, steps_done, total_steps, wrong_count,
-                  elapsed_sec, 1 if completed else 0, now, now))
+                    (student_id, course_id, lab_id, difficulty, steps_done, total_steps,
+                     wrong_count, hints_used, time_spent_sec, completed, started_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (student_id, course_id, lab_id, difficulty, steps_done, total_steps,
+                  wrong_count, hints_used, elapsed_sec, 1 if completed else 0, now, now))
 
         conn.execute("""
             INSERT INTO activity (student_id, day, seconds) VALUES (?, ?, ?)
@@ -260,14 +289,21 @@ def upsert_progress(student_id, lab_id, steps_done, total_steps, wrong_count, el
         """, (student_id, today, elapsed_sec))
 
 
-def get_progress_for_student(student_id, course_id=None):
-    query = ("SELECT course_id, lab_id, steps_done, total_steps, wrong_count, "
-              "time_spent_sec, completed, updated_at FROM progress WHERE student_id=?")
+def get_progress_for_student(student_id, course_id=None, difficulty=None):
+    query = ("SELECT course_id, lab_id, difficulty, steps_done, total_steps, wrong_count, "
+              "hints_used, time_spent_sec, completed, updated_at FROM progress WHERE student_id=?")
     params = [student_id]
     if course_id:
         query += " AND course_id=?"
         params.append(course_id)
-    query += " ORDER BY course_id, lab_id"
+    if difficulty:
+        query += " AND difficulty=?"
+        params.append(difficulty)
+    # Ordered so a caller keeping one row per lab_id lands on a predictable
+    # level rather than whatever the table happened to return. dashboard.html
+    # still does exactly that, so it needs revisiting when the level picker
+    # ships and a lab can hold three rows.
+    query += " ORDER BY course_id, lab_id, difficulty"
     with _connect() as conn:
         rows = conn.execute(query, params).fetchall()
         return [dict(r) for r in rows]

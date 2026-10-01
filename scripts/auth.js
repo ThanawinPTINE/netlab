@@ -1,7 +1,10 @@
 'use strict';
-/* NETLab / QoSLab — Google Sign-In (organization email only) + client-side session gate.
-   Backend verifies the Google ID token and the @email.kmutnb.ac.th domain once at login;
-   after that, pages only trust the profile object this file wrote to localStorage. */
+/* NETLab — Google Sign-In (organization email only) + client-side session gate.
+   Backend verifies the Google ID token and the @email.kmutnb.ac.th domain at login, then
+   issues a signed session token (see session.py). Pages read the profile object this file
+   wrote to localStorage for display, but any call that writes/reads a student's data
+   (/progress, /quiz-score) must also send getToken() — the backend derives the real
+   studentId from that token and no longer trusts a bare studentId from the client. */
 var AUTH_KEY = 'netlab-profile';
 var AUTH_SESSION_DAYS = 7;
 var AUTH_API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
@@ -18,6 +21,18 @@ function getProfile(){
     return null;
   }
   return data.profile;
+}
+
+/* Session token from /auth/google — backend now requires this on /progress
+   and /quiz-score so a page can't just claim to be any studentId anymore. */
+function getToken(){
+  var raw;
+  try{ raw = localStorage.getItem(AUTH_KEY); }catch(e){ return null; }
+  if(!raw) return null;
+  var data;
+  try{ data = JSON.parse(raw); }catch(e){ return null; }
+  if(!data || !data.exp || Date.now() > data.exp) return null;
+  return data.token || null;
 }
 
 function logout(){
@@ -49,7 +64,7 @@ async function handleGoogleCredential(response){
       return;
     }
     var exp = Date.now() + AUTH_SESSION_DAYS * 24 * 60 * 60 * 1000;
-    localStorage.setItem(AUTH_KEY, JSON.stringify({profile: data.profile, exp: exp}));
+    localStorage.setItem(AUTH_KEY, JSON.stringify({profile: data.profile, token: data.token, exp: exp}));
     window.location.href = '/labs.html';
   }catch(e){
     if(statusEl) statusEl.textContent = 'เชื่อมต่อ server ไม่ได้ ลองใหม่อีกครั้ง';

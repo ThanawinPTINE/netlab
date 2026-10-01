@@ -6,7 +6,7 @@
 <title>Ch.10 Redistribution — NETLab</title>
 <link rel="stylesheet" href="../../styles/tokens.css?v=2">
 <link rel="stylesheet" href="../../styles/shared.css?v=1">
-<script src="../../scripts/auth.js?v=2"></script>
+<script src="../../scripts/auth.js?v=3"></script>
 <style>
 body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 .topbar{height:52px;padding:0 var(--space-4);gap:var(--space-3);flex-shrink:0}
@@ -875,7 +875,7 @@ window.addEventListener('pagehide',function(){
   var elapsedSec=Math.round((Date.now()-APP.lastSaveTime)/1000);
   if(elapsedSec<1&&APP.wrongSinceSave===0)return;
   var payload=JSON.stringify({
-    studentId:studentId, labId:10, courseId:'netlab1',
+    studentId:studentId, labId:10, courseId:'netlab1', token:getToken(),
     stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
     wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:false
   });
@@ -1494,7 +1494,7 @@ function saveProgress(completed){
   var now=Date.now();
   var elapsedSec=Math.round((now-APP.lastSaveTime)/1000);
   var payload={
-    studentId:studentId, labId:10, courseId:'netlab1',
+    studentId:studentId, labId:10, courseId:'netlab1', token:getToken(),
     stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
     wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:!!completed
   };
@@ -1542,7 +1542,7 @@ async function loadSavedProgress(){
   if(!studentId)return;
   var row;
   try{
-    var res=await fetch(API_BASE+'/progress/'+encodeURIComponent(studentId));
+    var res=await fetch(API_BASE+'/progress/'+encodeURIComponent(studentId)+'?token='+encodeURIComponent(getToken()));
     var data=await res.json();
     row=(data.labs||[]).filter(function(r){return r.lab_id===10&&(r.course_id==null||r.course_id==='netlab1');})[0];
   }catch(e){return;}
@@ -1695,6 +1695,16 @@ function dropDD(qi,ti){
   ddSel=null;
 }
 
+function saveQuizScore(labId,quizKey,score,maxScore){
+  // ยิงทั้งตอนผ่านและไม่ผ่าน เพื่อให้ attempt_no สะท้อนจำนวนครั้งที่พยายามจริง
+  // ผู้เยี่ยมชม (guest) ไม่มี studentId และไม่มี token จึงข้ามไปเงียบๆ
+  var profile=(typeof getProfile==='function')&&getProfile();
+  if(!profile||!profile.studentId||!getToken())return;
+  fetch(API_BASE+'/quiz-score',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({token:getToken(),labId:labId,courseId:'netlab1',
+    quizKey:quizKey,score:score,maxScore:maxScore})}).catch(function(){});
+}
+
 function checkPretest(){
   var correct=0,total=0;
   PRETEST.forEach(function(q,qi){
@@ -1739,6 +1749,7 @@ function checkPretest(){
   var pct=total>0?Math.round(correct/total*100):100;
   document.getElementById('scoreResult').innerHTML='<span class="score-badge '+(pct>=70?'score-good':'score-ok')+'">'+correct+'/'+total+' ('+pct+'%)</span>';
   document.getElementById('goLabBtn').style.display='inline-block';
+  saveQuizScore(10,'pretest',correct,total);
 }
 
 function buildSys(){
@@ -1768,7 +1779,8 @@ function hideTyping(){var t=document.getElementById('typing');if(t)t.remove();}
 async function callAI(msg,sys){
   var res=await fetch(API_BASE+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({messages:APP.chatHistory.slice(-8).concat([{role:'user',content:msg}]),
-    system:sys||buildSys(),max_tokens:150})});
+    system:sys||buildSys(),max_tokens:150,
+    token:getToken(),labId:10,courseId:'netlab1'})});
   if(!res.ok)throw new Error('HTTP '+res.status);
   return (await res.json()).content||'ขออภัยครับ';
 }

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ch.3 IP Address and Subnetting — NETLab</title>
 <link rel="stylesheet" href="../../styles/tokens.css?v=2">
-<link rel="stylesheet" href="../../styles/shared.css?v=2">
+<link rel="stylesheet" href="../../styles/shared.css?v=3">
 <script src="../../scripts/auth.js?v=3"></script>
 <style>
 body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -244,6 +244,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 </style>
 </head>
 <body>
+<h1 class="sr-only">Ch.3 IP Address and Subnetting</h1>
 <script>requireAuth();</script>
 
 <div class="topbar">
@@ -306,7 +307,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
   <div class="chat-panel" id="chatPanel">
     <div class="chat-header">
       <div id="chatDot" style="width:7px;height:7px;border-radius:50%;background:var(--text3)"></div>
-      <div class="chat-title">AI — Network Tutor</div>
+      <h2 class="chat-title">AI — Network Tutor</h2>
       <div class="model-tag" id="modelTag">Gemini 2.5 Flash</div>
     </div>
     <div class="messages" id="messages"></div>
@@ -316,13 +317,13 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
       <div class="chip" onclick="location.href='../../index.html'">หน้าอ้างอิงหลัก</div>
     </div>
     <div class="chat-input-row">
-      <input class="chat-in" id="chatIn" placeholder="ถาม AI Tutor..." onkeydown="if(event.key==='Enter'&&!isBusy)sendChat()"/>
-      <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
+      <input class="chat-in" id="chatIn" placeholder="ถาม AI Tutor..." onkeydown="if(event.key==='Enter'&&!isBusy)sendChat()" aria-label="ถามคำถามกับ AI Tutor"/>
+      <button class="send-btn" id="sendBtn" onclick="sendChat()" aria-label="ส่งคำถาม">↑</button>
     </div>
   </div>
 </div>
 
-<script src="../../scripts/theme.js?v=1"></script>
+<script src="../../scripts/theme.js?v=2"></script>
 <script>renderAuthNav();</script>
 <script>
 'use strict';

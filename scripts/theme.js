@@ -57,3 +57,53 @@ document.addEventListener('click',function(e){
   }
 });
 loadTheme();
+
+
+/* ── Keyboard access for click handlers on non-button elements ─────────────
+   Several components are divs with an onclick (step rows, quiz options,
+   drag-drop targets, tab strips, PC icons). A pointer reaches them; a keyboard
+   does not. This gives each one a tab stop, a role, and Enter/Space activation,
+   so every action in a lab can be completed without a mouse.
+
+   Skipped deliberately:
+   - natively focusable tags, which already work
+   - elements that contain their own button/link/field — those are containers
+     such as a modal backdrop, and making the container a tab stop would put a
+     meaningless stop in front of the real controls
+   - elements already processed, so repeated runs stay cheap and idempotent */
+function makeClickablesFocusable(root){
+  var NATIVE = {BUTTON:1, A:1, INPUT:1, SELECT:1, TEXTAREA:1, SUMMARY:1};
+  var nodes = (root || document).querySelectorAll('[onclick]:not([data-kbd])');
+  for(var i=0; i<nodes.length; i++){
+    var el = nodes[i];
+    if(NATIVE[el.tagName]) continue;
+    if(el.querySelector('button,a[href],input,select,textarea')) continue;
+    /* A backdrop is a dismiss surface, not a control: the dialog it covers has
+       its own close button, so a tab stop here would be a stop on nothing. */
+    if(/backdrop|overlay|scrim/i.test(el.className || '')) continue;
+    el.setAttribute('data-kbd','1');
+    if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
+    if(!el.hasAttribute('role')) el.setAttribute('role','button');
+  }
+}
+
+/* One listener on the document rather than one per element: the labs redraw
+   their step list and quiz options constantly, and per-element listeners would
+   pile up on every render. */
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+  var el = e.target;
+  if(!el || !el.getAttribute || el.getAttribute('data-kbd') !== '1') return;
+  e.preventDefault();            // stop Space from scrolling the page
+  el.click();
+});
+
+if(window.MutationObserver){
+  new MutationObserver(function(){ makeClickablesFocusable(); })
+    .observe(document.documentElement, {childList:true, subtree:true});
+}
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', function(){ makeClickablesFocusable(); });
+}else{
+  makeClickablesFocusable();
+}

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ch.4 Basic Configuration — NETLab</title>
 <link rel="stylesheet" href="../../styles/tokens.css?v=2">
-<link rel="stylesheet" href="../../styles/shared.css?v=2">
+<link rel="stylesheet" href="../../styles/shared.css?v=3">
 <script src="../../scripts/auth.js?v=3"></script>
 <style>
 body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -245,6 +245,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 </style>
 </head>
 <body>
+<h1 class="sr-only">Ch.4 Basic Configuration</h1>
 <script>requireAuth();</script>
 
 <div class="topbar">
@@ -323,7 +324,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
             <div class="t-input-row">
               <span class="t-prompt" id="tPrompt">Router&gt;</span>
               <input class="t-input" id="termInput" autocomplete="off" spellcheck="false"
-                placeholder="พิมพ์ Cisco IOS command..." disabled onkeydown="handleTermKey(event)"/>
+                placeholder="พิมพ์ Cisco IOS command..." disabled onkeydown="handleTermKey(event)" aria-label="พิมพ์คำสั่ง Cisco IOS"/>
             </div>
             <div class="hint-box" id="hintBox">
               <div class="hint-title" id="hintTitle">Hint</div>
@@ -358,7 +359,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
   <div class="chat-panel" id="chatPanel">
     <div class="chat-header">
       <div id="chatDot" style="width:7px;height:7px;border-radius:50%;background:var(--text3)"></div>
-      <div class="chat-title">AI — Network Tutor</div>
+      <h2 class="chat-title">AI — Network Tutor</h2>
       <div class="model-tag" id="modelTag">Gemini 2.5 Flash</div>
     </div>
     <div class="messages" id="messages"></div>
@@ -369,8 +370,8 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
       <div class="chip" onclick="location.href='../../index.html#iosmodes'">พื้นฐานเพิ่มเติม</div>
     </div>
     <div class="chat-input-row">
-      <input class="chat-in" id="chatIn" placeholder="ถาม AI Tutor..." onkeydown="if(event.key==='Enter'&&!isBusy)sendChat()"/>
-      <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
+      <input class="chat-in" id="chatIn" placeholder="ถาม AI Tutor..." onkeydown="if(event.key==='Enter'&&!isBusy)sendChat()" aria-label="ถามคำถามกับ AI Tutor"/>
+      <button class="send-btn" id="sendBtn" onclick="sendChat()" aria-label="ส่งคำถาม">↑</button>
     </div>
   </div>
 </div>
@@ -380,11 +381,11 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
     <div class="pc-modal-title" id="pcModalTitle">IP Configuration</div>
     <div class="pc-modal-sub" id="pcModalSub"></div>
     <label class="pc-field-label" for="pcIpInput">IP Address</label>
-    <input class="pc-field-input" id="pcIpInput" autocomplete="off" spellcheck="false" placeholder="เช่น 192.168.10.10"/>
+    <input class="pc-field-input" id="pcIpInput" autocomplete="off" spellcheck="false" placeholder="เช่น 192.168.10.10" aria-label="IP Address ของเครื่อง PC"/>
     <label class="pc-field-label" for="pcMaskInput">Subnet Mask</label>
-    <input class="pc-field-input" id="pcMaskInput" autocomplete="off" spellcheck="false" placeholder="เช่น 255.255.255.0"/>
+    <input class="pc-field-input" id="pcMaskInput" autocomplete="off" spellcheck="false" placeholder="เช่น 255.255.255.0" aria-label="Subnet Mask ของเครื่อง PC"/>
     <label class="pc-field-label" for="pcGwInput">Default Gateway</label>
-    <input class="pc-field-input" id="pcGwInput" autocomplete="off" spellcheck="false" placeholder="เช่น 192.168.10.1"/>
+    <input class="pc-field-input" id="pcGwInput" autocomplete="off" spellcheck="false" placeholder="เช่น 192.168.10.1" aria-label="Default Gateway ของเครื่อง PC"/>
     <div class="pc-modal-err" id="pcModalErr"></div>
     <div class="pc-modal-actions">
       <button class="btn-skip2" onclick="closePcConfig()">ยกเลิก</button>
@@ -400,7 +401,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
     <div class="pc-cmd-screen" id="pcCmdScreen"></div>
     <div class="pc-cmd-inputrow">
       <span class="pc-cmd-prompt">C:\Users\Student&gt;</span>
-      <input class="pc-cmd-input" id="pcCmdInput" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')runPcPing()"/>
+      <input class="pc-cmd-input" id="pcCmdInput" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')runPcPing()" aria-label="พิมพ์คำสั่งใน Command Prompt"/>
     </div>
     <div class="pc-modal-actions">
       <button class="btn-skip2" onclick="closePcCmd()">ปิด</button>
@@ -408,7 +409,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
   </div>
 </div>
 
-<script src="../../scripts/theme.js?v=1"></script>
+<script src="../../scripts/theme.js?v=2"></script>
 <script src="../../scripts/cisco-patterns.js?v=4"></script>
 <script>renderAuthNav();</script>
 <script>

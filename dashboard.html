@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — NETLab</title>
+<link rel="stylesheet" href="styles/tokens.css?v=2">
+<link rel="stylesheet" href="styles/shared.css?v=1">
+<script src="scripts/auth.js?v=2"></script>
+<style>
+body{min-height:100vh}
+.topbar{height:56px;gap:10px}
+.settings-wrap{margin-left:auto}
+
+.hero{background:linear-gradient(180deg,var(--panel2),var(--bg));border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6);overflow:hidden;position:relative}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;display:block;filter:blur(1px) saturate(.85);
+  -webkit-mask-image:linear-gradient(to left, black 10%, transparent 55%);
+  mask-image:linear-gradient(to left, black 10%, transparent 55%);opacity:.28}
+.page-title{position:relative;z-index:1;font-size:42px;font-weight:800;letter-spacing:-0.02em;margin-bottom:var(--space-3);line-height:1.2;text-wrap:balance;max-width:640px}
+.page-sub{position:relative;z-index:1;font-size:var(--step-lg);color:var(--text2);max-width:560px;line-height:1.75}
+
+.wrap{max-width:900px;margin:0 auto;padding:var(--space-7) var(--space-5) var(--space-8)}
+
+/* ── Continue: the one thing a returning user actually wants — promoted above the stats ── */
+.continue-card{background:var(--panel);border:1px solid var(--cyan-d);border-radius:16px;padding:var(--space-6);display:flex;align-items:center;gap:var(--space-6);margin-bottom:var(--space-6)}
+.ring{width:140px;height:140px;border-radius:50%;flex-shrink:0;position:relative;background:conic-gradient(var(--cyan) 0% var(--pct,0%),var(--panel2) var(--pct,0%) 100%)}
+.ring::after{content:'';position:absolute;inset:12px;border-radius:50%;background:var(--panel)}
+.ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--step-2xl);z-index:1}
+.continue-text{flex:1;min-width:0}
+.continue-label{font-size:var(--step-sm);font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.continue-course{font-size:var(--step-sm);color:var(--text3);margin-bottom:4px}
+.continue-title{font-size:var(--step-2xl);font-weight:700;margin-bottom:10px;letter-spacing:-0.01em}
+.continue-desc{font-size:var(--step-base);color:var(--text2);line-height:1.6;margin-bottom:var(--space-4)}
+
+/* ── At-a-glance stats: secondary now, demoted below Continue ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3);margin-bottom:var(--space-4)}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)}
+.stat-num{font-size:var(--step-2xl);font-weight:800}
+.stat-bar{width:28px;height:3px;border-radius:2px}
+.stat-bar.c-cyan{background:var(--cyan)}
+.stat-bar.c-green{background:var(--green)}
+.stat-bar.c-amber{background:var(--amber)}
+.stat-bar.c-purple{background:var(--purple)}
+.stat-label{font-size:var(--step-xs);color:var(--text3)}
+
+/* ── Activity insight panel ── */
+.insight-grid{display:grid;grid-template-columns:1fr;gap:var(--space-4);margin-bottom:var(--space-6)}
+.insight-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:var(--space-5)}
+.insight-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-5)}
+.insight-title{font-size:var(--step-md);font-weight:700}
+.insight-period{font-size:var(--step-xs);color:var(--text3);background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:4px 10px}
+.activity-body{display:flex;gap:var(--space-7);align-items:center}
+.activity-chart{flex:1;display:flex;align-items:flex-end;gap:14px;height:160px}
+.activity-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
+.activity-bar{width:100%;max-width:32px;border-radius:6px 6px 3px 3px;background:var(--panel2)}
+.activity-bar.active{background:var(--cyan)}
+.activity-bar-day{font-size:var(--step-xs);color:var(--text3)}
+.activity-stats{display:flex;flex-direction:column;gap:var(--space-4);min-width:150px;flex-shrink:0}
+.activity-stat-label{font-size:var(--step-xs);color:var(--text3);margin-bottom:2px}
+.activity-stat-val{font-size:var(--step-lg);font-weight:700;display:flex;align-items:center;gap:8px}
+.activity-stat-badge{font-size:var(--step-xs);font-weight:700;color:var(--green);background:var(--green-l);border-radius:6px;padding:2px 7px}
+@media (max-width:760px){
+  .activity-body{flex-direction:column;align-items:stretch}
+}
+
+.lab-section-title{font-size:var(--step-xl);font-weight:700;margin-bottom:var(--space-2);letter-spacing:-0.01em}
+.lab-section-sub{font-size:var(--step-sm);color:var(--text3);margin-bottom:var(--space-5)}
+
+/* ── Course-level accordion: two big headings, each drops down to its own Lab list ── */
+.course-group{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:var(--space-4)}
+.course-group:has(.course-header[aria-expanded="true"]){border-color:var(--cyan-d)}
+.course-header{width:100%;display:flex;align-items:center;gap:var(--space-4);background:none;border:none;padding:var(--space-5);text-align:left;color:var(--text);cursor:pointer;font-family:inherit}
+.course-header:hover{color:var(--cyan)}
+.course-header:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+.course-header[disabled]{opacity:.55;cursor:not-allowed}
+.course-header-info{flex:1;min-width:0}
+.course-header-title{font-size:var(--step-lg);font-weight:700;letter-spacing:-0.01em}
+.course-header-sub{font-size:var(--step-sm);color:var(--text3);margin-top:4px}
+.course-caret{color:var(--text3);font-size:var(--step-lg);transition:transform .15s;flex-shrink:0}
+.course-header[aria-expanded="true"] .course-caret{transform:rotate(90deg);color:var(--cyan)}
+.course-body{padding:0 var(--space-5) var(--space-5);border-top:1px solid var(--border)}
+.course-locked-msg{padding-top:var(--space-4);font-size:var(--step-sm);color:var(--text3)}
+
+.roadmap{position:relative;padding-top:var(--space-4)}
+.road-step{position:relative;display:flex;gap:var(--space-4);padding-bottom:var(--space-3)}
+.road-step:last-child{padding-bottom:0}
+.road-step::before{content:'';position:absolute;left:19px;top:44px;bottom:0;width:2px;background:var(--border)}
+.road-step:last-child::before{display:none}
+.road-num{flex-shrink:0;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--step-sm);z-index:1;border:2px solid var(--border);background:var(--panel)}
+.road-step.done .road-num{background:var(--green-l);color:var(--green);border-color:var(--green)}
+.road-step.active .road-num{background:var(--cyan-wash);color:var(--cyan);border-color:var(--cyan)}
+.road-step.locked .road-num{color:var(--text3)}
+.road-card{flex:1;min-width:0;display:flex;align-items:center;gap:var(--space-3);background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:var(--space-4);text-decoration:none;color:var(--text);transition:border-color .12s}
+.road-card.clickable:hover{border-color:var(--cyan)}
+.road-card.clickable:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.road-card.locked{opacity:.55}
+.road-info{flex:1;min-width:0}
+.road-title{font-size:var(--step-base);font-weight:600}
+.road-status{font-size:var(--step-xs);font-weight:700;padding:4px 10px;border-radius:8px;flex-shrink:0;white-space:nowrap}
+.ls-done{background:var(--green-l);color:var(--green)}
+.ls-active{background:var(--cyan-wash);color:var(--cyan)}
+.ls-locked{background:var(--panel2);color:var(--text3)}
+.footer-note{max-width:1080px}
+@media (max-width:760px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .continue-card{flex-direction:column;text-align:center}
+}
+@media (max-width:480px){
+  .topbar .crumb{display:none}
+  .page-title{font-size:26px}
+  .road-card{padding:12px 14px;gap:12px}
+  .road-status{font-size:0;padding:0;background:none}
+  .ls-done::before{content:'✓';font-size:var(--step-sm);color:var(--green)}
+  .ls-active::before{content:'●';font-size:var(--step-sm);color:var(--cyan)}
+  .ls-locked::before{content:'–';font-size:var(--step-sm)}
+}
+</style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="topbar">
+  <a class="brand" href="index.html">NET<span>Lab</span></a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="labs.html">Lab</a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="course.html">Network Engineering Laboratory I</a>
+  <span class="crumb-sep">›</span>
+  <span class="crumb current">Dashboard</span>
+  <div class="topbar-right">
+    <div id="authSlot"></div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-bg"><img src="assets/topic-images/hero-network-dashboard.png" alt=""></div>
+  <div class="page-title">Dashboard</div>
+  <div class="page-sub">ภาพรวมการเรียนของคุณในรายวิชา Network Engineering Laboratory I</div>
+</div>
+
+<div class="wrap">
+  <div class="continue-card" id="continueCard"></div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num" id="statTotal">–</div><div class="stat-bar c-cyan"></div><div class="stat-label">จำนวน Lab ทั้งหมด</div></div>
+    <div class="stat-card"><div class="stat-num" id="statDone">–</div><div class="stat-bar c-green"></div><div class="stat-label">สำเร็จแล้ว</div></div>
+    <div class="stat-card"><div class="stat-num" id="statActive">–</div><div class="stat-bar c-amber"></div><div class="stat-label">กำลังดำเนินการ</div></div>
+    <div class="stat-card"><div class="stat-num" id="statLocked">–</div><div class="stat-bar c-purple"></div><div class="stat-label">รอปลดล็อก</div></div>
+  </div>
+
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-head">
+        <div class="insight-title">Practice Hours</div>
+        <div class="insight-period">7 วันล่าสุด</div>
+      </div>
+      <div class="activity-body">
+        <div class="activity-chart" id="activityChart"></div>
+        <div class="activity-stats">
+          <div>
+            <div class="activity-stat-label">เวลาฝึกสะสม (7 วันล่าสุด)</div>
+            <div class="activity-stat-val" id="statHours">–</div>
+          </div>
+          <div>
+            <div class="activity-stat-label">Lab ที่ทำเสร็จ</div>
+            <div class="activity-stat-val" id="statDone2">–</div>
+          </div>
+          <div>
+            <div class="activity-stat-label">จำนวนครั้งที่ตอบผิดสะสม</div>
+            <div class="activity-stat-val" id="statWrong">–</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lab-section-title">รายละเอียดแต่ละ Lab</div>
+  <div class="lab-section-sub">กดที่ชื่อวิชาเพื่อดูรายการ Lab ทั้งหมดในวิชานั้น</div>
+
+  <div class="course-group">
+    <button class="course-header" id="courseIToggle" aria-expanded="true" aria-controls="courseIBody" onclick="toggleCourse(this,'courseIBody')">
+      <div class="course-header-info">
+        <div class="course-header-title">Network Engineering Laboratory I</div>
+        <div class="course-header-sub" id="courseISub"></div>
+      </div>
+      <span class="course-caret">›</span>
+    </button>
+    <div class="course-body" id="courseIBody">
+      <div class="roadmap" id="labList"></div>
+    </div>
+  </div>
+
+  <div class="course-group">
+    <button class="course-header" id="courseIIToggle" aria-expanded="false" aria-controls="courseIIBody" onclick="toggleCourse(this,'courseIIBody')">
+      <div class="course-header-info">
+        <div class="course-header-title">Network Engineering Laboratory II</div>
+        <div class="course-header-sub">รอปลดล็อก</div>
+      </div>
+      <span class="course-caret">›</span>
+    </button>
+    <div class="course-body" id="courseIIBody" hidden>
+      <div class="course-locked-msg">ปลดล็อกหลังเรียน Network Engineering Laboratory I จบครบทุก Lab</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">ระบบจำลองเพื่อการศึกษา — ไม่มีความเกี่ยวข้องกับ Cisco Networking Academy (NetAcad)<br><span style="opacity:.75">Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span></div>
+
+<script>
+'use strict';
+var API_BASE=(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
+  ?'http://localhost:8000':'http://'+window.location.hostname+'/api';
+
+// เนื้อหา/ลิงก์ของแต่ละ Lab (ยังไม่มีหน้าจริงสำหรับ Lab อื่นนอกจาก Lab 5)
+var LAB_META=[
+  {n:1,title:'Course Introduction and Basic Network Knowledge Review',href:'labnetwork1/lab01-course-intro/lab1.html'},
+  {n:2,title:'UTP CAT5 Cable Termination, RJ45, Keystone Jack and Patch Panel',href:'labnetwork1/lab02-cable-termination/lab2.html'},
+  {n:3,title:'IP Address และ Subnet IPv4',href:'labnetwork1/lab03-ip-subnetting/lab3.html'},
+  {n:4,title:'Basic Configuration',href:'labnetwork1/lab04-basic-configuration/lab4.html'},
+  {n:5,title:'Static Route',href:'labnetwork1/lab05-static-route/lab5.html'},
+  {n:6,title:'RIP v1',href:'labnetwork1/lab06-rip-v1/lab6.html'},
+  {n:7,title:'RIP v2',href:'labnetwork1/lab07-rip-v2/lab7.html'},
+  {n:8,title:'EIGRP',href:'labnetwork1/lab08-eigrp/lab8.html'},
+  {n:9,title:'OSPF',href:'labnetwork1/lab09-ospf/lab9.html'},
+  {n:10,title:'Redistribution',href:'labnetwork1/lab10-redistribution/lab10.html'},
+  {n:11,title:'BGP',href:'labnetwork1/lab11-bgp/lab11.html'}
+];
+var LABS=[]; // สร้างจาก LAB_META + ข้อมูลจริงจาก backend ใน loadProgress()
+
+// ยังไม่มี Lab ให้เล่นจริง (เช่น Lab 6 ขึ้นไป) ถือว่า "locked" เสมอแม้จะเป็น Lab ถัดไปตามลำดับ
+var LAB_BUILT={1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,9:true,10:true,11:true};
+
+// หน้านี้เป็นตัวแทนของวิชา Network Eng. Lab I (เทอมนี้) เท่านั้น — กรองด้วย course_id
+// กันไว้ล่วงหน้า เผื่อวันที่มีวิชา Network Eng. Lab II (เทอม 2, course_id='netlab2')
+// แล้ว lab_id ของสองวิชาชนกัน (เช่น ทั้งคู่มี Lab 4) จะได้ไม่ดึงข้อมูลผิดวิชา
+var COURSE_ID='netlab1';
+function buildLabsFromProgress(rows){
+  var byId={};
+  (rows||[]).forEach(function(r){if(!r.course_id||r.course_id===COURSE_ID)byId[r.lab_id]=r;});
+  // ไล่ลำดับปลดล็อกเฉพาะในกลุ่ม Lab ที่สร้างแล้ว (LAB_BUILT) — Lab ที่ยังไม่มีหน้าจริง
+  // ถือเป็น "โปร่งใส" ไม่นับเป็นตัวกั้นคิว ไม่งั้น Lab 5 จะล็อกค้างเพราะ Lab 1-3 ยังไม่มีหน้าให้ทำ
+  var unlockedSoFar=true;
+  return LAB_META.map(function(meta){
+    var p=byId[meta.n];
+    var done=!!(p&&p.completed);
+    var started=!!(p&&p.steps_done>0);
+    var status='locked';
+    if(!LAB_BUILT[meta.n]){
+      status='locked';
+    }else if(done){
+      status='done';
+      unlockedSoFar=true;
+    }else if(started||unlockedSoFar){
+      status='active';
+      unlockedSoFar=false;
+    }
+    return {n:meta.n,title:meta.title,href:meta.href,status:status,
+      stepsDone:p?p.steps_done:0,totalSteps:p?p.total_steps:0,
+      timeSpentSec:p?p.time_spent_sec:0,wrong:p?p.wrong_count:0};
+  });
+}
+
+function renderContinue(){
+  var active=LABS.filter(function(l){return l.status==='active';})[0];
+  var done=LABS.filter(function(l){return l.status==='done';}).length;
+  var total=LABS.length;
+  var pct=Math.round(done/total*100);
+  var cont=document.getElementById('continueCard');
+  if(!active){
+    cont.innerHTML='<div class="continue-text"><div class="continue-label">สำเร็จการศึกษา</div><div class="continue-title">สำเร็จการศึกษาครบทุก Lab แล้ว</div></div>';
+    return;
+  }
+  cont.innerHTML=
+    '<div class="ring" style="--pct:'+pct+'%"><div class="ring-label">'+pct+'%</div></div>'
+    +'<div class="continue-text">'
+      +'<div class="continue-label">อยู่ระหว่างดำเนินการ</div>'
+      +'<div class="continue-course">Network Engineering Laboratory I</div>'
+      +'<div class="continue-title">Lab '+active.n+' — '+active.title+'</div>'
+      +'<div class="continue-desc">สำเร็จแล้ว '+done+' จาก '+total+' Lab — ดำเนินการต่อเพื่อปลดล็อก Lab ถัดไป</div>'
+      +'<a class="btn-primary" href="'+active.href+'">ไปต่อที่ Lab '+active.n+' →</a>'
+    +'</div>';
+}
+function renderLabs(){
+  var cont=document.getElementById('labList');
+  cont.innerHTML=LABS.map(function(l){
+    var statusClass=l.status==='done'?'ls-done':l.status==='active'?'ls-active':'ls-locked';
+    var statusLabel=l.status==='done'?'สำเร็จแล้ว':l.status==='active'?'กำลังดำเนินการ':'รอปลดล็อก';
+    var icon=l.status==='done'?'✓':l.status==='locked'?'–':l.n;
+    var clickable=(l.status==='done'||l.status==='active')&&l.href;
+    var tag=clickable?'a':'div';
+    var hrefAttr=clickable?' href="'+l.href+'"':'';
+    return '<div class="road-step '+l.status+'">'
+      +'<div class="road-num">'+icon+'</div>'
+      +'<'+tag+' class="road-card'+(clickable?' clickable':'')+(l.status==='locked'?' locked':'')+'"'+hrefAttr+'>'
+      +'<div class="road-info"><div class="road-title">Lab '+l.n+' — '+l.title+'</div></div>'
+      +'<div class="road-status '+statusClass+'">'+statusLabel+'</div>'
+      +'</'+tag+'>'
+      +'</div>';
+  }).join('');
+
+  var done=LABS.filter(function(l){return l.status==='done';}).length;
+  var total=LABS.length;
+  var pct=Math.round(done/total*100);
+  document.getElementById('courseISub').textContent='สำเร็จแล้ว '+done+'/'+total+' Lab — '+pct+'%';
+}
+
+function renderStats(){
+  var total=LABS.length;
+  var done=LABS.filter(function(l){return l.status==='done';}).length;
+  var active=LABS.filter(function(l){return l.status==='active';}).length;
+  var locked=total-done-active;
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('statDone').textContent=done;
+  document.getElementById('statActive').textContent=active;
+  document.getElementById('statLocked').textContent=locked;
+  document.getElementById('statDone2').textContent=done;
+  var totalWrong=LABS.reduce(function(sum,l){return sum+(l.wrong||0);},0);
+  document.getElementById('statWrong').textContent=totalWrong;
+}
+
+var DAY_LABELS=['อา','จ','อ','พ','พฤ','ศ','ส'];
+function renderActivity(weeklyActivity){
+  var days=(weeklyActivity||[]).map(function(w){
+    var d=new Date(w.day+'T00:00:00');
+    return {label:DAY_LABELS[d.getDay()],hours:w.seconds/3600};
+  });
+  var max=Math.max.apply(null,days.map(function(x){return x.hours;}).concat([0.1]));
+  var todayIdx=days.length-1;
+  document.getElementById('activityChart').innerHTML=days.map(function(x,i){
+    var pct=Math.round(x.hours/max*100);
+    return '<div class="activity-bar-col">'
+      +'<div class="activity-bar'+(i===todayIdx?' active':'')+'" style="height:'+Math.max(pct,2)+'%"></div>'
+      +'<div class="activity-bar-day">'+x.label+'</div>'
+      +'</div>';
+  }).join('');
+  var totalSec=days.reduce(function(sum,x){return sum+x.hours*3600;},0);
+  document.getElementById('statHours').textContent=(totalSec/3600).toFixed(1)+' ชม.';
+}
+
+async function loadProgress(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId){
+    LABS=buildLabsFromProgress([]);
+  }else{
+    try{
+      var res=await fetch(API_BASE+'/progress/'+encodeURIComponent(studentId));
+      var data=await res.json();
+      LABS=buildLabsFromProgress(data.labs);
+      renderActivity(data.weeklyActivity);
+    }catch(e){
+      LABS=buildLabsFromProgress([]);
+      renderActivity([]);
+    }
+  }
+  renderContinue();
+  renderLabs();
+  renderStats();
+}
+loadProgress();
+
+function toggleCourse(btn,id){
+  var body=document.getElementById(id);
+  if(!body)return;
+  var open=body.hasAttribute('hidden');
+  if(open){body.removeAttribute('hidden');}else{body.setAttribute('hidden','');}
+  btn.setAttribute('aria-expanded',open?'true':'false');
+}
+</script>
+<script src="scripts/theme.js?v=1"></script>
+<script>renderAuthNav();</script>
+</body>
+</html>

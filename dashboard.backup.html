@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — NETLab</title>
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/shared.css">
+<style>
+body{min-height:100vh}
+.topbar{height:56px;gap:10px}
+.settings-wrap{margin-left:auto}
+
+.hero{background:linear-gradient(180deg,var(--panel2),var(--bg));border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6);overflow:hidden;position:relative}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;display:block;filter:blur(1px) saturate(.85);
+  -webkit-mask-image:linear-gradient(to left, black 10%, transparent 55%);
+  mask-image:linear-gradient(to left, black 10%, transparent 55%);opacity:.28}
+.page-title{position:relative;z-index:1;font-size:42px;font-weight:800;letter-spacing:-0.02em;margin-bottom:var(--space-3);line-height:1.2;text-wrap:balance;max-width:640px}
+.page-sub{position:relative;z-index:1;font-size:var(--step-lg);color:var(--text2);max-width:560px;line-height:1.75}
+
+.wrap{max-width:900px;margin:0 auto;padding:var(--space-7) var(--space-5) var(--space-8)}
+
+/* ── Continue: the one thing a returning user actually wants — promoted above the stats ── */
+.continue-card{background:var(--panel);border:1px solid var(--cyan-d);border-radius:14px;padding:var(--space-5);display:flex;align-items:center;gap:var(--space-5);margin-bottom:var(--space-5)}
+.ring{width:88px;height:88px;border-radius:50%;flex-shrink:0;position:relative;background:conic-gradient(var(--cyan) 0% var(--pct,0%),var(--panel2) var(--pct,0%) 100%)}
+.ring::after{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--panel)}
+.ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--step-md);z-index:1}
+.continue-text{flex:1;min-width:0}
+.continue-label{font-size:var(--step-xs);font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.continue-title{font-size:var(--step-lg);font-weight:700;margin-bottom:6px;letter-spacing:-0.01em}
+.continue-desc{font-size:var(--step-sm);color:var(--text2);line-height:1.6;margin-bottom:var(--space-3)}
+
+/* ── At-a-glance stats: secondary now, demoted below Continue ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3);margin-bottom:var(--space-6)}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:var(--space-4)}
+.stat-num{font-size:var(--step-2xl);font-weight:800;color:var(--cyan)}
+.stat-label{font-size:var(--step-xs);color:var(--text3);margin-top:4px}
+
+.lab-section-title{font-size:var(--step-xl);font-weight:700;margin-bottom:var(--space-2);letter-spacing:-0.01em}
+.lab-section-sub{font-size:var(--step-sm);color:var(--text3);margin-bottom:var(--space-6)}
+.roadmap{position:relative}
+.road-step{position:relative;display:flex;gap:var(--space-4);padding-bottom:var(--space-4)}
+.road-step:last-child{padding-bottom:0}
+.road-step::before{content:'';position:absolute;left:19px;top:44px;bottom:0;width:2px;background:var(--border)}
+.road-step:last-child::before{display:none}
+.road-num{flex-shrink:0;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--step-sm);z-index:1;border:2px solid var(--border);background:var(--panel)}
+.road-step.done .road-num{background:var(--green-l);color:var(--green);border-color:var(--green)}
+.road-step.active .road-num{background:var(--cyan-wash);color:var(--cyan);border-color:var(--cyan)}
+.road-step.locked .road-num{color:var(--text3)}
+.road-card{flex:1;min-width:0;display:flex;align-items:center;gap:var(--space-3);background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:var(--space-4);text-decoration:none;color:var(--text);transition:border-color .12s}
+.road-card.clickable:hover{border-color:var(--cyan)}
+.road-card.clickable:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.road-card.locked{opacity:.55}
+.road-info{flex:1;min-width:0}
+.road-title{font-size:var(--step-base);font-weight:600}
+.road-status{font-size:var(--step-xs);font-weight:700;padding:4px 10px;border-radius:8px;flex-shrink:0;white-space:nowrap}
+.ls-done{background:var(--green-l);color:var(--green)}
+.ls-active{background:var(--cyan-wash);color:var(--cyan)}
+.ls-locked{background:var(--panel2);color:var(--text3)}
+.footer-note{max-width:1080px}
+@media (max-width:760px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .continue-card{flex-direction:column;text-align:center}
+}
+@media (max-width:480px){
+  .topbar .crumb{display:none}
+  .page-title{font-size:26px}
+  .road-card{padding:12px 14px;gap:12px}
+  .road-status{font-size:0;padding:0;background:none}
+  .ls-done::before{content:'✓';font-size:var(--step-sm);color:var(--green)}
+  .ls-active::before{content:'●';font-size:var(--step-sm);color:var(--cyan)}
+  .ls-locked::before{content:'–';font-size:var(--step-sm)}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="index.html">NET<span>Lab</span></a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="labs.html">Lab</a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="course.html">Network Engineering Laboratory I</a>
+  <span class="crumb-sep">›</span>
+  <span class="crumb current">Dashboard</span>
+  <div class="settings-wrap">
+    <button class="settings-toggle" id="settingsToggle" onclick="toggleSettings()" aria-haspopup="true" aria-expanded="false" aria-controls="settingsMenu" aria-label="ตั้งค่า" title="ตั้งค่า">⚙️</button>
+    <div class="settings-menu" id="settingsMenu" role="menu">
+      <button class="settings-item" id="themeToggle" onclick="toggleTheme()" role="menuitem">
+        <span class="theme-toggle-label">โหมดกลางคืน</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-bg"><img src="assets/topic-images/hero-network-dashboard.png" alt=""></div>
+  <div class="page-title">Dashboard ความคืบหน้า</div>
+  <div class="page-sub">ภาพรวมการเรียนของคุณในรายวิชา Network Engineering Laboratory I</div>
+</div>
+
+<div class="wrap">
+  <div class="continue-card" id="continueCard"></div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num">11</div><div class="stat-label">Lab ทั้งหมด</div></div>
+    <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">เรียนจบแล้ว</div></div>
+    <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">กำลังเรียน</div></div>
+    <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">ยังไม่ปลดล็อก</div></div>
+  </div>
+
+  <div class="lab-section-title">รายละเอียดแต่ละ Lab</div>
+  <div class="lab-section-sub">เรียงตามลำดับ — ต้องเรียนจบ Lab ก่อนหน้าให้ครบก่อนถึงจะปลดล็อก Lab ถัดไป</div>
+  <div class="roadmap" id="labList"></div>
+</div>
+
+<div class="footer-note">ระบบจำลองเพื่อการศึกษา — ไม่มีความเกี่ยวข้องกับ Cisco Networking Academy (NetAcad)<br><span style="opacity:.75">Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span></div>
+
+<script>
+'use strict';
+var LABS=[
+  {n:1,title:'Course Introduction and Basic Network Knowledge Review',status:'done'},
+  {n:2,title:'UTP CAT5 Cable Termination, RJ45, Keystone Jack and Patch Panel',status:'done'},
+  {n:3,title:'IP Address และ Subnet IPv4',status:'done'},
+  {n:4,title:'Basic Configuration',status:'done'},
+  {n:5,title:'Static Route',status:'active',href:'lab5.html'},
+  {n:6,title:'RIP v1',status:'locked'},
+  {n:7,title:'RIP v2',status:'locked'},
+  {n:8,title:'EIGRP',status:'locked'},
+  {n:9,title:'OSPF',status:'locked'},
+  {n:10,title:'Redistribution',status:'locked'},
+  {n:11,title:'BGP',status:'locked'}
+];
+
+function renderContinue(){
+  var active=LABS.filter(function(l){return l.status==='active';})[0];
+  var done=LABS.filter(function(l){return l.status==='done';}).length;
+  var total=LABS.length;
+  var pct=Math.round(done/total*100);
+  var cont=document.getElementById('continueCard');
+  if(!active){
+    cont.innerHTML='<div class="continue-text"><div class="continue-label">เสร็จสมบูรณ์</div><div class="continue-title">เรียนจบครบทุก Lab แล้ว</div></div>';
+    return;
+  }
+  cont.innerHTML=
+    '<div class="ring" style="--pct:'+pct+'%"><div class="ring-label">'+pct+'%</div></div>'
+    +'<div class="continue-text">'
+      +'<div class="continue-label">กำลังเรียนอยู่</div>'
+      +'<div class="continue-title">Lab '+active.n+' — '+active.title+'</div>'
+      +'<div class="continue-desc">เรียนจบแล้ว '+done+' จาก '+total+' Lab — ทำต่อให้จบเพื่อปลดล็อก Lab ถัดไป</div>'
+      +'<a class="btn-primary" href="'+active.href+'">ไปต่อที่ Lab '+active.n+' →</a>'
+    +'</div>';
+}
+renderContinue();
+
+function renderLabs(){
+  var cont=document.getElementById('labList');
+  cont.innerHTML=LABS.map(function(l){
+    var statusClass=l.status==='done'?'ls-done':l.status==='active'?'ls-active':'ls-locked';
+    var statusLabel=l.status==='done'?'เรียนจบแล้ว':l.status==='active'?'กำลังเรียน':'ยังไม่ปลดล็อก';
+    var icon=l.status==='done'?'✓':l.status==='locked'?'–':l.n;
+    var clickable=(l.status==='done'||l.status==='active')&&l.href;
+    var tag=clickable?'a':'div';
+    var hrefAttr=clickable?' href="'+l.href+'"':'';
+    return '<div class="road-step '+l.status+'">'
+      +'<div class="road-num">'+icon+'</div>'
+      +'<'+tag+' class="road-card'+(clickable?' clickable':'')+(l.status==='locked'?' locked':'')+'"'+hrefAttr+'>'
+      +'<div class="road-info"><div class="road-title">Lab '+l.n+' — '+l.title+'</div></div>'
+      +'<div class="road-status '+statusClass+'">'+statusLabel+'</div>'
+      +'</'+tag+'>'
+      +'</div>';
+  }).join('');
+}
+renderLabs();
+</script>
+<script src="scripts/theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# ให้ repo กำหนดการแปลง line ending เอง ไม่ต้องพึ่ง core.autocrlf ของแต่ละเครื่อง
+# มิฉะนั้นไฟล์ที่ส่งไปมาระหว่างเครื่องจะ diff ทั้งไฟล์ทุกครั้งแม้แก้บรรทัดเดียว
+* text=auto
+
+# ไฟล์ไบนารี — ห้ามแปลงอะไรทั้งนั้น
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.svg   text
+*.pdf   binary
+*.docx  binary
+*.db    binary

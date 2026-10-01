@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch.1 Course Introduction — NETLab</title>
+<link rel="stylesheet" href="../../styles/tokens.css?v=2">
+<link rel="stylesheet" href="../../styles/shared.css?v=1">
+<script src="../../scripts/auth.js?v=2"></script>
+<style>
+body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;padding:0 var(--space-4);gap:var(--space-3);flex-shrink:0}
+.chapter-badge{background:var(--cyan-d);color:#fff;font-size:var(--step-xs);font-weight:700;padding:4px 11px;border-radius:10px}
+.ai-pill{display:flex;align-items:center;gap:6px;font-size:var(--step-xs);padding:4px 11px;border-radius:10px;font-weight:600;margin-left:auto;flex-shrink:0}
+.lab-topbar-right{display:flex;align-items:center;gap:var(--space-3);flex-shrink:0}
+.ai-on{background:var(--green-l);color:var(--green);border:1px solid var(--green-border)}
+.ai-off{background:var(--red-l);color:var(--red);border:1px solid var(--red-border)}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.ai-dot.pulse{animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.main{flex:1;display:grid;grid-template-columns:290px minmax(0,1fr) 360px;overflow:hidden}
+.sidebar{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.sb-section{padding:8px 0}
+.sb-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:9px var(--space-4) 5px}
+.step-item{display:flex;align-items:flex-start;gap:var(--space-2);padding:8px var(--space-4);border-left:2px solid transparent}
+.step-item.active{background:var(--cyan-wash);border-left-color:var(--cyan)}
+.step-item.clickable{cursor:pointer}
+.step-item.clickable:hover{background:var(--panel2)}
+.review-note{display:flex;align-items:center;gap:7px;font-size:var(--step-xs);color:var(--text3);margin-top:var(--space-3);padding:7px 11px;border-radius:7px;background:var(--panel2);border:1px solid var(--border)}
+.review-note b{color:var(--text2);font-weight:700}
+.step-item.done{opacity:.7}
+.step-num{width:23px;height:23px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:var(--step-xs);font-weight:700;margin-top:2px}
+.sn-done{background:var(--green-l);color:var(--green)}
+.sn-active{background:var(--cyan-wash);color:var(--cyan)}
+.sn-next{background:var(--panel2);color:var(--text3)}
+.step-info{flex:1;min-width:0}
+.step-title{font-size:var(--step-sm);line-height:1.4}
+.step-sub{font-size:var(--step-xs);color:var(--text3);margin-top:2px}
+.progress-wrap{padding:var(--space-3) var(--space-4);border-top:1px solid var(--border);margin-top:auto}
+.prog-label{font-size:var(--step-xs);color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:3px;transition:width .5s}
+.center{display:flex;flex-direction:column;overflow:hidden}
+.content-area{flex:1;position:relative;overflow:hidden}
+.lesson-view{position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto}
+.lesson-status{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-5) 0}
+.topo-chip{font-size:var(--step-sm);color:var(--text2);background:var(--panel2);padding:4px 11px;border-radius:7px;font-weight:600}
+.complete-reopen-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--green-l);color:var(--green);border:1px solid var(--green-border);cursor:pointer;display:none}
+.complete-reopen-chip.show{display:inline-block}
+.next-lab-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--green);color:var(--btn-text);border:1px solid var(--green);cursor:pointer;display:none}
+.next-lab-chip.show{display:inline-block}
+.lesson-wrap{padding:var(--space-5);width:100%}
+.lesson-section-label{font-size:var(--step-xs);font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.lesson-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:var(--space-6)}
+.lesson-title{font-size:var(--step-xl);font-weight:700;letter-spacing:-0.01em;margin-bottom:var(--space-4)}
+.lesson-body{font-size:var(--step-base);color:var(--text2);line-height:1.75}
+.lesson-body p{margin:0 0 12px}
+.lesson-body ul{margin:0 0 12px;padding-left:22px}
+.lesson-body li{margin-bottom:6px}
+.lesson-body b{color:var(--text)}
+.lesson-body code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:.92em}
+.bit-table{table-layout:fixed}
+.bit-table th:first-child,.bit-table td:first-child{width:92px}
+.bit-table th:last-child,.bit-table td:last-child{width:148px}
+.bit-table th:not(:first-child):not(:last-child),
+.bit-table td:not(:first-child):not(:last-child){width:42px}
+.bit-table td{text-align:center;font-family:var(--mono)}
+.bit-table td:first-child,.bit-table td:last-child{text-align:left;font-family:var(--font);white-space:nowrap}
+.bit-table th{text-align:center;font-family:var(--mono)}
+.bit-table th:first-child,.bit-table th:last-child{text-align:left;font-family:var(--font)}
+.bit-table th:not(:first-child):not(:last-child),
+.bit-table td:not(:first-child):not(:last-child){border-left:1px solid var(--border)}
+.bit-table td:last-child{border-left:1px solid var(--border)}
+.bit-table th:last-child{border-left:1px solid var(--border)}
+.bit-table .bit-on,.bit-table .bit-off{padding:0}
+.bit-table .bit-on span,.bit-table .bit-off span{display:block;margin:4px 6px;border-radius:5px;padding:5px 0}
+.bit-table .bit-on span{color:var(--cyan);font-weight:700;background:var(--cyan-wash);border:1px solid var(--cyan-d)}
+.bit-table .bit-off span{color:var(--text3)}
+.calc-steps{margin:var(--space-3) 0 0;padding:0;list-style:none;border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.calc-steps li{display:flex;gap:var(--space-3);align-items:baseline;padding:8px 12px;border-bottom:1px solid var(--border);font-size:var(--step-sm)}
+.calc-steps li:last-child{border-bottom:none}
+.calc-steps li.hit{background:var(--cyan-wash)}
+.calc-steps .cs-q{font-family:var(--mono);color:var(--text);min-width:132px}
+.calc-steps .cs-a{color:var(--text2)}
+.review-intro{font-size:var(--step-sm);color:var(--text2);margin-bottom:var(--space-4);line-height:1.6}
+.rv-item{border:1px solid var(--border);border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-3);background:var(--panel)}
+.rv-item.ok{border-color:var(--green);background:var(--green-wash)}
+.rv-item.bad{border-color:var(--red)}
+.rv-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:9px}
+.rv-num{font-size:var(--step-xs);font-weight:700;color:var(--text3);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 11px;white-space:nowrap}
+.rv-mark{margin-left:auto;font-size:var(--step-sm);font-weight:700}
+.rv-mark.ok{color:var(--green)}
+.rv-mark.bad{color:var(--red)}
+.rv-q{font-size:var(--step-base);color:var(--text);line-height:1.6;margin-bottom:10px;font-weight:600}
+.rv-score{font-size:var(--step-md);font-weight:700;margin-top:var(--space-3)}
+.lesson-table-wrap{overflow-x:auto;margin:var(--space-4) 0 0;border:1px solid var(--border);border-radius:9px}
+.lesson-table{width:100%;border-collapse:collapse;font-size:var(--step-sm);min-width:440px}
+.lesson-table caption{caption-side:top;text-align:left;padding:9px 12px;font-size:var(--step-xs);font-weight:700;color:var(--text2);background:var(--panel2);border-bottom:1px solid var(--border)}
+.lesson-table th{text-align:left;padding:9px 12px;background:var(--panel2);color:var(--text2);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
+.lesson-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;line-height:1.55}
+.lesson-table tbody tr:last-child td{border-bottom:none}
+.lesson-table td:first-child{font-weight:700;white-space:nowrap;color:var(--text)}
+.lesson-table .t-ok{color:var(--green);font-weight:700}
+.lesson-table .t-no{color:var(--red);font-weight:700}
+.lesson-table code{font-family:var(--mono);background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:.92em}
+.lesson-fig{margin:var(--space-4) 0 0;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:var(--space-4) var(--space-3) var(--space-3)}
+.lesson-fig svg{display:block;width:100%;height:auto;margin:0 auto;max-width:600px;overflow:visible}
+.fig-cap{text-align:center;color:var(--text2);font-size:var(--step-xs);margin-top:10px;line-height:1.5}
+.f-box{fill:var(--panel);stroke:var(--border);stroke-width:1.4}
+.f-box-a{fill:var(--cyan-wash);stroke:var(--cyan);stroke-width:1.4}
+.f-box-g{fill:var(--green-wash);stroke:var(--green);stroke-width:1.4}
+.f-box-am{fill:var(--amber-wash);stroke:var(--amber);stroke-width:1.4}
+.f-box-p{fill:var(--purple-wash);stroke:var(--purple);stroke-width:1.4}
+.f-box-r{fill:var(--red-l);stroke:var(--red);stroke-width:1.4}
+.f-ln{stroke:var(--border);stroke-width:1.4;fill:none}
+.f-ln-a{stroke:var(--cyan);stroke-width:1.8;fill:none}
+.f-ln-g{stroke:var(--green);stroke-width:1.8;fill:none}
+.f-ln-d{stroke:var(--text3);stroke-width:1.2;fill:none;stroke-dasharray:4 3}
+.f-fill-a{fill:var(--cyan)}
+.f-fill-g{fill:var(--green)}
+.f-fill-am{fill:var(--amber)}
+.f-fill-p{fill:var(--purple)}
+.f-fill-r{fill:var(--red)}
+.f-t{fill:var(--text);font-size:12.5px;font-family:var(--font)}
+.f-tb{fill:var(--text);font-size:13.5px;font-weight:700;font-family:var(--font)}
+.f-ts{fill:var(--text2);font-size:12.5px;font-family:var(--font)}
+.f-tm{fill:var(--text);font-size:13.5px;font-family:var(--mono)}
+.f-ta{fill:var(--cyan);font-size:12.5px;font-weight:700;font-family:var(--font)}
+.f-tg{fill:var(--green);font-size:12.5px;font-weight:700;font-family:var(--font)}
+.lesson-actions{display:flex;justify-content:flex-end;margin-top:var(--space-5)}
+.q-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-3)}
+.q-num{font-size:var(--step-xs);color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.q-text{font-size:var(--step-md);font-weight:600;margin-bottom:var(--space-3);line-height:1.55}
+.q-opts{display:flex;flex-direction:column;gap:6px}
+.q-opt{display:flex;align-items:center;gap:var(--space-2);padding:9px 13px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:var(--step-sm);color:var(--text2);transition:all .1s}
+.q-opt:hover:not(.answered){border-color:var(--cyan-d);color:var(--text)}
+.q-opt.selected{background:var(--cyan-wash);border-color:var(--cyan);color:var(--cyan)}
+.q-opt.correct{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.q-opt.wrong{background:var(--red-l);border-color:var(--red);color:var(--red)}
+.q-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+.q-opt.selected .q-dot{border-color:var(--cyan);background:var(--cyan)}
+.q-opt.correct .q-dot{border-color:var(--green);background:var(--green)}
+.q-opt.wrong .q-dot{border-color:var(--red);background:var(--red)}
+.q-explain{margin-top:9px;font-size:var(--step-xs);padding:9px 11px;border-radius:8px;border:1px solid var(--green);background:var(--green-l);color:var(--explain-text);line-height:1.55;display:none}
+.q-explain.show{display:block}
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:10px}
+.dd-col-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.dd-items{display:flex;flex-direction:column;gap:5px}
+.dd-item{padding:7px 11px;border-radius:7px;border:1px solid var(--border);font-size:var(--step-xs);color:var(--text2);cursor:pointer;background:var(--panel2);transition:all .1s}
+.dd-item:hover:not(.checked){border-color:var(--cyan-d);color:var(--text)}
+.dd-item.sel{border-color:var(--cyan);background:var(--cyan-wash);color:var(--cyan)}
+.dd-item.matched{border-color:var(--green);background:var(--green-l);color:var(--green);cursor:default}
+.dd-item.pending{border-color:var(--cyan-d);background:rgba(61,139,255,.06)}
+.dd-item.checked{cursor:default}
+.dd-target{padding:7px 11px;border-radius:7px;border:2px dashed var(--border);font-size:var(--step-xs);color:var(--text2);min-height:36px;display:flex;align-items:center;cursor:pointer;transition:all .1s}
+.dd-target.pending{border-style:solid;border-color:var(--cyan-d);background:rgba(61,139,255,.06);color:var(--cyan)}
+.dd-target.filled{border-style:solid;border-color:var(--green);background:var(--green-l);color:var(--green)}
+.dd-target.wrong-m{border-color:var(--red);background:var(--red-l)}
+.dd-item[draggable="true"]{cursor:grab}
+.dd-item.dragging{opacity:.45;cursor:grabbing}
+.dd-target.drag-over{border-style:solid;border-color:var(--cyan);background:var(--cyan-wash)}
+.dd-hint{font-size:var(--step-xs);color:var(--text2);margin-top:8px}
+.checkpoint-actions{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-4)}
+.btn-check{padding:8px 20px;border-radius:8px;background:var(--cyan);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-base);font-weight:700}
+.btn-skip2{padding:8px 16px;border-radius:8px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;font-size:var(--step-sm);font-weight:600}
+.btn-next-lab{padding:9px 18px;border-radius:8px;background:var(--green);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-base);font-weight:700}
+.checkpoint-fb{font-size:var(--step-sm);font-weight:600}
+.checkpoint-fb.ok{color:var(--green)}
+.checkpoint-fb.bad{color:var(--red)}
+.hint-box{display:none;background:var(--amber-l);border:1px solid var(--amber-border);border-radius:10px;padding:var(--space-3);margin-top:var(--space-3)}
+.hint-box.show{display:block}
+.hint-title{font-size:var(--step-xs);font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.hint-text{font-size:var(--step-sm);color:var(--text2);line-height:1.55}
+.hint-answer-btn{margin-top:8px;padding:6px 14px;border-radius:7px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;font-size:var(--step-xs);font-weight:600;display:none}
+.hint-answer-btn.show{display:inline-block}
+.lab-complete{display:none;position:fixed;inset:0;background:var(--overlay);z-index:60;align-items:center;justify-content:center}
+.lab-complete.show{display:flex}
+.lab-complete-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:var(--space-7);width:440px;max-width:92vw;box-shadow:0 16px 50px rgba(0,0,0,.5);position:relative;text-align:center}
+.lab-complete-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px}
+.complete-title{font-size:var(--step-2xl);font-weight:700;color:var(--green);letter-spacing:-0.01em}
+.complete-sub{font-size:var(--step-base);color:var(--text2);max-width:400px;line-height:1.6;margin:12px auto 0}
+.lab-complete-actions{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-5)}
+.chat-panel{border-left:1px solid var(--border);display:grid;grid-template-rows:42px 1fr auto 50px;overflow:hidden;background:var(--panel)}
+.chat-header{display:flex;align-items:center;gap:7px;padding:0 var(--space-3);border-bottom:1px solid var(--border);background:var(--panel2)}
+.chat-title{font-size:var(--step-sm);font-weight:700;flex:1}
+.model-tag{font-size:11.5px;color:var(--text3);background:var(--panel);padding:2px 7px;border-radius:6px;border:1px solid var(--border)}
+.messages{overflow-y:auto;padding:var(--space-3);display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:8px;max-width:100%}
+.msg.user{flex-direction:row-reverse}
+.av{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700}
+.ai-av{background:var(--cyan-wash);color:var(--cyan)}
+.user-av{background:var(--panel2);color:var(--text2)}
+.bub{padding:8px 12px;border-radius:10px;font-size:var(--step-sm);line-height:1.55;white-space:pre-wrap;max-width:100%}
+.ai-b{background:var(--panel2);color:var(--text)}
+.user-b{background:var(--cyan-wash);color:var(--text)}
+.typing-dots{display:flex;gap:3px;padding:8px 12px;background:var(--panel2);border-radius:10px}
+.typing-dots span{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:blink 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+.chat-chips{display:flex;gap:6px;flex-wrap:wrap;padding:var(--space-2) var(--space-3);border-top:1px solid var(--border)}
+.chip{font-size:12.5px;padding:4px 10px;border-radius:20px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;white-space:nowrap}
+.chip:hover{border-color:var(--cyan-d);color:var(--text)}
+.chat-input-row{display:flex;gap:8px;padding:0 var(--space-3);align-items:center;border-top:1px solid var(--border)}
+.chat-in{flex:1;padding:9px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel2);color:var(--text);outline:none;font-size:var(--step-sm)}
+.send-btn{width:32px;height:32px;border-radius:50%;background:var(--cyan);color:var(--btn-text);border:none;cursor:pointer;font-size:14px;flex-shrink:0}
+.mobile-toggle{display:none}
+@media (max-width:900px){
+  .topbar .crumb:not(.current),.topbar .crumb-sep{display:none}
+  .topbar .crumb.current{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar .ai-pill span{display:none}
+  .topbar{overflow:hidden}
+  .main{grid-template-columns:1fr;position:relative}
+  .sidebar,.chat-panel{position:fixed;top:52px;bottom:0;width:280px;z-index:40;transition:transform .2s}
+  .sidebar{left:0;transform:translateX(-100%)}
+  .sidebar.mobile-open{transform:translateX(0)}
+  .chat-panel{right:0;transform:translateX(100%)}
+  .chat-panel.mobile-open{transform:translateX(0)}
+  .mobile-toggle{display:block;background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer}
+  .mobile-backdrop{display:none;position:fixed;inset:0;background:var(--overlay);z-index:35}
+  .mobile-backdrop.show{display:block}
+}
+@media (max-width:480px){
+  .chapter-badge{display:none}
+  .topbar>span:first-child{font-size:14px}
+  .q-card{padding:12px}
+  .lesson-title{font-size:18px}
+}
+</style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="topbar">
+  <button class="mobile-toggle" id="sidebarToggle" onclick="toggleMobilePanel('sidebar')" title="Steps">☰</button>
+  <a class="brand" href="../../index.html">NET<span>Lab</span></a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="../../labs.html">Lab</a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="../../course.html">Network Eng. Lab I</a>
+  <span class="crumb-sep">›</span>
+  <span class="chapter-badge">Lab 1</span>
+  <span class="crumb current">Course Introduction</span>
+  <div class="ai-pill ai-off" id="aiStatus">
+    <div class="ai-dot" id="aiDot"></div>
+    <span id="aiStatusText">กำลังเชื่อมต่อ...</span>
+  </div>
+  <div class="lab-topbar-right">
+    <div id="authSlot"></div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
+    <button class="mobile-toggle" id="chatToggle" onclick="toggleMobilePanel('chat')" title="AI Tutor">💬</button>
+  </div>
+</div>
+
+<div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobilePanels()"></div>
+
+<div class="main">
+  <div class="sidebar" id="sidebarPanel">
+    <div class="sb-section"><div id="sidebarSteps"></div></div>
+    <div class="progress-wrap">
+      <div class="prog-label"><span>ความคืบหน้า</span><span id="progText">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="content-area">
+      <div class="lesson-view">
+        <div class="lesson-status">
+          <div class="topo-chip" id="stepChip">Step 1/27</div>
+          <div class="complete-reopen-chip" id="completeChip" onclick="openLabComplete()">✓ Lab สำเร็จ — ดูสรุปผล</div>
+          <div class="next-lab-chip" id="nextLabChip" onclick="goNextLab()">ไป Lab ถัดไป →</div>
+        </div>
+        <div class="lesson-wrap" id="lessonWrap"></div>
+        <div class="lab-complete" id="labComplete" onclick="if(event.target===this)closeLabComplete()">
+          <div class="lab-complete-box" role="dialog" aria-labelledby="completeTitle">
+            <button class="lab-complete-close" onclick="closeLabComplete()" title="ปิด (ดูทบทวนเนื้อหาได้)">✕</button>
+            <div class="complete-title" id="completeTitle">Lab Ch.1 สำเร็จ!</div>
+            <div class="complete-sub">ทบทวนพื้นฐานเครือข่ายครบทุกหัวข้อ — ประเภทเครือข่าย, Topology, อุปกรณ์, สื่อกลาง, OSI/TCP-IP Model และ IP Address เบื้องต้น พร้อมสำหรับ Lab ถัดไปแล้วครับ</div>
+            <div class="lab-complete-actions">
+              <button class="btn-skip2" onclick="closeLabComplete()">ปิด — ทบทวนเนื้อหา</button>
+              <button class="btn-check" onclick="resetLab()">ทำ Lab นี้อีกครั้ง →</button>
+              <button class="btn-next-lab" onclick="goNextLab()">ไป Lab ถัดไป →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <div id="chatDot" style="width:7px;height:7px;border-radius:50%;background:var(--text3)"></div>
+      <div class="chat-title">AI — Network Tutor</div>
+      <div class="model-tag" id="modelTag">Gemini 2.5 Flash</div>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="chat-chips">
+      <div class="chip" onclick="askAboutTopic()">อธิบายเพิ่มเติม</div>
+      <div class="chip" onclick="showProgressSummary()">สรุปที่เรียนมาแล้ว</div>
+      <div class="chip" onclick="location.href='../../index.html'">หน้าอ้างอิงหลัก</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-in" id="chatIn" placeholder="ถาม AI Tutor..." onkeydown="if(event.key==='Enter'&&!isBusy)sendChat()"/>
+      <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../scripts/theme.js?v=1"></script>
+<script>renderAuthNav();</script>
+<script>
+'use strict';
+var API_BASE=(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
+  ?'http://localhost:8000':'http://'+window.location.hostname+'/api';
+
+// ── เนื้อหา Lab: สลับกันระหว่าง 'lesson' (อ่านเนื้อหา กด ถัดไป ได้เลย) กับ 'checkpoint' (ต้องตอบถูกก่อนถึงจะไปต่อ) ──
+// final:true = อยู่ในช่วงทบทวนท้ายบท (สรุปรวมทุกหัวข้อที่ผ่านมา) ต่างจาก checkpoint ระหว่างบทที่เพิ่งเรียนจบหัวข้อเดียว
+var STEPS=[
+  // ── หมวด A: เครือข่ายคอมพิวเตอร์เบื้องต้น ──
+  {id:1,type:'lesson',fig:'<svg viewBox="0 0 600 220"><rect x="258" y="92" width="84" height="38" rx="5" class="f-box-a"/><text x="300" y="116" class="f-ta" text-anchor="middle">Switch</text><line x1="300" y1="92" x2="120" y2="66" class="f-ln"/><line x1="300" y1="92" x2="300" y2="58" class="f-ln"/><line x1="300" y1="92" x2="480" y2="66" class="f-ln"/><line x1="300" y1="130" x2="120" y2="172" class="f-ln"/><line x1="300" y1="130" x2="480" y2="172" class="f-ln"/><rect x="97" y="26" width="46" height="34" rx="4" class="f-box"/><rect x="103" y="31" width="34" height="22" rx="2" class="f-box-a"/><text x="120" y="74" class="f-ts" text-anchor="middle">PC-A</text><rect x="277" y="20" width="46" height="34" rx="4" class="f-box"/><rect x="283" y="25" width="34" height="22" rx="2" class="f-box-a"/><text x="300" y="68" class="f-ts" text-anchor="middle">PC-B</text><rect x="457" y="26" width="46" height="34" rx="4" class="f-box"/><rect x="463" y="31" width="34" height="22" rx="2" class="f-box-a"/><text x="480" y="74" class="f-ts" text-anchor="middle">PC-C</text><rect x="74" y="160" width="92" height="40" rx="5" class="f-box-g"/><text x="120" y="185" class="f-tg" text-anchor="middle">Server</text><rect x="434" y="160" width="92" height="40" rx="5" class="f-box"/><text x="480" y="185" class="f-t" text-anchor="middle">Printer</text></svg>',figCap:'อุปกรณ์หลายชนิดเชื่อมถึงกันผ่านอุปกรณ์กลาง จึงแลกเปลี่ยนข้อมูลและใช้ทรัพยากรร่วมกันได้',section:'A. เครือข่ายคอมพิวเตอร์เบื้องต้น',title:'เครือข่ายคอมพิวเตอร์ (Computer Network) คืออะไร',
+   body:'<p>เครือข่ายคอมพิวเตอร์ คือกลุ่มของอุปกรณ์ (คอมพิวเตอร์ เซิร์ฟเวอร์ พรินเตอร์ มือถือ ฯลฯ) ที่เชื่อมต่อกันเพื่อ <b>แลกเปลี่ยนข้อมูลและใช้ทรัพยากรร่วมกัน</b> ไม่ว่าจะผ่านสาย (Wired) หรือไร้สาย (Wireless)</p><p>หัวใจของวิชานี้คือการเข้าใจว่าอุปกรณ์แต่ละตัว <b>รู้จักกันได้อย่างไร</b> และ <b>ข้อมูลเดินทางจากต้นทางไปปลายทางได้อย่างไร</b> — ซึ่งเป็นพื้นฐานที่ทุก Lab ถัดไปจะต่อยอดจากตรงนี้</p><p>การสื่อสารหนึ่งครั้งต้องมีองค์ประกอบครบ 4 อย่างเสมอ คือ <b>ผู้ส่ง (Sender)</b>, <b>ข้อมูล (Message)</b>, <b>สื่อกลาง (Medium)</b> และ <b>ผู้รับ (Receiver)</b> ถ้าขาดอย่างใดอย่างหนึ่งการสื่อสารจะไม่เกิดขึ้น</p><p>แต่แค่ 4 อย่างนี้ยังไม่พอ เพราะถ้าสองฝ่ายไม่ได้ตกลงกันว่าจะ "พูดภาษาเดียวกัน" ข้อมูลที่ส่งไปก็จะอ่านไม่รู้เรื่อง จึงต้องมีสิ่งที่ห้าคือ <b>โพรโทคอล (Protocol)</b> ซึ่งก็คือกฎที่กำหนดว่าข้อมูลต้องมีรูปแบบอย่างไร ใครพูดก่อน และถ้าข้อมูลหายต้องทำอย่างไร</p><p>เปรียบเทียบง่ายๆ กับการส่งจดหมาย ผู้ส่งคือเรา ข้อมูลคือเนื้อความ สื่อกลางคือไปรษณีย์ ผู้รับคือปลายทาง และโพรโทคอลคือกติกาว่าต้องเขียนที่อยู่ตรงไหนและติดแสตมป์เท่าไร — ทุกอย่างที่จะเรียนตลอดวิชานี้คือการทำความเข้าใจโพรโทคอลเหล่านี้ทีละตัว</p>'},
+  {id:2,type:'lesson',section:'A. เครือข่ายคอมพิวเตอร์เบื้องต้น',title:'ทำไมองค์กรถึงต้องมีเครือข่าย',
+   body:'<p>ประโยชน์หลักของการมีเครือข่าย:</p><ul><li><b>ใช้ทรัพยากรร่วมกัน (Resource Sharing)</b> — เครื่องพิมพ์ ไฟล์ อินเทอร์เน็ตเครื่องเดียว ใช้ได้หลายเครื่อง</li><li><b>สื่อสารกัน (Communication)</b> — อีเมล แชท วิดีโอคอล</li><li><b>รวมศูนย์ข้อมูล (Centralization)</b> — เก็บ backup และจัดการสิทธิ์การเข้าถึงจากที่เดียว</li><li><b>ประหยัดต้นทุน</b> — ไม่ต้องซื้ออุปกรณ์ซ้ำซ้อนทุกเครื่อง</li></ul><p>แต่การมีเครือข่ายก็มาพร้อมสิ่งที่ต้องแลก ซึ่งเป็นเหตุผลที่ต้องมีวิศวกรเครือข่ายคอยดูแล:</p><ul><li><b>ความปลอดภัย</b> — เมื่อเครื่องเชื่อมถึงกันได้ ผู้ไม่หวังดีก็เข้าถึงได้เช่นกัน จึงต้องมีการกำหนดรหัสผ่านและสิทธิ์การเข้าถึง (จะได้ฝึกตั้งค่าจริงใน Lab 4)</li><li><b>จุดล้มเหลวจุดเดียว (Single Point of Failure)</b> — ถ้าอุปกรณ์กลางเสีย ทั้งเครือข่ายอาจใช้งานไม่ได้ทันที จึงต้องออกแบบให้มีเส้นทางสำรอง</li><li><b>ต้นทุนการดูแล</b> — ต้องมีคนคอยตั้งค่า ตรวจสอบ และแก้ปัญหาเมื่อเครือข่ายล่ม</li></ul><p>งานของวิศวกรเครือข่ายคือทำให้ข้อดีเหล่านี้เกิดขึ้นจริง โดยควบคุมข้อเสียให้อยู่ในระดับที่ยอมรับได้</p>'},
+  {id:3,type:'lesson',fig:'<svg viewBox="0 0 600 172"><defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="var(--text3)" stroke-width="1.6"/></marker></defs><text x="14" y="30" class="f-ts">ระยะใกล้</text><text x="586" y="30" class="f-ts" text-anchor="end">ระยะไกล</text><line x1="14" y1="124" x2="586" y2="124" class="f-ln" marker-end="url(#ar1)"/><rect x="14" y="46" width="108" height="62" rx="6" class="f-box"/><text x="68" y="72" class="f-tb" text-anchor="middle">PAN</text><text x="68" y="92" class="f-ts" text-anchor="middle">Bluetooth หูฟัง</text><rect x="146" y="46" width="132" height="62" rx="6" class="f-box-a"/><text x="212" y="72" class="f-ta" text-anchor="middle">LAN</text><text x="212" y="92" class="f-ts" text-anchor="middle">ในอาคาร/ห้อง Lab</text><rect x="302" y="46" width="128" height="62" rx="6" class="f-box"/><text x="366" y="72" class="f-tb" text-anchor="middle">MAN</text><text x="366" y="92" class="f-ts" text-anchor="middle">ระดับเมือง</text><rect x="454" y="46" width="132" height="62" rx="6" class="f-box-g"/><text x="520" y="72" class="f-tg" text-anchor="middle">WAN</text><text x="520" y="92" class="f-ts" text-anchor="middle">ข้ามเมือง/ประเทศ</text><text x="520" y="146" class="f-ts" text-anchor="middle">Lab 4-11 จำลองส่วนนี้</text></svg>',figCap:'แบ่งตามขอบเขตพื้นที่ — Router ที่ตั้งค่าใน Lab 4-11 ทำหน้าที่เชื่อมเครือข่ายระดับ WAN',section:'A. เครือข่ายคอมพิวเตอร์เบื้องต้น',title:'ประเภทเครือข่ายตามขนาดพื้นที่',
+   body:'<p>แบ่งตามระยะทางและขอบเขตการใช้งาน:</p><ul><li><b>PAN (Personal Area Network)</b> — คือเครือข่ายที่เกิดขึ้นรอบตัวคนคนเดียว ในรัศมีประมาณ 1 ถึง 10 เมตร <u>หลักการ</u> คืออุปกรณ์จับคู่ (Pair) กันโดยตรงแบบไม่ต้องมีอุปกรณ์กลางและไม่ต้องมี IP Address เพราะสื่อสารกันในระดับ Layer 2 เท่านั้น <u>เทคโนโลยีที่ใช้</u> คือ Bluetooth, NFC และ Infrared <u>ความเร็ว</u> ระดับไม่กี่ Mbps เช่น มือถือกับหูฟังไร้สาย หรือการแตะบัตรจ่ายเงิน</li><li><b>LAN (Local Area Network)</b> — คือเครือข่ายที่ครอบคลุมพื้นที่จำกัดในความดูแลขององค์กรเดียว เช่น ห้อง Lab ชั้นหนึ่งของอาคาร หรือทั้งอาคาร <u>หลักการ</u> คือองค์กร <b>เป็นเจ้าของสายและอุปกรณ์เองทั้งหมด</b> จึงกำหนดความเร็วและผังเครือข่ายได้อิสระ โดยใช้ Switch เป็นศูนย์กลางและทุกเครื่องอยู่ใน Broadcast Domain เดียวกัน <u>เทคโนโลยี</u> คือ Ethernet บนสาย UTP <u>ระยะ</u> จำกัดที่ 100 เมตรต่อช่วงสาย <u>ความเร็ว</u> ปกติ 1 Gbps ขึ้นไป</li><li><b>MAN (Metropolitan Area Network)</b> — คือเครือข่ายที่เชื่อม LAN หลายแห่งเข้าด้วยกันภายในเมืองเดียว รัศมีราว 5 ถึง 50 กิโลเมตร <u>หลักการ</u> คือทำหน้าที่เป็นแกนกลาง (Backbone) เชื่อมสาขาย่อยเข้าหากัน โดยมักเช่าใช้โครงข่ายไฟเบอร์ของผู้ให้บริการในเมืองนั้น <u>ตัวอย่าง</u> คือเครือข่ายที่เชื่อมทุกวิทยาเขตของมหาวิทยาลัยเข้าด้วยกัน หรือเครือข่ายของธนาคารที่เชื่อมทุกสาขาในกรุงเทพ</li><li><b>WAN (Wide Area Network)</b> — คือเครือข่ายที่ครอบคลุมระยะไกลข้ามเมือง ข้ามประเทศ หรือทั่วโลก <u>หลักการสำคัญที่ต่างจาก LAN</u> คือองค์กร <b>ไม่ได้เป็นเจ้าของเส้นทาง</b> แต่ต้องเช่าจากผู้ให้บริการ (ISP) เพราะลากสายข้ามจังหวัดเองไม่ได้ ความเร็วจึงถูกกำหนดโดยสัญญาที่เช่าและมักต่ำกว่า LAN มาก ส่วนอุปกรณ์ที่ทำหน้าที่เชื่อม LAN เข้ากับ WAN คือ <b>Router</b> <u>ตัวอย่างที่ใหญ่ที่สุด</u> คืออินเทอร์เน็ต ซึ่งคือ WAN ที่เชื่อมเครือข่ายทั้งโลกเข้าด้วยกัน — และลิงก์ระหว่าง Router ทุกเส้นใน Lab 4-11 ก็คือการจำลองลิงก์ WAN ระหว่างสาขานั่นเอง</li></ul><p><b>ศัพท์ที่ต้องแยกให้ออก:</b> คำว่า <b>Backbone</b> หมายถึงเส้นทางแกนหลักที่รับปริมาณข้อมูลรวมของทุกสาขา ส่วน <b>ISP (Internet Service Provider)</b> คือผู้ให้บริการที่เป็นเจ้าของโครงข่ายที่เราเช่าใช้ และ <b>Last Mile</b> คือช่วงสายจากศูนย์ของ ISP มาถึงอาคารของเรา ซึ่งมักเป็นจุดที่ความเร็วตกที่สุดของทั้งเส้นทาง</p><p>นอกจากแบ่งตามขนาดแล้ว ยังแยกได้อีกว่า <b>ใครเป็นเจ้าของสายที่ใช้</b> ซึ่งเป็นเส้นแบ่งสำคัญระหว่าง LAN กับ WAN:</p><ul><li><b>LAN</b> — องค์กรเดินสายเองและเป็นเจ้าของอุปกรณ์เองทั้งหมด จึงกำหนดความเร็วได้เอง (ปกติ 1 Gbps ขึ้นไป)</li><li><b>WAN</b> — ต้องเช่าเส้นทางจากผู้ให้บริการ (ISP) เพราะลากสายข้ามจังหวัดเองไม่ได้ ความเร็วจึงมักต่ำกว่าและมีค่าใช้จ่ายรายเดือน</li></ul><p>ยังมีคำที่พบบ่อยอีกสองคำคือ <b>WLAN</b> (LAN แบบไร้สาย คือ Wi-Fi ในบ้านหรือในตึก) และ <b>SAN</b> (เครือข่ายเฉพาะสำหรับเชื่อมอุปกรณ์จัดเก็บข้อมูลในศูนย์ข้อมูล)</p><p>ในทุก Lab ตั้งแต่ Ch.4 เป็นต้นไป จะเห็นภาพเดียวกันเสมอคือ LAN ของแต่ละสาขา (ฝั่งที่มี PC ต่ออยู่) เชื่อมถึงกันผ่านลิงก์ WAN ระหว่าง Router — การเข้าใจว่าส่วนไหนคือ LAN ส่วนไหนคือ WAN จะช่วยให้ตั้งค่า IP ได้ไม่สับสน</p>'},
+  {id:4,type:'quiz',section:'A. เครือข่ายคอมพิวเตอร์เบื้องต้น',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'เครือข่ายเบื้องต้น',section:'A. เครือข่ายคอมพิวเตอร์เบื้องต้น',q:'เครือข่ายที่เชื่อมคอมพิวเตอร์ภายในห้อง Lab เดียวกัน ทั้งหมดอยู่ในอาคารเดียว จัดเป็นเครือข่ายประเภทใด?',
+   opts:['WAN (Wide Area Network)','LAN (Local Area Network)','MAN (Metropolitan Area Network)','PAN (Personal Area Network)'],
+   ans:1,exp:'เครือข่ายที่ครอบคลุมพื้นที่ขนาดเล็กในอาคารหรือองค์กรเดียวกัน (เช่นห้อง Lab, ชั้นเดียวกันในอาคาร) จัดเป็น LAN (Local Area Network) — ต่างจาก WAN ที่ครอบคลุมระยะไกลข้ามเมืองหรือประเทศ'},
+
+  // ── หมวด B: Topology และอุปกรณ์เครือข่าย ──,
+     {topic:'เครือข่ายเบื้องต้น',q:'ความแตกต่างที่สำคัญที่สุดระหว่าง LAN กับ WAN ในทางปฏิบัติคือข้อใด?',
+      opts:['WAN ใช้สายทองแดง ส่วน LAN ใช้ไฟเบอร์เท่านั้น','LAN องค์กรเป็นเจ้าของสายและอุปกรณ์เอง ส่วน WAN ต้องเช่าเส้นทางจากผู้ให้บริการ','LAN ส่งข้อมูลได้เฉพาะภายในห้องเดียวกัน ส่วน WAN ส่งได้ทั้งอาคาร','WAN ไม่ต้องใช้ Router แต่ LAN ต้องใช้'],
+      ans:1,exp:'เส้นแบ่งที่แท้จริงคือความเป็นเจ้าของ องค์กรเดินสายและวางอุปกรณ์ใน LAN ได้เอง จึงกำหนดความเร็วได้อิสระ แต่ลากสายข้ามจังหวัดเองไม่ได้ จึงต้องเช่าเส้นทาง WAN จาก ISP ซึ่งเป็นเหตุผลที่ลิงก์ WAN มักช้ากว่าและมีค่าใช้จ่ายรายเดือน — ส่วนชนิดของสายและการใช้ Router ไม่ใช่ตัวแบ่ง'},
+     {topic:'เครือข่ายเบื้องต้น',q:'การเชื่อมต่อหูฟังไร้สายเข้ากับโทรศัพท์ด้วย Bluetooth จัดเป็นเครือข่ายประเภทใด?',
+      opts:['LAN','MAN','PAN','WAN'],
+      ans:2,exp:'PAN (Personal Area Network) คือเครือข่ายรอบตัวคนคนเดียวในรัศมีราว 1 ถึง 10 เมตร อุปกรณ์จับคู่กันโดยตรงโดยไม่ต้องมีอุปกรณ์กลางและไม่ต้องมี IP Address เพราะสื่อสารกันที่ Layer 2 เท่านั้น — Bluetooth และ NFC คือตัวอย่างที่ใช้บ่อยที่สุด'}
+   ]},
+  {id:5,type:'lesson',section:'B. Topology และอุปกรณ์เครือข่าย',title:'Network Topology คืออะไร',
+   body:'<p>Topology คือ <b>รูปแบบการจัดวางการเชื่อมต่อ</b> ระหว่างอุปกรณ์ในเครือข่าย มีทั้ง Physical Topology (การเดินสายจริง) และ Logical Topology (เส้นทางที่ข้อมูลไหลจริง ซึ่งอาจไม่ตรงกับสายจริงก็ได้)</p><p>รูปแบบหลักที่พบบ่อย: <b>Bus, Star, Ring, Mesh</b> และ <b>Hybrid</b> (ผสมหลายแบบเข้าด้วยกัน)</p><p>จุดที่นักศึกษามักสับสนคือ Physical กับ Logical Topology ไม่จำเป็นต้องเป็นแบบเดียวกัน ตัวอย่างคลาสสิกคือเครือข่ายยุคที่ยังใช้ Hub:</p><ul><li><b>Physical เป็น Star</b> — มองด้วยตาเห็นทุกเครื่องเดินสายเข้า Hub ตรงกลางเหมือนดาวกระจาย</li><li><b>Logical เป็น Bus</b> — แต่ข้อมูลจริงถูกกระจายออกไปทุกพอร์ตพร้อมกัน ทุกเครื่องจึงได้ยินกันหมดเหมือนใช้สายเส้นเดียวร่วมกัน</li></ul><p>พอเปลี่ยนจาก Hub มาเป็น Switch หน้าตาการเดินสาย (Physical) ยังเป็น Star เหมือนเดิมทุกอย่าง แต่ Logical เปลี่ยนเป็น Star ตามไปด้วย เพราะ Switch ส่งข้อมูลตรงไปยังพอร์ตปลายทางเท่านั้น ไม่กระจายมั่วอีกต่อไป</p><p>บทเรียนคือ การดูแค่รูปการเดินสายอย่างเดียวไม่พอ ต้องรู้ด้วยว่าอุปกรณ์กลางทำงานอย่างไร</p>'},
+  {id:6,type:'lesson',fig:'<svg viewBox="0 0 600 308"><line x1="70" y1="74" x2="230" y2="74" class="f-ln-a"/><line x1="100" y1="74" x2="100" y2="53" class="f-ln"/><line x1="150" y1="74" x2="150" y2="53" class="f-ln"/><line x1="200" y1="74" x2="200" y2="53" class="f-ln"/><circle cx="100" cy="44" r="9" class="f-box-a"/><circle cx="150" cy="44" r="9" class="f-box-a"/><circle cx="200" cy="44" r="9" class="f-box-a"/><text x="150" y="120" class="f-tb" text-anchor="middle">Bus</text><text x="150" y="140" class="f-ts" text-anchor="middle">ทุกเครื่องใช้สายเส้นเดียวร่วมกัน</text><g transform="translate(300,0)"><line x1="150" y1="64" x2="104" y2="40" class="f-ln"/><line x1="150" y1="64" x2="196" y2="40" class="f-ln"/><line x1="150" y1="64" x2="104" y2="92" class="f-ln"/><line x1="150" y1="64" x2="196" y2="92" class="f-ln"/><rect x="136" y="54" width="28" height="20" rx="3" class="f-box-a"/><circle cx="104" cy="40" r="9" class="f-box-a"/><circle cx="196" cy="40" r="9" class="f-box-a"/><circle cx="104" cy="92" r="9" class="f-box-a"/><circle cx="196" cy="92" r="9" class="f-box-a"/></g><text x="450" y="120" class="f-tb" text-anchor="middle">Star</text><text x="450" y="140" class="f-ts" text-anchor="middle">ต่อเข้าอุปกรณ์กลาง นิยมที่สุด</text><g transform="translate(0,150)"><circle cx="150" cy="66" r="32" class="f-ln-a"/><circle cx="150" cy="34" r="9" class="f-box-a"/><circle cx="182" cy="66" r="9" class="f-box-a"/><circle cx="150" cy="98" r="9" class="f-box-a"/><circle cx="118" cy="66" r="9" class="f-box-a"/></g><text x="150" y="270" class="f-tb" text-anchor="middle">Ring</text><text x="150" y="290" class="f-ts" text-anchor="middle">ข้อมูลวิ่งวนเป็นวงแหวน</text><g transform="translate(300,150)"><line x1="112" y1="42" x2="188" y2="42" class="f-ln"/><line x1="112" y1="42" x2="112" y2="92" class="f-ln"/><line x1="112" y1="42" x2="188" y2="92" class="f-ln"/><line x1="188" y1="42" x2="112" y2="92" class="f-ln"/><line x1="188" y1="42" x2="188" y2="92" class="f-ln"/><line x1="112" y1="92" x2="188" y2="92" class="f-ln"/><circle cx="112" cy="42" r="9" class="f-box-a"/><circle cx="188" cy="42" r="9" class="f-box-a"/><circle cx="112" cy="92" r="9" class="f-box-a"/><circle cx="188" cy="92" r="9" class="f-box-a"/></g><text x="450" y="270" class="f-tb" text-anchor="middle">Mesh</text><text x="450" y="290" class="f-ts" text-anchor="middle">ทุกเครื่องถึงกันหมด ทนทานสุด</text><line x1="300" y1="16" x2="300" y2="292" class="f-ln-d"/><line x1="16" y1="150" x2="584" y2="150" class="f-ln-d"/></svg>',figCap:'Topology หลัก 4 แบบ — Star คือรูปแบบที่ใช้จริงในเครือข่าย LAN สมัยใหม่แทบทั้งหมด',section:'B. Topology และอุปกรณ์เครือข่าย',title:'เปรียบเทียบ Topology แต่ละแบบ',
+   body:'<ul><li><b>Bus</b> — คือผังที่ทุกเครื่องเชื่อมเข้ากับสายหลักเส้นเดียวร่วมกัน เรียกสายเส้นนั้นว่า Backbone <u>หลักการ</u> คือเมื่อเครื่องใดส่งข้อมูล สัญญาณจะวิ่งไปทั้งสายและทุกเครื่องได้รับหมด แต่จะมีเพียงเครื่องที่ตรงกับที่อยู่ปลายทางเท่านั้นที่รับไว้ ที่เหลือทิ้งไป และเนื่องจากใช้สายร่วมกัน จึงต้องมีกติกาผลัดกันส่ง ถ้าสองเครื่องส่งพร้อมกันจะชนกัน <u>ข้อสังเกต</u> คือปลายสายทั้งสองข้างต้องมีตัวปิดปลายเรียกว่า Terminator เพื่อดูดสัญญาณทิ้ง ไม่ให้สะท้อนกลับมารบกวน</li><li><b>Star</b> — คือผังที่ทุกเครื่องเดินสายของตัวเองเข้าหาอุปกรณ์กลางเพียงตัวเดียว <u>หลักการ</u> คือไม่มีเครื่องใดต่อถึงกันโดยตรงเลย ทุกการสื่อสารต้องผ่านอุปกรณ์กลางเสมอ ซึ่งทำให้ควบคุมและตรวจสอบได้ง่าย <u>ข้อดี</u> คือสายเส้นหนึ่งขาดกระทบเพียงเครื่องเดียว และเพิ่มหรือถอดเครื่องได้โดยไม่รบกวนใคร <u>ข้อเสีย</u> คือใช้สายมากกว่าแบบอื่น และถ้าอุปกรณ์กลางเสียจะล่มทั้งวง</li><li><b>Ring</b> — คือผังที่แต่ละเครื่องเชื่อมกับเพื่อนบ้านสองข้างจนครบเป็นวงปิด <u>หลักการ</u> คือข้อมูลถูกส่งต่อไปทีละเครื่องในทิศทางเดียว โดยแต่ละเครื่องทำหน้าที่ทวนสัญญาณให้แรงขึ้นด้วย และมักใช้วิธีส่งสัญลักษณ์อนุญาตที่เรียกว่า Token วนไปเรื่อยๆ ใครถือ Token อยู่จึงจะมีสิทธิ์ส่ง ทำให้ไม่มีการชนกันเลย <u>ข้อเสีย</u> คือถ้าจุดใดขาดจะกระทบทั้งวง จึงมักทำเป็นวงคู่สวนทางกันเพื่อสำรอง</li><li><b>Mesh</b> — ทุกเครื่องเชื่อมถึงกันหมด (Full Mesh) ทนทานต่อความเสียหายสูงสุด แต่ค่าใช้จ่ายสายสูงมาก — Topology ของ Lab 4-11 ที่ Router ต่อกันเป็นเส้นตรง (Partial Mesh แบบง่าย) ก็เป็นแนวคิดเดียวกันนี้ในระดับ WAN</li></ul><p>ถ้าเทียบเป็นตารางให้เห็นภาพ:</p><ul><li><b>Bus</b> — ประหยัดสายที่สุด แต่ถ้าสายหลักขาดจุดเดียวเครือข่ายล่มทั้งหมด และหาจุดเสียยาก ปัจจุบันเลิกใช้แล้ว</li><li><b>Star</b> — ใช้สายมากกว่า Bus แต่สายหนึ่งเส้นเสียกระทบแค่เครื่องเดียว หาจุดเสียง่าย จึงเป็นมาตรฐานของ LAN ทุกวันนี้ ข้อเสียคือถ้าอุปกรณ์กลางเสียก็ล่มทั้งวง</li><li><b>Ring</b> — ข้อมูลวิ่งไปในทิศทางเดียว ควบคุมการชนกันของข้อมูลได้ดี แต่ถ้าจุดใดจุดหนึ่งขาดก็กระทบทั้งวง จึงมักทำเป็นวงคู่เพื่อสำรอง</li><li><b>Mesh</b> — ทนทานที่สุดเพราะมีเส้นทางสำรองเสมอ แต่แพงที่สุด</li></ul><p>ที่ว่า Mesh แพง คำนวณได้จากสูตรจำนวนลิงก์แบบ Full Mesh คือ <b>n(n-1)/2</b> — เครือข่าย 4 จุดใช้ 6 เส้น แต่พอเพิ่มเป็น 10 จุดต้องใช้ถึง 45 เส้น จึงไม่มีใครทำ Full Mesh กับเครื่องผู้ใช้ทั่วไป แต่จะใช้เฉพาะระหว่าง Router แกนหลักที่ห้ามล่มเท่านั้น</p>'},
+  {id:7,type:'lesson',fig:'<svg viewBox="0 0 600 132"><rect x="2" y="30" width="104" height="76" rx="7" class="f-box"/><text x="54" y="56" class="f-tb" text-anchor="middle">Hub</text><text x="54" y="76" class="f-ts" text-anchor="middle">กระจายทุกพอร์ต</text><text x="54" y="95" class="f-ts" text-anchor="middle">Layer 1</text><rect x="122" y="30" width="104" height="76" rx="7" class="f-box-p"/><text x="174" y="56" class="f-tb" text-anchor="middle">Switch</text><text x="174" y="76" class="f-ts" text-anchor="middle">จำ MAC Address</text><text x="174" y="95" class="f-ts" text-anchor="middle">Layer 2</text><rect x="242" y="30" width="104" height="76" rx="7" class="f-box-a"/><text x="294" y="56" class="f-ta" text-anchor="middle">Router</text><text x="294" y="76" class="f-ts" text-anchor="middle">เชื่อมต่าง Network</text><text x="294" y="95" class="f-ts" text-anchor="middle">Layer 3</text><rect x="362" y="30" width="104" height="76" rx="7" class="f-box"/><text x="414" y="56" class="f-tb" text-anchor="middle">Access Point</text><text x="414" y="76" class="f-ts" text-anchor="middle">มีสาย ไป Wi-Fi</text><text x="414" y="95" class="f-ts" text-anchor="middle">Layer 2</text><rect x="482" y="30" width="104" height="76" rx="7" class="f-box"/><text x="534" y="56" class="f-tb" text-anchor="middle">Modem</text><text x="534" y="76" class="f-ts" text-anchor="middle">เชื่อมสาย ISP</text><text x="534" y="95" class="f-ts" text-anchor="middle">Layer 1-2</text><text x="294" y="124" class="f-ta" text-anchor="middle">อุปกรณ์หลักที่ฝึกตั้งค่าจริงใน Lab 4-11</text></svg>',figCap:'ยิ่ง Layer สูง อุปกรณ์ยิ่งตัดสินใจเส้นทางได้ฉลาดขึ้น — Hub กระจายทุกพอร์ต, Switch ส่งตรงพอร์ตปลายทาง, Router เลือกเส้นทางข้ามเครือข่าย',section:'B. Topology และอุปกรณ์เครือข่าย',title:'อุปกรณ์เครือข่ายพื้นฐาน',
+   body:'<ul><li><b>Hub</b> — คืออุปกรณ์ทวนสัญญาณหลายพอร์ต ทำงานที่ <b>Layer 1</b> <u>หลักการ</u> คือเมื่อได้รับสัญญาณไฟฟ้าเข้ามาที่พอร์ตใด จะขยายแล้วส่งออกทุกพอร์ตที่เหลือทันทีโดยไม่อ่านข้อมูลเลย จึงไม่รู้จัก MAC หรือ IP ใดๆ <u>ผลที่ตามมา</u> คือทุกเครื่องได้ยินข้อมูลของกันและกันหมด และถ้าสองเครื่องส่งพร้อมกันจะเกิดการชนกัน (Collision) ต้องรอสุ่มเวลาแล้วส่งใหม่ ยิ่งต่อเครื่องเยอะยิ่งช้า จึงเลิกใช้ไปแล้ว</li><li><b>Switch</b> — คืออุปกรณ์กระจายสัญญาณที่ทำงานที่ <b>Layer 2</b> โดยตัดสินใจจาก <b>MAC Address</b> <u>หลักการ</u> คือมีตารางชื่อ <b>MAC Address Table</b> เก็บว่า MAC ไหนอยู่พอร์ตไหน เมื่อเฟรมเข้ามาจะอ่าน MAC ปลายทางแล้วส่งออกเฉพาะพอร์ตนั้นพอร์ตเดียว (เรียกว่า Forwarding) ถ้ายังไม่รู้จักจึงจะส่งออกทุกพอร์ต (Flooding) แล้วจดจำไว้จากเฟรมที่ตอบกลับมา <u>ผลที่ตามมา</u> คือแต่ละพอร์ตเป็น Collision Domain ของตัวเอง จึงไม่มีการชนกันเลย แต่ทั้งตัวยังเป็น Broadcast Domain เดียว</li><li><b>Router</b> — คืออุปกรณ์หาเส้นทางที่ทำงานที่ <b>Layer 3</b> โดยตัดสินใจจาก <b>IP Address</b> <u>หลักการ</u> คือมี <b>Routing Table</b> เก็บว่าปลายทางแต่ละวงต้องส่งออกทางไหน เมื่อ Packet เข้ามาจะเทียบ IP ปลายทางกับตาราง เลือกเส้นทางที่ตรงที่สุด แล้วส่งต่อไปยัง Router ตัวถัดไป (เรียกว่า Next-hop) พร้อมสร้าง Header ชั้น 2 ขึ้นใหม่ทุกครั้ง <u>ผลที่ตามมา</u> คือ Router เป็นตัวแบ่ง Broadcast Domain เพราะจะไม่ส่ง Broadcast ข้ามไปวงอื่น — การใส่ข้อมูลลง Routing Table นี้เองคือสิ่งที่จะได้ทำทุก Lab ตั้งแต่ Ch.5 เป็นต้นไป</li><li><b>Access Point (AP)</b> — คืออุปกรณ์ที่ทำหน้าที่เป็นสะพานระหว่างเครือข่ายมีสายกับไร้สาย ทำงานที่ <b>Layer 2</b> <u>หลักการ</u> คือรับเฟรม Ethernet จากสายแล้วแปลงเป็นคลื่นวิทยุตามมาตรฐาน 802.11 และแปลงกลับในทางตรงข้าม โดยประกาศชื่อเครือข่าย (SSID) ให้อุปกรณ์มาเชื่อมต่อ <u>ข้อสังเกต</u> คือผู้ใช้ทุกเครื่องที่เกาะ AP เดียวกันต้องผลัดกันส่ง จึงแบ่งความเร็วกัน ต่างจาก Switch ที่ทุกพอร์ตได้ความเร็วเต็ม</li><li><b>Modem (Modulator-Demodulator)</b> — คืออุปกรณ์แปลงรูปแบบสัญญาณ <u>หลักการ</u> คือสัญญาณดิจิทัลแบบ 0 กับ 1 ที่คอมพิวเตอร์ใช้ ส่งผ่านสายของผู้ให้บริการโดยตรงไม่ได้ Modem จึงแปลงให้อยู่ในรูปที่สายนั้นรองรับ (Modulate) ตอนส่งออก และแปลงกลับ (Demodulate) ตอนรับเข้า <u>ตัวอย่าง</u> คือ Modem ของไฟเบอร์บ้านที่แปลงระหว่างสัญญาณแสงกับสัญญาณ Ethernet ปัจจุบันมักรวมอยู่ในกล่องเดียวกับ Router และ AP</li></ul><p>คำสำคัญที่ใช้แยกว่าอุปกรณ์แต่ละตัวต่างกันอย่างไรจริงๆ มีสองคำ:</p><ul><li><b>Collision Domain</b> — ขอบเขตที่ข้อมูลอาจชนกันได้ Hub ทำให้ทุกพอร์ตอยู่ใน Collision Domain เดียวกันหมด ยิ่งต่อเครื่องเยอะยิ่งชนกันบ่อยและช้าลง ส่วน Switch แยก Collision Domain ให้ทุกพอร์ต จึงไม่มีการชนกันเลย — นี่คือเหตุผลที่ Hub หายไปจากตลาด</li><li><b>Broadcast Domain</b> — ขอบเขตที่ข้อมูลแบบกระจาย (Broadcast) ไปถึง Switch ทั้งตัวเป็น Broadcast Domain เดียว แต่ <b>Router จะไม่ส่ง Broadcast ข้ามไป</b> จึงเป็นตัวแบ่ง Broadcast Domain</li></ul><p>ยังมีอุปกรณ์ที่พบบ่อยอีกสองชนิดคือ <b>Layer 3 Switch</b> ที่ทำงานเหมือน Switch แต่หาเส้นทางข้าม Network ได้ด้วย และ <b>Firewall</b> ที่ตรวจและกรองข้อมูลตามกฎความปลอดภัยที่ตั้งไว้</p>'},
+  {id:8,type:'quiz',section:'B. Topology และอุปกรณ์เครือข่าย',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'Topology และอุปกรณ์',section:'B. Topology และอุปกรณ์เครือข่าย',q:'อุปกรณ์ใดที่ใช้เชื่อมต่อระหว่างเครือข่ายที่ต่าง Network กัน (เช่น LAN หนึ่งไปยังอีก LAN หนึ่ง) และเป็นอุปกรณ์หลักที่จะได้ฝึกตั้งค่าในทุก Lab ถัดไป?',
+   opts:['Hub','Switch','Router','Access Point'],
+   ans:2,exp:'Router ทำหน้าที่เชื่อมต่อและส่งต่อข้อมูล (Routing) ระหว่างเครือข่ายที่ต่าง Network กัน ต่างจาก Switch ที่ทำงานภายใน Network เดียวกันเท่านั้น — Router คืออุปกรณ์หลักที่ทุก Lab ตั้งแต่ Ch.4 เป็นต้นไปจะให้ฝึกตั้งค่าโดยตรง'},
+
+  // ── หมวด C: สื่อกลางและความเร็วเครือข่าย ──,
+     {topic:'Topology และอุปกรณ์',q:'เพราะเหตุใด Switch จึงทำให้เครือข่ายเร็วกว่าการใช้ Hub อย่างชัดเจน?',
+      opts:['เพราะ Switch ขยายสัญญาณให้แรงกว่า Hub','เพราะ Switch รองรับสายที่ยาวกว่า Hub ได้','เพราะ Switch ส่งข้อมูลตรงไปยังพอร์ตปลายทางเท่านั้น แต่ละพอร์ตจึงไม่มีการชนกันของข้อมูล','เพราะ Switch แบ่ง Broadcast Domain ออกจากกันให้ทุกพอร์ต'],
+      ans:2,exp:'Hub ส่งสัญญาณออกทุกพอร์ตโดยไม่อ่านข้อมูล ทุกเครื่องจึงอยู่ใน Collision Domain เดียวกันและชนกันบ่อยเมื่อมีผู้ใช้เยอะ ส่วน Switch อ่าน MAC ปลายทางจากตารางแล้วส่งออกเฉพาะพอร์ตนั้น แต่ละพอร์ตจึงเป็น Collision Domain ของตัวเอง — ข้อสุดท้ายผิดเพราะการแบ่ง Broadcast Domain เป็นหน้าที่ของ Router ไม่ใช่ Switch'},
+     {topic:'Topology และอุปกรณ์',q:'Topology แบบใดที่เครือข่าย LAN สมัยใหม่ใช้กันเกือบทั้งหมด และเพราะเหตุใด?',
+      opts:['Star เพราะสายเส้นหนึ่งเสียกระทบเพียงเครื่องเดียว และเพิ่มถอดเครื่องได้โดยไม่รบกวนใคร','Bus เพราะประหยัดสายที่สุด','Ring เพราะข้อมูลวิ่งทางเดียวจึงไม่ชนกัน','Mesh เพราะมีเส้นทางสำรองเสมอ'],
+      ans:0,exp:'Star ชนะในทางปฏิบัติเพราะดูแลง่ายที่สุด สายขาดหนึ่งเส้นกระทบแค่เครื่องเดียวและหาจุดเสียได้ทันที ส่วน Bus แม้ประหยัดสายแต่ขาดจุดเดียวล่มทั้งวง Ring กระทบทั้งวงเช่นกันเมื่อจุดใดขาด และ Mesh แพงเกินไปเพราะจำนวนสายโตตามสูตร n(n-1)/2'}
+   ]},
+  {id:9,type:'lesson',fig:'<svg viewBox="0 0 660 230"><circle cx="165" cy="80" r="60" class="f-box"/><circle cx="180.2" cy="101.2" r="9.5" fill="var(--amber)" opacity="0.9"/><circle cx="192.2" cy="101.2" r="9.5" fill="var(--amber)" opacity="0.4"/><circle cx="137.8" cy="101.2" r="9.5" fill="var(--green)" opacity="0.9"/><circle cx="149.8" cy="101.2" r="9.5" fill="var(--green)" opacity="0.4"/><circle cx="137.8" cy="58.8" r="9.5" fill="var(--cyan)" opacity="0.9"/><circle cx="149.8" cy="58.8" r="9.5" fill="var(--cyan)" opacity="0.4"/><circle cx="180.2" cy="58.8" r="9.5" fill="var(--purple)" opacity="0.9"/><circle cx="192.2" cy="58.8" r="9.5" fill="var(--purple)" opacity="0.4"/><text x="165" y="172" class="f-tb" text-anchor="middle">UTP (Cat5e/Cat6)</text><text x="165" y="194" class="f-ts" text-anchor="middle">ทองแดง 4 คู่ตีเกลียว</text><text x="165" y="214" class="f-ts" text-anchor="middle">ราคาถูก ติดตั้งเองได้</text><line x1="330" y1="24" x2="330" y2="206" class="f-ln-d"/><circle cx="495" cy="80" r="60" class="f-box"/><circle cx="495" cy="80" r="40" fill="var(--cyan-wash)" stroke="var(--cyan)" stroke-width="1.2"/><circle cx="495" cy="80" r="16" fill="var(--cyan)" opacity="0.9"/><text x="495" y="46" class="f-ts" text-anchor="middle">Cladding</text><text x="495" y="112" class="f-ts" text-anchor="middle">Core</text><text x="495" y="172" class="f-tb" text-anchor="middle">Fiber Optic</text><text x="495" y="194" class="f-ts" text-anchor="middle">ส่งข้อมูลเป็นลำแสง</text><text x="495" y="214" class="f-ts" text-anchor="middle">เร็ว ไกล ไม่ถูกคลื่นรบกวน</text></svg>',figCap:'ภาคตัดขวางของสายทั้งสองชนิด — UTP ใช้การตีเกลียวลดสัญญาณรบกวน ส่วน Fiber ส่งข้อมูลเป็นลำแสงในแกนแก้ว',section:'C. สื่อกลางและความเร็วเครือข่าย',title:'สื่อกลางแบบมีสาย (Wired Media)',
+   body:'<ul><li><b>UTP (Unshielded Twisted Pair)</b> — สาย LAN ที่พบบ่อยที่สุด (เช่น Cat5e, Cat6) ราคาถูก ติดตั้งง่าย — รายละเอียดการเข้าหัวสายจะฝึกจริงใน Lab 2</li><li><b>Fiber Optic (สายใยแก้วนำแสง)</b> — คือสายที่มีแกนกลางเป็นแก้วหรือพลาสติกใสสำหรับให้แสงเดินทาง <u>หลักการ</u> คือแปลงข้อมูลเป็นจังหวะกะพริบของแสง แล้วอาศัยปรากฏการณ์สะท้อนกลับหมดภายใน คือชั้นหุ้มแกน (Cladding) มีคุณสมบัติหักเหแสงต่างจากแกน ทำให้แสงสะท้อนอยู่ภายในแกนตลอดโดยไม่รั่วออก <u>ข้อดี</u> คือเพราะส่งด้วยแสงไม่ใช่ไฟฟ้า จึงไม่ถูกสนามแม่เหล็กไฟฟ้ารบกวนเลย ส่งได้ไกลหลายสิบกิโลเมตรและรองรับความเร็วสูงมาก <u>ข้อเสีย</u> คือราคาสูง หักงอมากไม่ได้ และต้องใช้เครื่องมือเฉพาะในการต่อสาย</li></ul><p>รายละเอียดที่ต้องรู้เพิ่มเกี่ยวกับสายทองแดง:</p><ul><li><b>UTP กับ STP</b> — UTP ไม่มีฉนวนโลหะหุ้ม ราคาถูกและอ่อนตัว ส่วน STP มีชั้นโลหะหุ้มเพิ่มเพื่อกันสัญญาณรบกวน ใช้ในโรงงานที่มีมอเตอร์หรือเครื่องจักรเยอะ</li><li><b>ระดับ Category</b> — บอกคุณภาพของสายว่ารองรับความถี่ได้สูงแค่ไหน ยิ่งสูงยิ่งบิดเกลียวถี่และกันสัญญาณรบกวนได้ดีกว่า (ดูตารางเทียบด้านล่าง)</li><li><b>ข้อจำกัดระยะ 100 เมตร</b> — สาย UTP เดินได้ไกลสุด 100 เมตรต่อช่วง (แบ่งเป็นสายในผนัง 90 เมตร และสายสั้นหัวท้ายรวม 10 เมตร) ถ้าเกินกว่านี้สัญญาณจะอ่อนจนใช้งานไม่ได้ ต้องเปลี่ยนไปใช้ Fiber</li></ul><div class="lesson-table-wrap"><table class="lesson-table"><caption>เทียบระดับ Category ของสาย UTP</caption><thead><tr><th>Category</th><th>ความเร็วสูงสุด</th><th>ความถี่</th><th>ระยะที่ได้ความเร็วเต็ม</th><th>เหมาะกับ</th></tr></thead><tbody><tr><td>Cat5e</td><td>1 Gbps</td><td>100 MHz</td><td>100 เมตร</td><td>งานทั่วไป สำนักงานและบ้าน</td></tr><tr><td>Cat6</td><td>1 Gbps</td><td>250 MHz</td><td>100 เมตร</td><td>งานที่ต้องการเผื่ออนาคต</td></tr><tr><td>Cat6</td><td>10 Gbps</td><td>250 MHz</td><td>ไม่เกิน 55 เมตร</td><td>เชื่อม Switch ระยะสั้นในตู้ Rack</td></tr><tr><td>Cat6a</td><td>10 Gbps</td><td>500 MHz</td><td>100 เมตร</td><td>ศูนย์ข้อมูลและงานความเร็วสูง</td></tr></tbody></table></div><p>ส่วน Fiber ยังแยกได้อีกสองชนิดคือ <b>Multi-mode</b> แกนใหญ่ ราคาถูกกว่า ใช้ในระยะไม่เกินไม่กี่ร้อยเมตรภายในอาคาร และ <b>Single-mode</b> แกนเล็กมาก ใช้ได้ไกลหลายสิบกิโลเมตร สำหรับเชื่อมระหว่างเมือง</p>'},
+  {id:10,type:'lesson',section:'C. สื่อกลางและความเร็วเครือข่าย',title:'สื่อกลางไร้สาย (Wireless Media)',
+   body:'<p>ใช้คลื่นวิทยุในการส่งข้อมูล เช่น <b>Wi-Fi</b> (802.11), <b>Bluetooth</b>, และสัญญาณมือถือ (4G/5G) — สะดวกเพราะไม่ต้องเดินสาย แต่มักช้ากว่าและถูกรบกวนสัญญาณได้ง่ายกว่าสื่อแบบมีสาย</p><p>มาตรฐาน Wi-Fi ที่ใช้กันคือตระกูล <b>IEEE 802.11</b> ซึ่งพัฒนามาเรื่อยๆ ได้แก่ 802.11n (Wi-Fi 4), 802.11ac (Wi-Fi 5) และ 802.11ax (Wi-Fi 6) โดยรุ่นใหม่จะเร็วขึ้นและรองรับผู้ใช้พร้อมกันได้มากขึ้น</p><div class="lesson-table-wrap"><table class="lesson-table"><caption>เทียบย่านความถี่ของ Wi-Fi</caption><thead><tr><th>ย่านความถี่</th><th>ความเร็ว</th><th>ระยะทาง</th><th>ทะลุกำแพง</th><th>สัญญาณรบกวน</th><th>เหมาะกับ</th></tr></thead><tbody><tr><td>2.4 GHz</td><td>ช้ากว่า</td><td><span class="t-ok">ไกลกว่า</span></td><td><span class="t-ok">ดีกว่า</span></td><td><span class="t-no">เยอะ</span> เพราะไมโครเวฟ โทรศัพท์ไร้สาย และ Bluetooth ใช้ย่านเดียวกัน</td><td>พื้นที่กว้าง มีผนังหลายชั้น</td></tr><tr><td>5 GHz</td><td><span class="t-ok">เร็วกว่ามาก</span></td><td><span class="t-no">สั้นกว่า</span></td><td><span class="t-no">แย่กว่า</span></td><td><span class="t-ok">น้อย</span></td><td>ห้องเดียวกับ Access Point งานที่ต้องการความเร็ว</td></tr></tbody></table></div><p>เนื่องจากสัญญาณไร้สายลอยอยู่ในอากาศ ใครก็ดักฟังได้ จึงต้องเข้ารหัสเสมอ มาตรฐานที่ควรใช้คือ <b>WPA2</b> เป็นอย่างต่ำ หรือ <b>WPA3</b> ถ้าอุปกรณ์รองรับ — ส่วน WEP เป็นของเก่าที่ถูกเจาะได้ในไม่กี่นาที ห้ามใช้แล้ว</p>'},
+  {id:11,type:'lesson',fig:'<svg viewBox="0 0 600 192"><text x="255" y="22" class="f-ts" text-anchor="middle">Bandwidth = ความกว้างถนน (ความจุสูงสุดทางทฤษฎี เช่น 100 Mbps)</text><rect x="20" y="32" width="470" height="56" rx="6" class="f-box"/><rect x="28" y="46" width="454" height="28" rx="3" fill="var(--cyan-wash)"/><rect x="28" y="46" width="276" height="28" rx="3" fill="var(--cyan)" opacity="0.8"/><text x="166" y="65" class="f-ts" text-anchor="middle" fill="var(--btn-text)">Throughput = ที่ส่งได้จริง</text><text x="393" y="65" class="f-ts" text-anchor="middle">ส่วนที่ใช้ไม่ได้จริง</text><circle cx="34" cy="130" r="9" class="f-box-g"/><text x="34" y="154" class="f-ts" text-anchor="middle">ต้นทาง</text><circle cx="476" cy="130" r="9" class="f-box-g"/><text x="476" y="154" class="f-ts" text-anchor="middle">ปลายทาง</text><line x1="45" y1="130" x2="465" y2="130" class="f-ln-g"/><text x="255" y="122" class="f-tg" text-anchor="middle">Latency = เวลาที่ใช้เดินทาง (ms)</text><rect x="504" y="102" width="88" height="56" rx="5" class="f-box-g"/><text x="548" y="126" class="f-tm" text-anchor="middle">ping</text><text x="548" y="144" class="f-ts" text-anchor="middle">วัดค่านี้</text></svg>',figCap:'Throughput จะน้อยกว่า Bandwidth เสมอ ส่วน Latency คือค่าเวลาที่คำสั่ง ping รายงานออกมาโดยตรง',section:'C. สื่อกลางและความเร็วเครือข่าย',title:'Bandwidth, Throughput และ Latency',
+   body:'<ul><li><b>Bandwidth (แบนด์วิดท์)</b> — คือ <u>ความจุสูงสุดทางทฤษฎี</u> ที่เส้นทางหนึ่งรองรับได้ในหนึ่งวินาที มีหน่วยเป็น bps <u>หลักการ</u> คือค่านี้ถูกกำหนดตายตัวโดยตัวสื่อกลางและอุปกรณ์ปลายทางทั้งสองฝั่ง เช่น สาย Cat5e กับพอร์ต Gigabit ได้ 1 Gbps ไม่ว่าจะมีคนใช้งานอยู่กี่คนก็ตาม จึงเป็น <b>เพดาน</b> ที่ไม่มีทางเกิน เปรียบได้กับจำนวนช่องจราจรของถนน</li><li><b>Throughput (ทรูพุต)</b> — คือ <u>ปริมาณข้อมูลที่ส่งผ่านได้จริง</u> ในหนึ่งวินาที วัดจากการใช้งานจริง ไม่ใช่จากสเปก <u>หลักการ</u> คือค่านี้ต่ำกว่า Bandwidth เสมอ เพราะส่วนหนึ่งของความจุถูกใช้ไปกับ Header ของทุกชั้น (เรียกว่า Overhead) การส่งซ้ำเมื่อข้อมูลเสียหาย และการแบ่งใช้กับผู้ใช้คนอื่น <u>ข้อควรรู้</u> คือในทางปฏิบัติ Throughput ที่ได้ราว 70 ถึง 90 เปอร์เซ็นต์ของ Bandwidth ถือว่าปกติ</li><li><b>Latency (เวลาหน่วง)</b> — คือ <u>เวลาที่ข้อมูลใช้เดินทาง</u> จากต้นทางถึงปลายทาง มีหน่วยเป็นมิลลิวินาที (ms) <u>หลักการ</u> คือเกิดจากสี่ส่วนรวมกัน ได้แก่ เวลาที่ใช้ยิงข้อมูลออกสาย, เวลาที่สัญญาณวิ่งไปตามระยะทาง, เวลาที่รอคิวในอุปกรณ์แต่ละตัว และเวลาที่อุปกรณ์ใช้ประมวลผล <u>ข้อสำคัญ</u> คือ Latency ไม่ได้ขึ้นกับ Bandwidth เลย เน็ตเร็ว 1 Gbps ที่ต้องวิ่งไปเซิร์ฟเวอร์อีกซีกโลกก็ยังหน่วงสูงอยู่ดี — ค่าที่ <code>ping</code> รายงานในช่อง time คือค่าไปกลับ เรียกว่า <b>RTT (Round-Trip Time)</b> ซึ่งเท่ากับ Latency สองเที่ยวรวมกัน</li></ul><div class="lesson-table-wrap"><table class="lesson-table"><caption>สรุปเทียบสามคำที่สับสนบ่อยที่สุด</caption><thead><tr><th>ศัพท์</th><th>คืออะไร</th><th>หน่วย</th><th>ได้ค่ามาจากไหน</th><th>เปลี่ยนตามการใช้งานไหม</th></tr></thead><tbody><tr><td>Bandwidth</td><td>ความจุสูงสุดทางทฤษฎี</td><td>bps</td><td>สเปกของสายและพอร์ต</td><td><span class="t-no">ไม่เปลี่ยน</span> เป็นเพดานตายตัว</td></tr><tr><td>Throughput</td><td>ปริมาณที่ส่งผ่านได้จริง</td><td>bps</td><td>วัดจากการใช้งานจริง</td><td><span class="t-ok">เปลี่ยน</span> ตามจำนวนผู้ใช้และคุณภาพสาย</td></tr><tr><td>Latency</td><td>เวลาที่ข้อมูลใช้เดินทาง</td><td>ms</td><td>คำสั่ง <code>ping</code> ช่อง time</td><td><span class="t-ok">เปลี่ยน</span> ตามระยะทางและความหนาแน่น</td></tr></tbody></table></div><p>เรื่องหน่วยที่สับสนบ่อยที่สุด: ความเร็วเครือข่ายใช้หน่วย <b>bps (bit ต่อวินาที ตัว b เล็ก)</b> แต่ขนาดไฟล์ใช้หน่วย <b>Byte (ตัว B ใหญ่)</b> และ 1 Byte = 8 bit ดังนั้นเน็ต 100 Mbps จะโหลดไฟล์ได้จริงประมาณ 12.5 MB ต่อวินาทีเท่านั้น ไม่ใช่ 100 MB</p><p>นอกจากสามคำหลักแล้ว ยังมีอีกสองค่าที่ใช้วัดคุณภาพเครือข่าย:</p><ul><li><b>Jitter</b> — ความแกว่งของค่า Latency ถ้า ping แล้วเวลาเด้งไปมาระหว่าง 5 ms กับ 200 ms แปลว่า Jitter สูง ซึ่งทำให้เสียงและวิดีโอคอลกระตุกแม้ความเร็วจะสูงก็ตาม</li><li><b>Packet Loss</b> — สัดส่วนข้อมูลที่หายระหว่างทาง ผลลัพธ์ของ ping จะรายงานค่านี้ให้ตรงๆ ในบรรทัด Lost</li></ul><p>ตอนทำ Lab 4-11 ทุกครั้งที่ ping สำเร็จ ให้สังเกตบรรทัดสรุปท้ายผลลัพธ์ที่บอกทั้งจำนวน Packet ที่ส่ง รับ สูญหาย และค่า time ต่ำสุด สูงสุด เฉลี่ย — ทั้งหมดนั้นคือค่าที่อธิบายในบทนี้</p>'},
+  {id:12,type:'quiz',section:'C. สื่อกลางและความเร็วเครือข่าย',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'สื่อกลางและความเร็ว',section:'C. สื่อกลางและความเร็วเครือข่าย',q:'เวลาหน่วง (delay) ที่ข้อมูลใช้เดินทางจากต้นทางไปถึงปลายทาง ซึ่งเป็นค่าที่คำสั่ง ping วัดให้ดูโดยตรง เรียกว่าอะไร?',
+   opts:['Bandwidth','Throughput','Latency','Attenuation'],
+   ans:2,exp:'Latency คือเวลาหน่วงในการเดินทางของข้อมูล วัดเป็นหน่วย millisecond (ms) — เวลาที่เห็นในผลลัพธ์ของคำสั่ง ping (เช่น "time<1ms") คือค่า Latency นี้เอง ส่วน Bandwidth คือความจุสูงสุดทางทฤษฎี และ Throughput คือความเร็วที่ส่งได้จริง'},
+
+  // ── หมวด D: OSI Model และ TCP/IP Model ──,
+     {topic:'สื่อกลางและความเร็ว',q:'สาย UTP เดินได้ไกลที่สุดกี่เมตรต่อหนึ่งช่วง ก่อนที่สัญญาณจะอ่อนจนใช้งานไม่ได้?',
+      opts:['50 เมตร','100 เมตร','250 เมตร','500 เมตร'],
+      ans:1,exp:'มาตรฐานกำหนดไว้ที่ 100 เมตรต่อช่วง แบ่งเป็นสายถาวรในผนัง 90 เมตร และสายสั้นหัวท้ายรวมกันอีก 10 เมตร ถ้าต้องเดินไกลกว่านี้ต้องเปลี่ยนไปใช้ Fiber หรือเพิ่มอุปกรณ์ทวนสัญญาณกลางทาง'},
+     {topic:'สื่อกลางและความเร็ว',q:'เน็ตที่ระบุว่าเร็ว 100 Mbps แต่วัดจริงได้เพียง 80 Mbps อธิบายด้วยคำใดได้ถูกต้องที่สุด?',
+      opts:['Bandwidth คือ 80 Mbps ส่วน Throughput คือ 100 Mbps','Latency สูงเกินไปจึงทำให้ความเร็วลดลง','Bandwidth คือ 100 Mbps ส่วน Throughput คือ 80 Mbps','สายเสียจึงได้ความเร็วไม่เต็ม ต้องเปลี่ยนสายใหม่'],
+      ans:2,exp:'Bandwidth คือเพดานตามสเปกซึ่งคือ 100 Mbps ส่วน Throughput คือที่ส่งได้จริงซึ่งคือ 80 Mbps และจะต่ำกว่าเพดานเสมอ เพราะความจุส่วนหนึ่งถูกใช้ไปกับ Header ของทุกชั้นและการแบ่งใช้กับผู้อื่น — ได้ราว 70 ถึง 90 เปอร์เซ็นต์ถือว่าปกติ ไม่ได้แปลว่าสายเสีย'}
+   ]},
+  {id:13,type:'lesson',section:'D. OSI Model และ TCP/IP Model',title:'ทำไมต้องมี Model มาตรฐาน',
+   body:'<p>อุปกรณ์และซอฟต์แวร์เครือข่ายผลิตจากหลายบริษัททั่วโลก ถ้าไม่มี "มาตรฐานกลาง" ก็จะคุยกันไม่รู้เรื่อง จึงมีการแบ่งการทำงานของเครือข่ายออกเป็น <b>ชั้น (Layer)</b> แต่ละชั้นรับผิดชอบหน้าที่เฉพาะของตัวเอง ทำให้ผู้ผลิตต่างเจ้าออกแบบอุปกรณ์ให้ทำงานร่วมกันได้</p><p>ประโยชน์ที่จับต้องได้จริงของการแบ่งเป็นชั้น มี 3 ข้อ:</p><ul><li><b>แก้ปัญหาได้เป็นระบบ</b> — เมื่อเครือข่ายมีปัญหา จะไล่ตรวจทีละชั้นจากล่างขึ้นบนได้ คือดูสายก่อน (ชั้น 1) แล้วค่อยดู MAC (ชั้น 2) แล้วค่อยดู IP (ชั้น 3) ไม่ต้องเดาสุ่ม</li><li><b>เปลี่ยนชั้นหนึ่งไม่กระทบชั้นอื่น</b> — เปลี่ยนจากสาย UTP เป็น Fiber (ชั้น 1) โดยที่ IP Address (ชั้น 3) ไม่ต้องแก้อะไรเลย</li><li><b>ผู้ผลิตต่างเจ้าทำงานร่วมกันได้</b> — Router ยี่ห้อหนึ่งคุยกับ Switch อีกยี่ห้อได้ เพราะยึดมาตรฐานเดียวกัน</li></ul><p>ข้อควรรู้: OSI เป็นแบบจำลองเชิงทฤษฎีที่ใช้อธิบายและใช้สอบ ส่วน TCP/IP คือสิ่งที่อินเทอร์เน็ตใช้งานจริง — จึงต้องรู้ทั้งคู่ และรู้ว่าชั้นไหนของทั้งสองแบบตรงกัน</p>'},
+  {id:14,type:'lesson',fig:'<svg viewBox="0 0 600 266"><text x="34" y="20" class="f-ts">ใกล้ผู้ใช้</text><rect x="70" y="26" width="370" height="27" rx="4" class="f-box"/><text x="60" y="44" class="f-ts" text-anchor="end">7</text><text x="82" y="44" class="f-tb">Application</text><text x="430" y="44" class="f-ts" text-anchor="end">ผู้ใช้โต้ตอบ — เว็บ, อีเมล</text><rect x="70" y="58" width="370" height="27" rx="4" class="f-box"/><text x="60" y="76" class="f-ts" text-anchor="end">6</text><text x="82" y="76" class="f-tb">Presentation</text><text x="430" y="76" class="f-ts" text-anchor="end">แปลงรูปแบบ/เข้ารหัส</text><rect x="70" y="90" width="370" height="27" rx="4" class="f-box"/><text x="60" y="108" class="f-ts" text-anchor="end">5</text><text x="82" y="108" class="f-tb">Session</text><text x="430" y="108" class="f-ts" text-anchor="end">จัดการ session การเชื่อมต่อ</text><rect x="70" y="122" width="370" height="27" rx="4" class="f-box-p"/><text x="60" y="140" class="f-ts" text-anchor="end">4</text><text x="82" y="140" class="f-tb">Transport</text><text x="430" y="140" class="f-ts" text-anchor="end">TCP/UDP — Segment</text><rect x="70" y="154" width="370" height="27" rx="4" class="f-box-a"/><text x="60" y="172" class="f-ts" text-anchor="end">3</text><text x="82" y="172" class="f-tb">Network</text><text x="430" y="172" class="f-ts" text-anchor="end">IP Address — Packet</text><rect x="70" y="186" width="370" height="27" rx="4" class="f-box-g"/><text x="60" y="204" class="f-ts" text-anchor="end">2</text><text x="82" y="204" class="f-tb">Data Link</text><text x="430" y="204" class="f-ts" text-anchor="end">MAC Address — Frame</text><rect x="70" y="218" width="370" height="27" rx="4" class="f-box"/><text x="60" y="236" class="f-ts" text-anchor="end">1</text><text x="82" y="236" class="f-tb">Physical</text><text x="430" y="236" class="f-ts" text-anchor="end">สัญญาณไฟฟ้า/แสง — Bits</text><text x="450" y="172" class="f-ta">Router ทำงานชั้นนี้</text><text x="450" y="204" class="f-tg">Switch ทำงานชั้นนี้</text><text x="34" y="262" class="f-ts">ใกล้สายจริง</text></svg>',figCap:'ท่องจำจากบนลงล่างว่า All People Seem To Need Data Processing — ชั้นที่ใช้บ่อยที่สุดในวิชานี้คือ Layer 3 (Router) และ Layer 2 (Switch)',section:'D. OSI Model และ TCP/IP Model',title:'OSI Model (7 ชั้น)',
+   body:'<p>เรียงจากบนลงล่าง (มักท่องจำว่า "All People Seem To Need Data Processing"):</p><ul><li><b>7. Application (ชั้นประยุกต์)</b> — คือชั้นที่ให้บริการแก่โปรแกรมของผู้ใช้โดยตรง <u>หน้าที่</u> คือกำหนดรูปแบบคำขอและคำตอบระหว่างโปรแกรมสองฝั่ง เช่น เบราว์เซอร์ขอหน้าเว็บด้วย HTTP <u>หน่วยข้อมูล</u> เรียกว่า Data</li><li><b>6. Presentation (ชั้นนำเสนอ)</b> — คือชั้นที่จัดรูปแบบข้อมูลให้สองฝั่งเข้าใจตรงกัน <u>หน้าที่</u> มีสามอย่างคือแปลงรหัสตัวอักษร (เช่น UTF-8), บีบอัดข้อมูลให้เล็กลง และเข้ารหัสเพื่อความปลอดภัย ซึ่งก็คือชั้นที่ TLS ของ HTTPS ทำงาน</li><li><b>5. Session (ชั้นจัดการวาระ)</b> — คือชั้นที่ดูแลการสนทนาหนึ่งรอบตั้งแต่เริ่มจนจบ <u>หน้าที่</u> คือเปิดวาระ ดูแลให้ต่อเนื่อง และปิดเมื่อจบ รวมถึงตั้งจุดบันทึก (Checkpoint) ไว้ให้ส่งต่อได้ถ้าหลุดกลางคัน เช่น การดาวน์โหลดไฟล์ใหญ่ที่หยุดแล้วต่อได้</li><li><b>4. Transport (ชั้นขนส่ง)</b> — คือชั้นที่รับผิดชอบการส่งข้อมูลจากโปรแกรมต้นทางถึงโปรแกรมปลายทางให้ครบถ้วน <u>หน้าที่</u> คือซอยข้อมูลก้อนใหญ่เป็นชิ้นย่อย ใส่หมายเลขกำกับลำดับ และใช้ <b>Port Number</b> ระบุว่าเป็นของโปรแกรมใด <u>สองโพรโทคอลหลัก</u> คือ TCP ที่ยืนยันการรับและส่งซ้ำให้เมื่อข้อมูลหาย กับ UDP ที่ส่งทิ้งไปเลยไม่ยืนยัน แต่เร็วกว่าและใช้กับเสียงและวิดีโอ <u>หน่วยข้อมูล</u> เรียกว่า Segment</li><li><b>3. Network (ชั้นเครือข่าย)</b> — คือชั้นที่พาข้อมูลข้ามเครือข่ายไปให้ถึงปลายทาง <u>หน้าที่</u> คือกำหนดที่อยู่ด้วย <b>IP Address</b> และเลือกเส้นทาง (Routing) ว่าจะส่งออกทางไหน รวมถึงซอยข้อมูลใหม่ถ้าเส้นทางถัดไปรับขนาดไม่ไหว <u>อุปกรณ์</u> คือ Router <u>หน่วยข้อมูล</u> เรียกว่า Packet — ชั้นนี้คือหัวใจของวิชานี้ทั้งวิชา</li><li><b>2. Data Link (ชั้นเชื่อมโยงข้อมูล)</b> — คือชั้นที่ส่งข้อมูลระหว่างอุปกรณ์ที่อยู่ในวงเดียวกัน <u>หน้าที่</u> คือกำหนดที่อยู่ด้วย <b>MAC Address</b> ควบคุมว่าใครได้ส่งเมื่อไรเพื่อไม่ให้ชนกัน และตรวจว่าข้อมูลเสียหายระหว่างทางหรือไม่ด้วยรหัสตรวจสอบท้ายเฟรมที่เรียกว่า FCS <u>อุปกรณ์</u> คือ Switch <u>หน่วยข้อมูล</u> เรียกว่า Frame</li><li><b>1. Physical (ชั้นกายภาพ)</b> — คือชั้นที่แปลงข้อมูลเป็นสัญญาณจริงบนสื่อกลาง <u>หน้าที่</u> คือกำหนดว่าเลข 1 กับ 0 จะแทนด้วยอะไร เช่น ระดับแรงดันไฟฟ้าบนสายทองแดง จังหวะกะพริบของแสงในไฟเบอร์ หรือคลื่นวิทยุ รวมถึงกำหนดรูปร่างหัวต่อและจำนวนขาด้วย <u>หน่วยข้อมูล</u> เรียกว่า Bits</li></ul><p>ตัวอย่างสิ่งที่อยู่ในแต่ละชั้น ซึ่งช่วยให้จำได้ว่าชั้นไหนทำอะไร:</p><ul><li><b>ชั้น 7 Application</b> — HTTP, HTTPS, FTP, DNS, SMTP</li><li><b>ชั้น 4 Transport</b> — TCP (ส่งแบบรับประกันว่าถึงครบ ใช้กับเว็บและไฟล์) และ UDP (ส่งเร็วแต่ไม่รับประกัน ใช้กับเสียงและวิดีโอ)</li><li><b>ชั้น 3 Network</b> — IP, ICMP (โพรโทคอลที่คำสั่ง ping ใช้) และ Router</li><li><b>ชั้น 2 Data Link</b> — Ethernet, MAC Address, Switch</li><li><b>ชั้น 1 Physical</b> — สาย UTP, Fiber, หัว RJ45, สัญญาณไฟฟ้า</li></ul><div class="lesson-table-wrap"><table class="lesson-table"><caption>สรุป OSI ทั้ง 7 ชั้นในตารางเดียว</caption><thead><tr><th>ชั้น</th><th>หน้าที่หลัก</th><th>ที่อยู่ที่ใช้</th><th>ชื่อหน่วยข้อมูล (PDU)</th><th>ตัวอย่างโพรโทคอล / อุปกรณ์</th></tr></thead><tbody><tr><td>7 Application</td><td>ให้บริการแก่โปรแกรมผู้ใช้</td><td>-</td><td>Data</td><td>HTTP, HTTPS, FTP, DNS, SMTP</td></tr><tr><td>6 Presentation</td><td>แปลงรหัส บีบอัด เข้ารหัส</td><td>-</td><td>Data</td><td>TLS, JPEG, UTF-8</td></tr><tr><td>5 Session</td><td>เปิด ดูแล และปิดวาระการคุย</td><td>-</td><td>Data</td><td>NetBIOS, RPC</td></tr><tr><td>4 Transport</td><td>ส่งถึงโปรแกรมปลายทางให้ครบ</td><td>Port Number</td><td>Segment</td><td>TCP, UDP</td></tr><tr><td>3 Network</td><td>หาเส้นทางข้ามเครือข่าย</td><td>IP Address</td><td>Packet</td><td>IP, ICMP / <b>Router</b></td></tr><tr><td>2 Data Link</td><td>ส่งภายในวงเดียวกัน</td><td>MAC Address</td><td>Frame</td><td>Ethernet / <b>Switch</b></td></tr><tr><td>1 Physical</td><td>แปลงเป็นสัญญาณจริงบนสื่อกลาง</td><td>-</td><td>Bits</td><td>สาย UTP, Fiber, RJ45</td></tr></tbody></table></div><p>เทคนิคแก้ปัญหาที่ใช้จริงในงานคือไล่จากชั้นล่างขึ้นบนเสมอ เพราะปัญหาส่วนใหญ่อยู่ชั้นล่าง เช่น ping ไม่ผ่าน ให้เช็คก่อนว่าสายเสียบแน่นหรือไม่ ไฟที่พอร์ตติดหรือไม่ (ชั้น 1) ก่อนจะไปสงสัยว่า IP ผิด (ชั้น 3) — ใน Lab จำลองนี้ขั้นที่เทียบเท่ากันคือการสั่ง <code>no shutdown</code> เพื่อเปิด Interface ก่อนเสมอ</p>'},
+  {id:15,type:'lesson',fig:'<svg viewBox="0 0 600 268"><text x="150" y="18" class="f-tb" text-anchor="middle">OSI Model (7 ชั้น)</text><text x="440" y="18" class="f-tb" text-anchor="middle">TCP/IP Model (4 ชั้น)</text><rect x="40" y="30" width="220" height="27" rx="4" class="f-box"/><text x="150" y="48" class="f-t" text-anchor="middle">7. Application</text><rect x="40" y="63" width="220" height="27" rx="4" class="f-box"/><text x="150" y="81" class="f-t" text-anchor="middle">6. Presentation</text><rect x="40" y="96" width="220" height="27" rx="4" class="f-box"/><text x="150" y="114" class="f-t" text-anchor="middle">5. Session</text><rect x="40" y="129" width="220" height="27" rx="4" class="f-box"/><text x="150" y="147" class="f-t" text-anchor="middle">4. Transport</text><rect x="40" y="162" width="220" height="27" rx="4" class="f-box"/><text x="150" y="180" class="f-t" text-anchor="middle">3. Network</text><rect x="40" y="195" width="220" height="27" rx="4" class="f-box"/><text x="150" y="213" class="f-t" text-anchor="middle">2. Data Link</text><rect x="40" y="228" width="220" height="27" rx="4" class="f-box"/><text x="150" y="246" class="f-t" text-anchor="middle">1. Physical</text><rect x="340" y="30" width="200" height="93" rx="4" class="f-box-am"/><text x="440" y="81" class="f-tb" text-anchor="middle">Application</text><line x1="266" y1="76" x2="334" y2="76" class="f-ln-d"/><rect x="340" y="129" width="200" height="27" rx="4" class="f-box-p"/><text x="440" y="147" class="f-tb" text-anchor="middle">Transport</text><line x1="266" y1="142" x2="334" y2="142" class="f-ln-d"/><rect x="340" y="162" width="200" height="27" rx="4" class="f-box-a"/><text x="440" y="180" class="f-tb" text-anchor="middle">Internet</text><line x1="266" y1="175" x2="334" y2="175" class="f-ln-d"/><rect x="340" y="195" width="200" height="60" rx="4" class="f-box-g"/><text x="440" y="230" class="f-tb" text-anchor="middle">Network Access</text><line x1="266" y1="225" x2="334" y2="225" class="f-ln-d"/></svg>',figCap:'TCP/IP ยุบ 7 ชั้นของ OSI ให้เหลือ 4 ชั้น — Internet Layer ของ TCP/IP ตรงกับ Network Layer ของ OSI ซึ่งเป็นชั้นที่ Router ทำงาน',section:'D. OSI Model และ TCP/IP Model',title:'TCP/IP Model (4 ชั้น) เทียบกับ OSI',
+   body:'<p>TCP/IP Model เป็นโมเดลที่ใช้งานจริงบนอินเทอร์เน็ต ย่อรวม 7 ชั้นของ OSI ให้เหลือ 4 ชั้น:</p><ul><li><b>Application</b> — รวมงานของ OSI ชั้น 5, 6 และ 7 ไว้ชั้นเดียว <u>เหตุผลที่รวม</u> คือในทางปฏิบัติ โปรแกรมหนึ่งตัวมักจัดการทั้งรูปแบบคำขอ การเข้ารหัส และการดูแลวาระไปพร้อมกันอยู่แล้ว จึงไม่มีประโยชน์ที่จะแยกเป็นสามชั้น</li><li><b>Transport</b> — ตรงกับ OSI ชั้น 4 ทุกประการ <u>หน้าที่</u> คือส่งข้อมูลถึงโปรแกรมปลายทางด้วย Port Number โดยเลือกได้ระหว่าง TCP ที่เชื่อถือได้กับ UDP ที่เร็วกว่า</li><li><b>Internet</b> — ตรงกับ OSI ชั้น 3 <u>หน้าที่</u> คือกำหนด IP Address และหาเส้นทางข้ามเครือข่าย <u>ข้อสังเกตเรื่องชื่อ</u> คือชั้นนี้ชื่อ Internet ไม่ใช่ Network เพราะออกแบบมาเพื่อเชื่อม <b>หลายเครือข่ายที่ต่างชนิดกัน</b> เข้าด้วยกัน ซึ่งเป็นที่มาของคำว่า Internetworking และคำว่าอินเทอร์เน็ตในปัจจุบัน</li><li><b>Network Access (หรือ Link)</b> — รวมงานของ OSI ชั้น 1 กับ 2 <u>เหตุผลที่รวม</u> คือเทคโนโลยีหนึ่งอย่าง เช่น Ethernet หรือ Wi-Fi กำหนดทั้งรูปแบบเฟรมและวิธีส่งสัญญาณบนสายมาพร้อมกันในมาตรฐานเดียว จึงแยกจากกันไม่ได้ในทางปฏิบัติ</li></ul><p>ในการทำงานจริง วิศวกรเครือข่ายมักอ้างอิงเลขชั้นแบบ OSI (เช่น "ปัญหานี้เป็น Layer 3") แต่ใช้ Protocol ตาม TCP/IP Model จริง</p><p>โพรโทคอลหลักในแต่ละชั้นของ TCP/IP:</p><ul><li><b>Application</b> — HTTP, DNS, DHCP, FTP (รวมงานของ OSI ชั้น 5, 6, 7 ไว้ด้วยกัน)</li><li><b>Transport</b> — TCP และ UDP</li><li><b>Internet</b> — IP, ICMP, ARP — ชั้นนี้คือหัวใจของวิชานี้ เพราะเป็นชั้นที่ Router ทำงานและเป็นที่มาของคำว่า Routing</li><li><b>Network Access</b> — Ethernet และทุกอย่างที่เกี่ยวกับสายจริง (รวมงานของ OSI ชั้น 1 กับ 2)</li></ul><div class="lesson-table-wrap"><table class="lesson-table"><caption>จับคู่ชั้นของ TCP/IP กับ OSI</caption><thead><tr><th>TCP/IP (4 ชั้น)</th><th>ตรงกับ OSI ชั้น</th><th>หน้าที่</th><th>โพรโทคอลหลัก</th></tr></thead><tbody><tr><td>Application</td><td>7, 6, 5</td><td>ให้บริการโปรแกรม จัดรูปแบบ เข้ารหัส และดูแลวาระ</td><td>HTTP, DNS, DHCP, FTP</td></tr><tr><td>Transport</td><td>4</td><td>ส่งถึงโปรแกรมปลายทางด้วย Port Number</td><td>TCP, UDP</td></tr><tr><td>Internet</td><td>3</td><td>กำหนด IP และหาเส้นทางข้ามเครือข่าย</td><td>IP, ICMP, ARP</td></tr><tr><td>Network Access</td><td>2, 1</td><td>สร้างเฟรมและส่งสัญญาณจริงบนสาย</td><td>Ethernet, Wi-Fi</td></tr></tbody></table></div><p>เหตุผลที่โลกจริงใช้ TCP/IP แทนที่จะใช้ OSI ทั้งที่ OSI ออกแบบมาครบกว่า ก็เพราะ TCP/IP ถูกนำไปใช้งานจริงและแจกฟรีพร้อมระบบปฏิบัติการ Unix ก่อน จนแพร่หลายไปทั่วเสียแล้วเมื่อ OSI เสร็จ — OSI จึงเหลือบทบาทเป็นภาษากลางที่วิศวกรใช้อธิบายปัญหา เช่นการพูดว่า "ปัญหาอยู่ที่ Layer 2" ซึ่งทุกคนเข้าใจตรงกันทันที</p>'},
+  {id:16,type:'lesson',fig:'<svg viewBox="0 0 600 218"><rect x="100" y="8" width="400" height="32" rx="4" class="f-box-am"/><text x="112" y="29" class="f-tb">Data</text><text x="488" y="29" class="f-ts" text-anchor="end">Application Layer</text><rect x="80" y="48" width="440" height="32" rx="4" class="f-box-p"/><text x="92" y="69" class="f-tb">Segment</text><text x="508" y="69" class="f-ts" text-anchor="end">Transport Layer</text><text x="154" y="69" class="f-ts">+ Header ของชั้นนี้</text><rect x="60" y="88" width="480" height="32" rx="4" class="f-box-a"/><text x="72" y="109" class="f-tb">Packet</text><text x="528" y="109" class="f-ts" text-anchor="end">Network Layer</text><text x="134" y="109" class="f-ts">+ Header ของชั้นนี้</text><rect x="40" y="128" width="520" height="32" rx="4" class="f-box-g"/><text x="52" y="149" class="f-tb">Frame</text><text x="548" y="149" class="f-ts" text-anchor="end">Data Link Layer</text><text x="114" y="149" class="f-ts">+ Header ของชั้นนี้</text><rect x="20" y="168" width="560" height="32" rx="4" class="f-box"/><text x="32" y="189" class="f-tb">Bits</text><text x="568" y="189" class="f-ts" text-anchor="end">Physical Layer</text><text x="94" y="189" class="f-ts">+ Header ของชั้นนี้</text><text x="300" y="208" class="f-ts" text-anchor="middle">ฝั่งส่งห่อ Header เพิ่มทีละชั้นลงล่าง — ฝั่งรับแกะออกทีละชั้นขึ้นบน (Decapsulation)</text></svg>',figCap:'ทุกชั้นที่ข้อมูลผ่านลงไปจะถูกห่อ Header ของชั้นนั้นเพิ่มเข้ามา และเปลี่ยนชื่อหน่วยข้อมูล (PDU) ไปตามชั้น',section:'D. OSI Model และ TCP/IP Model',title:'Encapsulation: ข้อมูลถูกห่อหุ้มอย่างไรก่อนส่ง',
+   body:'<p>เมื่อส่งข้อมูล แต่ละชั้นจะ "ห่อหุ้ม" ข้อมูลด้วย Header ของตัวเอง เรียกกระบวนการนี้ว่า <b>Encapsulation</b> — ชื่อหน่วยข้อมูล (PDU) จะเปลี่ยนไปตามชั้น:</p><p>ชื่อเรียกหน่วยข้อมูลในแต่ละชั้นมีศัพท์เฉพาะว่า <b>PDU (Protocol Data Unit)</b> ซึ่งเปลี่ยนชื่อไปตามชั้นที่ข้อมูลอยู่ ดังนี้:</p><ul><li><b>Application → Data</b> — ข้อมูลดิบจากโปรแกรม ยังไม่มี Header ของเครือข่ายใดๆ เช่น ข้อความคำขอหน้าเว็บ</li><li><b>Transport → Segment</b> — ห่อด้วย TCP Header ซึ่งบรรจุ Port ต้นทางและปลายทาง หมายเลขลำดับ และค่าสำหรับยืนยันการรับ <u>ผู้ที่อ่าน Header นี้</u> คือเครื่องปลายทางเท่านั้น อุปกรณ์ระหว่างทางไม่ยุ่งด้วย (ถ้าใช้ UDP จะเรียกว่า Datagram แทน)</li><li><b>Network → Packet</b> — ห่อด้วย IP Header ซึ่งบรรจุ IP ต้นทางและปลายทาง และค่า <b>TTL</b> ที่ลดลงหนึ่งทุกครั้งที่ผ่าน Router เพื่อกันไม่ให้ข้อมูลวนไม่รู้จบ <u>ผู้ที่อ่าน Header นี้</u> คือ Router ทุกตัวตลอดเส้นทาง</li><li><b>Data Link → Frame</b> — ห่อด้วย MAC Header ที่หัว และ <b>FCS</b> ที่ท้ายไว้ตรวจความเสียหาย <u>ผู้ที่อ่าน Header นี้</u> คือ Switch และอุปกรณ์ในวงเดียวกันเท่านั้น และ Header ชุดนี้ <b>ถูกสร้างใหม่ทุกครั้งที่ข้ามไปวงถัดไป</b></li><li><b>Physical → Bits</b> — ไม่มีการห่อเพิ่มแล้ว แต่แปลงทั้งเฟรมเป็นสัญญาณไฟฟ้า แสง หรือคลื่นวิทยุตามสื่อกลางที่ใช้</li></ul><p>ฝั่งผู้รับจะทำย้อนกลับเรียกว่า <b>De-encapsulation</b> แกะ Header ออกทีละชั้นจนเหลือ Data เดิม</p><p>ตัวอย่างของจริงว่าแต่ละชั้นเติมอะไรลงไปบ้าง เมื่อเราเปิดเว็บหนึ่งหน้า:</p><ul><li><b>Transport</b> เติมหมายเลขพอร์ต เช่น ปลายทางพอร์ต 443 สำหรับ HTTPS เพื่อบอกว่าข้อมูลนี้ของโปรแกรมไหน</li><li><b>Network</b> เติม IP ต้นทางและ IP ปลายทาง เพื่อให้ Router รู้ว่าต้องส่งต่อไปทางไหน</li><li><b>Data Link</b> เติม MAC ต้นทางและ MAC ปลายทาง เพื่อส่งต่อภายในวงเดียวกัน พร้อมเติม FCS ท้ายเฟรมไว้ตรวจว่าข้อมูลเสียหายระหว่างทางหรือไม่</li></ul><div class="lesson-table-wrap"><table class="lesson-table"><caption>ใครเติม Header อะไร และใครเป็นคนอ่าน</caption><thead><tr><th>ชั้น</th><th>ชื่อ PDU</th><th>Header ที่เติมเข้าไป</th><th>ใครเป็นคนอ่าน</th><th>คงอยู่ตลอดเส้นทางไหม</th></tr></thead><tbody><tr><td>Transport</td><td>Segment</td><td>Port ต้นทาง/ปลายทาง, ลำดับ</td><td>เครื่องปลายทางเท่านั้น</td><td><span class="t-ok">คงอยู่</span></td></tr><tr><td>Network</td><td>Packet</td><td>IP ต้นทาง/ปลายทาง, TTL</td><td>Router ทุกตัวตลอดทาง</td><td><span class="t-ok">คงอยู่</span> (TTL ลดลงทีละ 1)</td></tr><tr><td>Data Link</td><td>Frame</td><td>MAC ต้นทาง/ปลายทาง, FCS</td><td>Switch ในวงเดียวกัน</td><td><span class="t-no">สร้างใหม่</span> ทุกครั้งที่ข้ามวง</td></tr><tr><td>Physical</td><td>Bits</td><td>ไม่มี แปลงเป็นสัญญาณ</td><td>อุปกรณ์ที่ปลายสาย</td><td>-</td></tr></tbody></table></div><p>จุดสำคัญที่ต้องเข้าใจคือ ทุกครั้งที่ Packet ผ่าน Router หนึ่งตัว <b>Header ชั้น 2 จะถูกถอดทิ้งและสร้างใหม่</b> เพราะ MAC ใช้ได้แค่ภายในวงเดียวกัน แต่ <b>Header ชั้น 3 ที่มี IP ต้นทางปลายทางจะคงเดิมตลอดเส้นทาง</b> — นี่คือเหตุผลที่ IP ใช้ระบุปลายทางข้ามโลกได้ แต่ MAC ใช้ไม่ได้</p><p>อีกค่าที่ควรรู้คือ <b>MTU</b> ซึ่งปกติเท่ากับ 1500 Byte คือขนาดใหญ่สุดที่เฟรมหนึ่งบรรทุกได้ ถ้าข้อมูลใหญ่กว่านี้ต้องถูกซอยออกเป็นหลายชิ้นก่อนส่ง</p>'},
+  {id:17,type:'quiz',section:'D. OSI Model และ TCP/IP Model',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'OSI และ TCP/IP',section:'D. OSI Model และ TCP/IP Model',q:'IP Address ทำงานอยู่ใน Layer ใดของ OSI Model และหน่วยข้อมูล (PDU) ในชั้นนั้นเรียกว่าอะไร?',
+   opts:['Layer 2 (Data Link) — เรียกว่า Frame','Layer 3 (Network) — เรียกว่า Packet','Layer 4 (Transport) — เรียกว่า Segment','Layer 7 (Application) — เรียกว่า Data'],
+   ans:1,exp:'IP Address ทำงานที่ Layer 3 (Network) ของ OSI Model ซึ่งเป็นชั้นที่ Router ใช้ในการตัดสินใจเส้นทาง (Routing) — หน่วยข้อมูลในชั้นนี้เรียกว่า Packet (ห่อหุ้มด้วย IP Header ที่มี Source/Destination IP)'},
+     {topic:'OSI และ TCP/IP',q:'ชั้น Internet ของ TCP/IP Model ตรงกับชั้นใดของ OSI Model?',
+      opts:['Layer 2 Data Link','Layer 4 Transport','Layer 3 Network','Layer 7 Application'],
+      ans:2,exp:'TCP/IP ชั้น Internet ทำหน้าที่เดียวกับ OSI ชั้น 3 Network คือกำหนด IP Address และหาเส้นทางข้ามเครือข่าย ที่ใช้ชื่อว่า Internet เพราะออกแบบมาเพื่อเชื่อมหลายเครือข่ายต่างชนิดเข้าด้วยกัน ซึ่งเป็นที่มาของคำว่า Internetworking'},
+     {topic:'OSI และ TCP/IP',q:'เมื่อ Packet เดินทางผ่าน Router หลายตัว ข้อมูลส่วนใดถูกสร้างใหม่ทุกครั้งที่ข้ามไปเครือข่ายถัดไป?',
+      opts:['IP Address ต้นทางและปลายทาง','MAC Address ต้นทางและปลายทาง','หมายเลข Port ของ TCP','เนื้อข้อมูลของผู้ใช้'],
+      ans:1,exp:'MAC Address ใช้ได้เฉพาะภายในวงเดียวกัน Router จึงถอด Header ชั้น 2 ทิ้งแล้วสร้างใหม่ทุกครั้งที่ส่งต่อ ส่วน IP ต้นทางและปลายทางคงเดิมตลอดเส้นทาง เพราะเป็นตัวบอกปลายทางสุดท้าย — นี่คือเหตุผลที่ IP ใช้ระบุปลายทางข้ามโลกได้แต่ MAC ทำไม่ได้'}
+   ]},
+  {id:18,type:'checkpoint',section:'D. OSI Model และ TCP/IP Model',q:'จับคู่ชั้น (Layer) กับหน่วยข้อมูล (PDU) ที่ถูกต้อง',
+   dragdrop:true,
+   pairs:[
+     {left:'Transport Layer',right:'Segment'},
+     {left:'Network Layer',right:'Packet'},
+     {left:'Data Link Layer',right:'Frame'},
+     {left:'Physical Layer',right:'Bits'}
+   ]},
+
+  // ── หมวด E: IP Address เบื้องต้น ──
+  {id:19,type:'lesson',fig:'<svg viewBox="0 0 600 178"><rect x="20" y="34" width="130" height="44" rx="5" class="f-box-a"/><text x="85" y="64" class="f-ta" text-anchor="middle" font-size="19">192</text><rect x="20" y="88" width="130" height="30" rx="4" class="f-box"/><text x="85" y="108" class="f-tm" text-anchor="middle">11000000</text><text x="85" y="136" class="f-ts" text-anchor="middle">Octet 1 = 8 bits</text><text x="159" y="64" class="f-tb" text-anchor="middle">.</text><rect x="166" y="34" width="130" height="44" rx="5" class="f-box-a"/><text x="231" y="64" class="f-ta" text-anchor="middle" font-size="19">168</text><rect x="166" y="88" width="130" height="30" rx="4" class="f-box"/><text x="231" y="108" class="f-tm" text-anchor="middle">10101000</text><text x="231" y="136" class="f-ts" text-anchor="middle">Octet 2 = 8 bits</text><text x="305" y="64" class="f-tb" text-anchor="middle">.</text><rect x="312" y="34" width="130" height="44" rx="5" class="f-box-a"/><text x="377" y="64" class="f-ta" text-anchor="middle" font-size="19">1</text><rect x="312" y="88" width="130" height="30" rx="4" class="f-box"/><text x="377" y="108" class="f-tm" text-anchor="middle">00000001</text><text x="377" y="136" class="f-ts" text-anchor="middle">Octet 3 = 8 bits</text><text x="451" y="64" class="f-tb" text-anchor="middle">.</text><rect x="458" y="34" width="130" height="44" rx="5" class="f-box-a"/><text x="523" y="64" class="f-ta" text-anchor="middle" font-size="19">10</text><rect x="458" y="88" width="130" height="30" rx="4" class="f-box"/><text x="523" y="108" class="f-tm" text-anchor="middle">00001010</text><text x="523" y="136" class="f-ts" text-anchor="middle">Octet 4 = 8 bits</text><text x="300" y="22" class="f-ts" text-anchor="middle">เขียนแบบ Dotted Decimal เพื่อให้คนอ่านง่าย</text><text x="300" y="162" class="f-ts" text-anchor="middle">เครื่องมองเป็นเลขฐานสอง 32 bits ทั้งหมด (4 x 8 = 32)</text></svg>',figCap:'IPv4 หนึ่งหมายเลขคือเลขฐานสอง 32 bits แบ่งเขียนเป็น 4 ท่อน ท่อนละ 8 bits จึงมีค่าได้ 0-255 ต่อท่อน',section:'E. IP Address เบื้องต้น',title:'IP Address คืออะไร',
+   body:'<p>IP Address คือ "ที่อยู่" ของอุปกรณ์บนเครือข่าย ทำงานที่ Layer 3 ใช้ระบุตัวตนและหาเส้นทางส่งข้อมูล เช่น <code>192.168.1.10</code> — เขียนในรูปแบบ IPv4 คือตัวเลข 4 ชุด (Octet) คั่นด้วยจุด แต่ละชุดมีค่าได้ 0-255</p><p>รายละเอียดการคำนวณ Subnet Mask และการแบ่งเครือข่ายย่อยจะเรียนเจาะลึกใน <b>Lab 3</b> ต่อไป</p><p>IP Address หนึ่งหมายเลขไม่ได้เป็นก้อนเดียว แต่แบ่งออกเป็นสองส่วนเสมอ คือ <b>ส่วน Network</b> ที่บอกว่าอยู่เครือข่ายไหน และ <b>ส่วน Host</b> ที่บอกว่าเป็นเครื่องไหนในเครือข่ายนั้น โดยมี Subnet Mask เป็นตัวกำหนดว่าแบ่งตรงไหน (จะเรียนละเอียดใน Lab 3)</p><p>เปรียบเทียบกับที่อยู่บ้าน ส่วน Network คือชื่อหมู่บ้าน ส่วน Host คือเลขที่บ้าน — บ้านเลขที่ 10 มีได้หลายหมู่บ้าน แต่ในหมู่บ้านเดียวกันจะมีเลขที่ 10 ซ้ำกันไม่ได้</p><p>ทีนี้มาดูว่าเลขฐานสิบกลายเป็นฐานสองได้อย่างไร หลักคิดคือ <b>แต่ละตำแหน่งใน 8 bit มีค่าประจำตัวของมันเอง</b> ไล่จากซ้ายไปขวาคือ 128, 64, 32, 16, 8, 4, 2 และ 1 ถ้าตำแหน่งไหนเป็นเลข 1 แปลว่า <u>นับค่านั้นเข้ามา</u> ถ้าเป็น 0 แปลว่าไม่นับ แล้วเอาที่นับได้ทั้งหมดมาบวกกัน</p><div class="lesson-table-wrap"><table class="lesson-table bit-table"><caption>ลองอ่านตารางนี้: ช่องฟ้าคือ bit ที่เป็น 1 ซึ่งถูกนับเข้ามา</caption><thead><tr><th>เลขฐานสิบ</th><th>128</th><th>64</th><th>32</th><th>16</th><th>8</th><th>4</th><th>2</th><th>1</th><th>บวกกันได้</th></tr></thead><tbody><tr><td>192</td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td>128 + 64</td></tr><tr><td>168</td><td class="bit-on"><span>1</span></td><td class="bit-off"><span>0</span></td><td class="bit-on"><span>1</span></td><td class="bit-off"><span>0</span></td><td class="bit-on"><span>1</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td>128 + 32 + 8</td></tr><tr><td>255</td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td>128 + 64 + 32 + 16 + 8 + 4 + 2 + 1</td></tr><tr><td>10</td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-on"><span>1</span></td><td class="bit-off"><span>0</span></td><td class="bit-on"><span>1</span></td><td class="bit-off"><span>0</span></td><td>8 + 2</td></tr></tbody></table></div><p>เช่นบรรทัดแรก เลข <b>192</b> มี bit เป็น 1 อยู่สองตำแหน่งแรก จึงเท่ากับ 128 + 64 = 192 และเขียนเป็น <code>11000000</code></p><p>ค่าประจำหลักชุดนี้จะใช้ตลอดทั้ง Lab 3 ควรจำให้ขึ้นใจ</p><p>ปัจจุบันยังมี <b>IPv6</b> ที่ใช้ 128 bit เขียนเป็นเลขฐานสิบหก เกิดขึ้นเพราะ IPv4 ที่มีราว 4.3 พันล้านหมายเลขไม่พอใช้แล้ว แต่ในวิชานี้จะเน้น IPv4 เป็นหลัก</p>'},
+  {id:20,type:'lesson',fig:'<svg viewBox="0 0 660 232"><rect x="14" y="30" width="286" height="176" rx="8" class="f-box" stroke-dasharray="5 4"/><text x="157" y="52" class="f-tb" text-anchor="middle">เครือข่ายภายใน (Private)</text><rect x="60" y="68" width="52" height="38" rx="4" class="f-box"/><rect x="67" y="74" width="38" height="24" rx="2" class="f-box-a"/><text x="86" y="122" class="f-ts" text-anchor="middle">192.168.1.10</text><rect x="190" y="68" width="52" height="38" rx="4" class="f-box"/><rect x="197" y="74" width="38" height="24" rx="2" class="f-box-a"/><text x="216" y="122" class="f-ts" text-anchor="middle">192.168.1.11</text><text x="157" y="158" class="f-ts" text-anchor="middle">หมายเลขชุดนี้ใช้ซ้ำกันได้ทุกบ้าน</text><text x="157" y="182" class="f-ts" text-anchor="middle">และออกอินเทอร์เน็ตตรงๆ ไม่ได้</text><line x1="300" y1="112" x2="330" y2="112" class="f-ln"/><rect x="330" y="88" width="104" height="50" rx="6" class="f-box-a"/><text x="382" y="110" class="f-ta" text-anchor="middle">Router</text><text x="382" y="128" class="f-ts" text-anchor="middle">แปลงด้วย NAT</text><line x1="434" y1="112" x2="464" y2="112" class="f-ln-g"/><ellipse cx="560" cy="112" rx="92" ry="52" class="f-box-g"/><text x="560" y="106" class="f-tg" text-anchor="middle">Internet</text><text x="560" y="128" class="f-tm" text-anchor="middle">203.150.20.5</text><text x="560" y="188" class="f-ts" text-anchor="middle">Public IP ไม่ซ้ำกันทั้งโลก</text></svg>',figCap:'ทุกเครื่องข้างในใช้ Private IP เมื่อจะออกอินเทอร์เน็ต Router จะแปลงให้เหลือ Public IP เพียงหมายเลขเดียวด้วย NAT',section:'E. IP Address เบื้องต้น',title:'Public IP vs Private IP',
+   body:'<ul><li><b>Public IP</b> — คือหมายเลขที่ <u>ใช้ได้จริงบนอินเทอร์เน็ตและไม่ซ้ำกันทั้งโลก</u> <u>หลักการ</u> คือมีองค์กรกลางชื่อ IANA เป็นผู้ถือหมายเลขทั้งหมดแล้วแบ่งให้หน่วยงานประจำภูมิภาค ซึ่งแบ่งต่อให้ ISP และ ISP แบ่งให้ลูกค้าอีกทอดหนึ่ง จึงรับประกันได้ว่าไม่มีใครถือซ้ำกัน — เพราะมีจำกัดและมีค่าใช้จ่าย องค์กรทั่วไปจึงได้มาเพียงไม่กี่หมายเลข</li><li><b>Private IP</b> — คือหมายเลขในช่วงที่ถูกกันไว้ให้ใช้ <u>ภายในเครือข่ายของตัวเองเท่านั้น</u> ตามมาตรฐาน RFC1918 <u>หลักการ</u> คือ Router บนอินเทอร์เน็ตถูกตั้งให้ทิ้ง Packet ที่มีต้นทางหรือปลายทางเป็นช่วงเหล่านี้เสมอ หมายเลขชุดเดียวกันจึงถูกใช้ซ้ำได้พร้อมกันในทุกบ้านทุกองค์กรทั่วโลกโดยไม่ชนกัน <u>เหตุผลที่ต้องมี</u> คือหมายเลข IPv4 ทั้งโลกมีราว 4.3 พันล้านซึ่งไม่พอกับจำนวนอุปกรณ์จริง การให้เครื่องภายในใช้ Private IP แล้วค่อยแปลงตอนออกอินเทอร์เน็ตจึงช่วยประหยัดหมายเลขได้มหาศาล — ช่วง IP ที่กันไว้ใช้แบบ Private ได้แก่ <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code> (สังเกตว่า Lab 4-11 ทุกตัวใช้ช่วง IP เหล่านี้ทั้งหมด)</li></ul><p>ช่วง Private IP ตามมาตรฐาน RFC1918 มีเพียง 3 ช่วงเท่านั้น ควรจำให้ได้ทั้งหมด:</p><div class="lesson-table-wrap"><table class="lesson-table"><caption>ช่วง Private IP ทั้งสามช่วงตาม RFC1918</caption><thead><tr><th>ช่วง</th><th>เขียนเต็ม</th><th>จำนวนหมายเลข</th><th>มักใช้กับ</th></tr></thead><tbody><tr><td><code>10.0.0.0/8</code></td><td>10.0.0.0 ถึง 10.255.255.255</td><td>ราว 16.7 ล้าน</td><td>องค์กรขนาดใหญ่มาก</td></tr><tr><td><code>172.16.0.0/12</code></td><td>172.16.0.0 ถึง 172.31.255.255</td><td>ราว 1 ล้าน</td><td>องค์กรขนาดกลาง <b>ระวังข้อสอบ</b> เพราะ 172.32 ขึ้นไปไม่ใช่ Private แล้ว</td></tr><tr><td><code>192.168.0.0/16</code></td><td>192.168.0.0 ถึง 192.168.255.255</td><td>65,536</td><td>บ้าน ห้อง Lab และทุก Lab ในวิชานี้</td></tr></tbody></table></div><p>สิ่งที่ทำให้ Private IP ออกอินเทอร์เน็ตได้คือ <b>NAT (Network Address Translation)</b> ซึ่งทำงานอยู่บน Router โดยแปลง IP ต้นทางจาก Private เป็น Public ก่อนส่งออก และจำไว้ว่าขากลับต้องส่งคืนให้เครื่องไหน ในทางปฏิบัติมักใช้แบบ <b>PAT</b> ที่แยกด้วยหมายเลขพอร์ตเพิ่มด้วย ทำให้ทั้งบ้านใช้ Public IP ร่วมกันเพียงหมายเลขเดียวได้</p><p>มีอีกช่วงที่เจอบ่อยเวลาแก้ปัญหาคือ <b>169.254.x.x</b> ซึ่งเครื่องจะตั้งให้ตัวเองอัตโนมัติเมื่อขอ IP จาก DHCP ไม่สำเร็จ — ถ้าเห็นเลขชุดนี้ใน ipconfig แปลว่าเครื่องติดต่อ DHCP ไม่ได้ ไม่ใช่ว่าตั้งค่าถูกแล้ว</p>'},
+  {id:21,type:'lesson',fig:'<svg viewBox="0 0 600 170"><text x="300" y="22" class="f-ts" text-anchor="middle">MAC Address = 48 bits เขียนเป็นเลขฐานสิบหก 6 ท่อน</text><rect x="60" y="34" width="230" height="46" rx="5" class="f-box-p"/><text x="175" y="64" class="f-tm" text-anchor="middle" font-size="15">00:1A:2B</text><rect x="310" y="34" width="230" height="46" rx="5" class="f-box"/><text x="425" y="64" class="f-tm" text-anchor="middle" font-size="15">3C:4D:5E</text><text x="175" y="102" class="f-tb" text-anchor="middle">OUI — 24 bits แรก</text><text x="175" y="120" class="f-ts" text-anchor="middle">รหัสผู้ผลิต (Cisco, Intel, ...)</text><text x="425" y="102" class="f-tb" text-anchor="middle">24 bits หลัง</text><text x="425" y="120" class="f-ts" text-anchor="middle">หมายเลขเครื่องจากโรงงาน</text><text x="300" y="152" class="f-ts" text-anchor="middle">ติดมากับการ์ดเครือข่าย (NIC) ตั้งแต่โรงงาน ย้ายเครือข่ายก็ไม่เปลี่ยน — ต่างจาก IP Address ที่ตั้งใหม่ได้</text></svg>',figCap:'MAC Address ใช้ระบุเครื่องภายใน Network เดียวกัน (Layer 2) ส่วน IP Address ใช้ระบุเครื่องข้าม Network (Layer 3)',section:'E. IP Address เบื้องต้น',title:'MAC Address เบื้องต้น',
+   body:'<p>MAC Address คือที่อยู่ทาง Physical ของ Network Interface Card (NIC) ทำงานที่ Layer 2 เป็นเลขฐาน 16 จำนวน 6 คู่ (เช่น <code>00:1A:2B:3C:4D:5E</code>) ถูกกำหนดมาจากโรงงานและไม่ซ้ำกันทั่วโลก — ต่างจาก IP Address ที่เปลี่ยนแปลงได้ตามเครือข่ายที่เชื่อมต่อ</p><p>MAC Address เขียนได้หลายรูปแบบแต่หมายถึงสิ่งเดียวกัน เช่น <code>00:1A:2B:3C:4D:5E</code>, <code>00-1A-2B-3C-4D-5E</code> หรือแบบที่ Cisco IOS ใช้คือ <code>001a.2b3c.4d5e</code> — รูปแบบสุดท้ายนี้คือสิ่งที่จะเห็นเวลาสั่งดูตาราง MAC บนอุปกรณ์จริง</p><p>คำถามที่ตามมาคือ ถ้าเรารู้แค่ IP ปลายทาง แล้วจะรู้ MAC ของมันได้อย่างไร คำตอบคือโพรโทคอล <b>ARP</b> ซึ่งจะตะโกนถามทั้งวงว่า "ใครถือ IP นี้อยู่ ช่วยตอบ MAC มาด้วย" แล้วเครื่องที่ถือ IP นั้นจะตอบกลับมา จากนั้นจึงส่งข้อมูลจริงได้</p><p>การตะโกนถามทั้งวงนี้ใช้ MAC ปลายทางพิเศษคือ <b>FF:FF:FF:FF:FF:FF</b> ซึ่งหมายถึงทุกเครื่องในวงเดียวกัน เรียกว่า Broadcast — และอย่างที่เรียนไปแล้วว่า Router จะไม่ส่ง Broadcast ข้ามไปวงอื่น</p><div class="lesson-table-wrap"><table class="lesson-table"><caption>MAC Address เทียบกับ IP Address</caption><thead><tr><th>หัวข้อ</th><th>MAC Address</th><th>IP Address</th></tr></thead><tbody><tr><td>ทำงานที่ชั้น</td><td>Layer 2 (Data Link)</td><td>Layer 3 (Network)</td></tr><tr><td>ขนาด</td><td>48 bit เลขฐานสิบหก 6 ท่อน</td><td>32 bit เลขฐานสิบ 4 ท่อน (IPv4)</td></tr><tr><td>ใครกำหนด</td><td>ผู้ผลิตกำหนดมาจากโรงงาน</td><td>ผู้ดูแลระบบตั้งเอง หรือได้จาก DHCP</td></tr><tr><td>เปลี่ยนได้ไหม</td><td><span class="t-no">ติดถาวรกับการ์ดเครือข่าย</span></td><td><span class="t-ok">เปลี่ยนได้ตลอด</span></td></tr><tr><td>ขอบเขตการใช้</td><td>ภายในวงเดียวกันเท่านั้น</td><td>ข้ามวงและข้ามโลกได้</td></tr><tr><td>ใครใช้ค่านี้</td><td>Switch</td><td>Router</td></tr></tbody></table></div><p>การส่งข้อมูลจริงหนึ่งครั้งใช้ทั้งสองอย่างพร้อมกันเสมอ คือใช้ IP บอกว่าปลายทางสุดท้ายอยู่ที่ไหน และใช้ MAC บอกว่าก้าวถัดไปต้องส่งให้ใคร</p>'},
+  {id:22,type:'quiz',section:'E. IP Address เบื้องต้น',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'IP และ MAC Address',section:'E. IP Address เบื้องต้น',q:'ข้อใดคือช่วง IP Address ที่ถูกกันไว้สำหรับใช้งานแบบ Private (ใช้ภายในเครือข่ายส่วนตัว)?',
+   opts:['169.254.0.0/16','203.0.113.0/24','172.16.0.0/12','100.64.0.0/10'],
+   ans:2,exp:'ช่วง Private ตามมาตรฐาน RFC1918 มีสามช่วงคือ 10.0.0.0/8, 172.16.0.0/12 และ 192.168.0.0/16 เท่านั้น — ส่วน 169.254.0.0/16 คือ APIPA ที่เครื่องตั้งเองเมื่อขอ DHCP ไม่ได้, 203.0.113.0/24 เป็นช่วงสงวนไว้ใช้ในเอกสารตัวอย่าง และ 100.64.0.0/10 เป็นช่วงที่ ISP ใช้ทำ CGNAT ทั้งสามช่วงนี้ไม่ใช่ Private IP ตาม RFC1918'},
+
+  // ── สรุปท้ายบท: ทบทวนทุกหัวข้อที่เรียนมา ──,
+     {topic:'IP และ MAC Address',q:'เหตุใดเครื่องในบ้านที่ใช้ IP 192.168.1.10 จึงเปิดเว็บบนอินเทอร์เน็ตได้ ทั้งที่เป็น Private IP?',
+      opts:['เพราะ ISP อนุญาตให้ Private IP บางช่วงออกอินเทอร์เน็ตได้','เพราะ Router แปลง IP ต้นทางให้เป็น Public IP ก่อนส่งออกด้วย NAT','เพราะ 192.168.1.10 เป็น Public IP อยู่แล้ว','เพราะ DNS แปลง Private IP ให้เป็น Public IP ให้อัตโนมัติ'],
+      ans:1,exp:'Router บนอินเทอร์เน็ตถูกตั้งให้ทิ้ง Packet ที่มี Private IP เสมอ สิ่งที่ทำให้ออกเน็ตได้คือ NAT บน Router ที่แปลง IP ต้นทางเป็น Public IP ก่อนส่งออกและจำไว้ว่าขากลับต้องคืนให้เครื่องไหน — DNS ทำหน้าที่แปลงชื่อเว็บเป็น IP ไม่เกี่ยวกับเรื่องนี้'},
+     {topic:'IP และ MAC Address',q:'ข้อใดอธิบายความต่างระหว่าง MAC Address กับ IP Address ได้ถูกต้อง?',
+      opts:['MAC เปลี่ยนได้ตลอดเวลา ส่วน IP ติดมากับอุปกรณ์ถาวร','MAC ใช้ข้ามเครือข่ายได้ ส่วน IP ใช้ได้เฉพาะในวงเดียวกัน','ทั้งสองอย่างทำงานที่ Layer 3 เหมือนกัน','MAC ติดมากับการ์ดเครือข่ายจากโรงงานและใช้ภายในวงเดียวกัน ส่วน IP ตั้งใหม่ได้และใช้ข้ามวง'],
+      ans:3,exp:'MAC เป็นเลข 48 bit ที่ผู้ผลิตกำหนดมาจากโรงงาน ใช้ส่งข้อมูลภายในวงเดียวกันที่ Layer 2 ส่วน IP เป็นค่าที่ตั้งเองหรือได้จาก DHCP ใช้ส่งข้ามวงที่ Layer 3 — ตัวเลือกอื่นสลับคุณสมบัติของทั้งสองอย่างกัน'}
+   ]},
+  {id:100,type:'review',final:true,fromQuizzes:true,section:'สรุปท้ายบท',
+   title:'ทบทวนรวมท้ายบท Ch.1',
+   intro:'ตอบให้ครบทุกข้อแล้วกดตรวจคำตอบครั้งเดียว — ข้อที่ยังไม่ถูกจะถูกคืนกลับมาให้แก้ใหม่',
+   pool:[
+  {topic:'เครือข่ายเบื้องต้น',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'ข้อใดเรียงลำดับเครือข่ายจากขนาดเล็กไปใหญ่ได้ถูกต้อง?',
+   opts:['WAN → MAN → LAN → PAN','PAN → LAN → MAN → WAN','LAN → PAN → WAN → MAN','MAN → WAN → PAN → LAN'],
+   ans:1,exp:'เรียงจากเล็กไปใหญ่: PAN (ส่วนตัวมาก เช่น Bluetooth) → LAN (ในอาคาร/องค์กรเดียว) → MAN (ระดับเมือง) → WAN (ระยะไกลข้ามเมือง/ประเทศ)'},
+  {topic:'Topology และอุปกรณ์',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'อุปกรณ์ใดทำงานโดยจดจำ MAC Address เพื่อส่งข้อมูลตรงไปยังพอร์ตปลายทางภายใน Network เดียวกัน (ไม่ใช่กระจายทุกพอร์ตแบบ Hub)?',
+   opts:['Switch','Router','Modem','Access Point'],
+   ans:0,exp:'Switch ทำงานที่ Layer 2 โดยจดจำ MAC Address ของอุปกรณ์แต่ละพอร์ต ทำให้ส่งข้อมูลตรงไปยังปลายทางได้โดยไม่ต้องกระจายสัญญาณไปทุกพอร์ตเหมือน Hub'},
+  {topic:'สื่อกลางและความเร็ว',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'ถ้า ping ไปยังปลายทางแล้วได้ค่า time สูงผิดปกติ แต่ไม่มี Packet สูญหายเลย ข้อใดสรุปได้ตรงที่สุด?',
+   opts:['เส้นทางมีความหน่วงสูง แต่ข้อมูลยังส่งถึงกันได้ครบทุก Packet','ปลายทางปิดเครื่องอยู่','Subnet Mask ของฝั่งใดฝั่งหนึ่งตั้งค่าผิด','สายสัญญาณขาดที่จุดใดจุดหนึ่งของเส้นทาง'],
+   ans:0,exp:'ค่า time ที่ ping รายงานคือ Latency เมื่อค่าสูงแต่ไม่มี Packet สูญหาย แปลว่าเส้นทางยังเชื่อมถึงกันครบ เพียงแต่ใช้เวลาเดินทางนาน — ถ้าปลายทางปิดเครื่อง สายขาด หรือ Subnet Mask ผิด ผลลัพธ์จะเป็น Request timed out หรือ Destination host unreachable ไม่ใช่ค่า time ที่สูงขึ้น'},
+  {topic:'IP และ MAC Address',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'IP Address ในช่วง 192.168.1.0 ที่ใช้ในบ้านหรือห้อง Lab ทั่วไป จัดเป็น IP ประเภทใด?',
+   opts:['Public IP','Private IP','Loopback IP','Broadcast IP'],
+   ans:1,exp:'192.168.0.0/16 เป็นหนึ่งในช่วง Private IP ที่กันไว้ใช้ภายในเครือข่ายส่วนตัว ไม่สามารถเชื่อมต่อตรงกับอินเทอร์เน็ตได้ (ต้องผ่าน NAT ที่ Router ก่อน)'},
+  {topic:'OSI และ TCP/IP',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'จับคู่แนวคิดกับความหมายให้ถูกต้อง (ทบทวนรวมทุกหัวข้อ)',
+   dragdrop:true,
+   pairs:[
+     {left:'Router',right:'เชื่อมต่อระหว่างเครือข่ายที่ต่าง Network กัน'},
+     {left:'Star Topology',right:'ทุกเครื่องต่อเข้า Switch ตรงกลาง เป็นที่นิยมที่สุด'},
+     {left:'Bandwidth',right:'ความจุสูงสุดทางทฤษฎีของเส้นทางเครือข่าย'},
+     {left:'Private IP',right:'ใช้ภายในเครือข่ายส่วนตัว ซ้ำกันได้ระหว่างหลายเครือข่าย'}
+   ]}
+   ]}
+];
+
+var APP={step:1,maxStep:1,stepsDone:[],wrong:0,chatHistory:[],wrongSinceSave:0,lastSaveTime:Date.now()};
+var isBusy=false;
+var ddSel=null;
+var ddMap={};
+
+function toggleMobilePanel(which){
+  var panel=document.getElementById(which==='sidebar'?'sidebarPanel':'chatPanel');
+  var other=document.getElementById(which==='sidebar'?'chatPanel':'sidebarPanel');
+  other.classList.remove('mobile-open');
+  panel.classList.toggle('mobile-open');
+  document.getElementById('mobileBackdrop').classList.toggle('show',panel.classList.contains('mobile-open'));
+}
+function closeMobilePanels(){
+  document.getElementById('sidebarPanel').classList.remove('mobile-open');
+  document.getElementById('chatPanel').classList.remove('mobile-open');
+  document.getElementById('mobileBackdrop').classList.remove('show');
+}
+
+window.onload=function(){
+  renderSidebar();renderStep();
+  checkHealth();setInterval(checkHealth,30000);
+  addMsg('ai','สวัสดีครับ! Ch.1 Course Introduction\n\nLab นี้จะพาทบทวนพื้นฐานเครือข่ายทั้งหมดก่อนเริ่มลงมือปฏิบัติจริงใน Lab ถัดไป — อ่านเนื้อหาแต่ละหัวข้อ กด "ถัดไป" เพื่อไปต่อ และตอบคำถาม Checkpoint ให้ถูกก่อนถึงจะไปหัวข้อถัดไปได้ครับ รวม 27 steps (มีคำถามทบทวนรวมท้ายบทอีก 5 ข้อ)');
+  loadSavedProgress();
+};
+
+window.addEventListener('pagehide',function(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var elapsedSec=Math.round((Date.now()-APP.lastSaveTime)/1000);
+  if(elapsedSec<1&&APP.wrongSinceSave===0)return;
+  var payload=JSON.stringify({
+    studentId:studentId, labId:1, courseId:'netlab1',
+    stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
+    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:false
+  });
+  if(navigator.sendBeacon){
+    navigator.sendBeacon(API_BASE+'/progress',new Blob([payload],{type:'application/json'}));
+  }
+});
+
+function rvCount(s){
+  if(s.items&&s.items.length)return s.items.length;
+  var seen={},n=0;
+  (typeof rvPoolOf==='function'?rvPoolOf(s):(s.pool||[])).forEach(function(it){
+    var t=it.topic||'อื่นๆ';
+    if(!seen[t]){seen[t]=1;n++;}
+  });
+  return n;
+}
+
+function renderSidebar(){
+  var cont=document.getElementById('sidebarSteps');
+  cont.innerHTML='';
+  var lastSec='';
+  STEPS.forEach(function(s,i){
+    if(s.section!==lastSec){
+      var lbl=document.createElement('div');lbl.className='sb-label';lbl.textContent=s.section;cont.appendChild(lbl);lastSec=s.section;
+    }
+    var done=APP.stepsDone.indexOf(s.id)>=0;
+    var cur=i===APP.step-1;
+    var div=document.createElement('div');
+    div.className='step-item'+(done?' done':'')+(cur?' active':'');
+    var rawTitle=(s.type==='lesson'||s.type==='review'||s.type==='quiz')?s.title:(s.q||s.title||'');
+    var title=rawTitle.length>44?rawTitle.slice(0,44)+'…':rawTitle;
+    div.innerHTML='<div class="step-num '+(done?'sn-done':cur?'sn-active':'sn-next')+'">'+(done?'✓':(i+1))+'</div>'
+      +'<div class="step-info"><div class="step-title">'+title+'</div><div class="step-sub">'+(s.type==='lesson'?'เนื้อหา':(s.type==='review'?(rvCount(s)+' ข้อ รวมทุกหัวข้อ'):s.type==='quiz'?(rvCount(s)+' ข้อ ทดสอบความรู้'):(s.final?'ทบทวนท้ายบท':'Checkpoint')))+'</div></div>';
+    if(i+1<=APP.maxStep&&!isLockedInTest()){
+      div.classList.add('clickable');
+      div.onclick=(function(idx){return function(){goToStep(idx+1);};})(i);
+    }
+    cont.appendChild(div);
+  });
+  var pct=Math.round(APP.stepsDone.length/STEPS.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progText').textContent=pct+'%';
+}
+
+function updateStepChip(){
+  document.getElementById('stepChip').textContent='Step '+APP.step+'/'+STEPS.length;
+}
+
+
+/* ── ทบทวนรวมท้ายบท: ทุกข้ออยู่หน้าเดียว ตรวจพร้อมกันครั้งเดียว ── */
+var rvSel={},rvDD={},rvDDsel={},rvWire={},rvWireSel={};
+
+function rvIsMcq(it){return !!(it.opts&&it.opts.length);}
+
+function rvShuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+/* ดึงคำถามจากคลัง โดยสุ่มมาหัวข้อละ 1 ข้อ แล้วสลับลำดับการถาม */
+function rvPoolOf(s){
+  var pool=(s.pool||[]).slice();
+  if(s.fromQuizzes){
+    STEPS.forEach(function(st){
+      if(st.type==='quiz'&&st.items)pool=pool.concat(st.items);
+    });
+  }
+  return pool;
+}
+
+function rvDraw(s){
+  var all=rvPoolOf(s);
+  if(!all.length)return s.items||[];
+  var byTopic={},order=[];
+  all.forEach(function(it){
+    var t=it.topic||'อื่นๆ';
+    if(!byTopic[t]){byTopic[t]=[];order.push(t);}
+    byTopic[t].push(it);
+  });
+  var picked=order.map(function(t){
+    var bucket=byTopic[t];
+    return bucket[Math.floor(Math.random()*bucket.length)];
+  });
+  return rvShuffle(picked);
+}
+
+function renderReview(s){
+  var wrap=document.getElementById('lessonWrap');
+  rvSel={};rvDD={};rvDDsel={};rvWire={};rvWireSel={};
+  if((s.pool||s.fromQuizzes)&&!(s.items&&s.items.length&&s.drawn))
+    { s.items=rvDraw(s); s.drawn=true; }
+  var html='<div class="lesson-section-label">'+s.section+'</div>'
+    +'<div class="lesson-card"><div class="lesson-title">'+s.title+'</div>'
+    +'<div class="review-intro">'+s.intro+'</div>';
+  s.items.forEach(function(it,k){html+=rvItemHtml(it,k);});
+  if(s.pool||s.fromQuizzes)html+='<div class="review-note"><b>ชุดคำถามสุ่ม</b> — สุ่มมาหัวข้อละ 1 ข้อจากทุกเรื่องที่เรียนในบทนี้ ถ้าทำ Lab ซ้ำจะได้คำถามชุดใหม่</div>';
+  html+='<div class="checkpoint-fb" id="cpFb"></div>'
+    +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitReview()">ตรวจคำตอบทั้งหมด</button></div>'
+    +'</div>';
+  wrap.innerHTML=html;
+}
+
+function rvItemHtml(it,k){
+  var h='<div class="rv-item" id="rvitem_'+k+'"><div class="rv-head">'
+    +'<div class="rv-num">ข้อ '+(k+1)+'</div><div class="rv-mark" id="rvmark_'+k+'"></div></div>'
+    +'<div class="rv-q">'+(it.q||it.title||'')+'</div>';
+  if(rvIsMcq(it)){
+    h+='<div class="q-opts">'+it.opts.map(function(o,oi){
+      return '<div class="q-opt" id="rvopt_'+k+'_'+oi+'" onclick="rvPick('+k+','+oi+')"><div class="q-dot"></div><span>'+o+'</span></div>';
+    }).join('')+'</div>'
+     +'<div class="q-explain" id="rvexp_'+k+'">'+(it.exp||'')+'</div>';
+  }else if(it.dragdrop){
+    var sh=it.pairs.slice().sort(function(){return Math.random()-.5;});
+    h+='<div class="dd-hint">ลากข้อความจากซ้ายไปวางบนคู่ที่ถูกต้องทางขวา (หรือคลิกเลือกแล้วคลิกช่องปลายทาง)</div>'
+     +'<div class="dd-grid"><div><div class="dd-col-label">คลิกเลือก</div><div class="dd-items">'
+     +sh.map(function(p,pi){
+        var lv=p.left.replace(/'/g,"\\'");
+        return '<div class="dd-item" id="rvddi_'+k+'_'+pi+'" draggable="true"'
+          +' ondragstart="rvDragStart(event,'+k+','+pi+',\''+lv+'\')" ondragend="dragEndDD(event)"'
+          +' onclick="rvDdPick('+k+','+pi+',\''+lv+'\')">'+p.left+'</div>';
+      }).join('')
+     +'</div></div><div><div class="dd-col-label">จับคู่กับ</div><div class="dd-items">'
+     +it.pairs.map(function(p,ti){
+        return '<div class="dd-target" id="rvddt_'+k+'_'+ti+'" data-answer="'+p.right+'"'
+          +' ondragover="rvDragOver(event,'+k+','+ti+')" ondragleave="rvDragLeave('+k+','+ti+')"'
+          +' ondrop="rvDrop(event,'+k+','+ti+')" onclick="rvDdDrop('+k+','+ti+')">'+p.right+'</div>';
+      }).join('')
+     +'</div></div></div>';
+  }else if(it.type==='wireorder'){
+    var shuffled=Object.keys(WIRE_COLORS).sort(function(){return Math.random()-.5;});
+    h+='<div class="wire-scenario">'+(it.scenario||'')+'</div>'
+     +'<div class="wire-pins">'+it.order.map(function(_,i){
+        return '<div class="wire-pin"><div class="wire-pin-num">Pin '+(i+1)+'</div>'
+          +'<div class="wire-pin-slot" id="rvpin_'+k+'_'+i+'" onclick="rvWirePlace('+k+','+i+')"></div></div>';
+      }).join('')+'</div>'
+     +'<div class="wire-pool-label">คลิกเลือกสี</div>'
+     +'<div class="wire-pool">'+shuffled.map(function(key){
+        return '<div style="position:relative"><div class="wire-chip '+WIRE_COLORS[key].cls+'" id="rvchip_'+k+'_'+key+'" onclick="rvWirePick('+k+',\''+key+'\')"></div>'
+          +'<div class="wire-chip-label">'+WIRE_COLORS[key].label+'</div></div>';
+      }).join('')+'</div>';
+  }else if(it.type==='calc'){
+    h+='<div class="calc-scenario">'+(it.scenario||'')+'</div>'
+     +'<div class="calc-fields">'+it.fields.map(function(f){
+        return '<div class="calc-field"><label class="calc-field-label">'+f.label+'</label>'
+          +'<input class="calc-field-input" id="rvcalc_'+k+'_'+f.key+'" autocomplete="off" spellcheck="false" placeholder="'+f.placeholder+'"/>'
+          +'<div class="calc-field-ans" id="rvcalcans_'+k+'_'+f.key+'"></div></div>';
+      }).join('')+'</div>';
+  }
+  return h+'</div>';
+}
+
+function rvPick(k,oi){
+  var card=document.getElementById('rvitem_'+k);
+  if(card.dataset.locked)return;
+  for(var i=0;i<20;i++){var el=document.getElementById('rvopt_'+k+'_'+i);if(el)el.classList.remove('selected');}
+  document.getElementById('rvopt_'+k+'_'+oi).classList.add('selected');
+  rvSel[k]=oi;
+}
+
+function rvDdPick(k,pi,value){
+  var item=document.getElementById('rvddi_'+k+'_'+pi);
+  if(item.classList.contains('matched'))return;
+  var cur=rvDDsel[k];
+  if(cur&&cur.pi===pi){item.classList.remove('sel');rvDDsel[k]=null;return;}
+  if(cur){var old=document.getElementById('rvddi_'+k+'_'+cur.pi);if(old)old.classList.remove('sel');}
+  item.classList.add('sel');
+  rvDDsel[k]={pi:pi,value:value};
+}
+
+function rvDdDrop(k,ti){
+  var sel=rvDDsel[k];
+  if(!sel)return;
+  rvDD[k]=rvDD[k]||{};
+  Object.keys(rvDD[k]).forEach(function(t){
+    if(rvDD[k][t].pi===sel.pi){
+      var old=document.getElementById('rvddt_'+k+'_'+t);
+      if(old&&!old.classList.contains('filled')){old.classList.remove('pending');old.textContent=old.dataset.answer;}
+      delete rvDD[k][t];
+    }
+  });
+  var target=document.getElementById('rvddt_'+k+'_'+ti);
+  if(target.classList.contains('filled'))return;
+  rvDD[k][ti]={pi:sel.pi,lv:sel.value};
+  var item=document.getElementById('rvddi_'+k+'_'+sel.pi);
+  if(item){item.classList.remove('sel');item.classList.add('pending');}
+  target.classList.add('pending');target.textContent='→ '+sel.value;
+  rvDDsel[k]=null;
+}
+
+function rvDragStart(ev,k,pi,value){
+  var item=document.getElementById('rvddi_'+k+'_'+pi);
+  if(item.classList.contains('matched')){ev.preventDefault();return;}
+  rvDDsel[k]={pi:pi,value:value};
+  item.classList.add('dragging');
+  try{ev.dataTransfer.setData('text/plain',String(pi));ev.dataTransfer.effectAllowed='move';}catch(e){}
+}
+function rvDragOver(ev,k,ti){
+  if(!rvDDsel[k])return;
+  ev.preventDefault();
+  var t=document.getElementById('rvddt_'+k+'_'+ti);
+  if(t&&!t.classList.contains('filled'))t.classList.add('drag-over');
+}
+function rvDragLeave(k,ti){var t=document.getElementById('rvddt_'+k+'_'+ti);if(t)t.classList.remove('drag-over');}
+function rvDrop(ev,k,ti){ev.preventDefault();rvDragLeave(k,ti);rvDdDrop(k,ti);}
+
+function rvWirePick(k,key){
+  var chip=document.getElementById('rvchip_'+k+'_'+key);
+  if(chip.classList.contains('placed'))return;
+  if(rvWireSel[k]){var old=document.getElementById('rvchip_'+k+'_'+rvWireSel[k]);if(old)old.classList.remove('sel');}
+  chip.classList.add('sel');
+  rvWireSel[k]=key;
+}
+
+function rvWirePlace(k,i){
+  var slot=document.getElementById('rvpin_'+k+'_'+i);
+  rvWire[k]=rvWire[k]||{};
+  if(rvWire[k][i]!=null&&!rvWireSel[k]){
+    var oldChip=document.getElementById('rvchip_'+k+'_'+rvWire[k][i]);
+    if(oldChip)oldChip.classList.remove('placed');
+    delete rvWire[k][i];
+    slot.className='wire-pin-slot';slot.innerHTML='';
+    return;
+  }
+  if(!rvWireSel[k])return;
+  if(rvWire[k][i]!=null){
+    var prev=document.getElementById('rvchip_'+k+'_'+rvWire[k][i]);
+    if(prev)prev.classList.remove('placed');
+  }
+  var key=rvWireSel[k];
+  rvWire[k][i]=key;
+  var chip=document.getElementById('rvchip_'+k+'_'+key);
+  chip.classList.remove('sel');chip.classList.add('placed');
+  slot.className='wire-pin-slot filled';
+  slot.innerHTML='<div class="wire-chip '+WIRE_COLORS[key].cls+'" style="width:90%;height:80%;cursor:default"></div>';
+  rvWireSel[k]=null;
+}
+
+function rvGradeItem(it,k){
+  var card=document.getElementById('rvitem_'+k);
+  var mark=document.getElementById('rvmark_'+k);
+  var ok=false;
+  if(rvIsMcq(it)){
+    ok=rvSel[k]===it.ans;
+    for(var i=0;i<it.opts.length;i++){
+      var el=document.getElementById('rvopt_'+k+'_'+i);
+      el.classList.add('answered');
+      if(i===it.ans&&ok)el.classList.add('correct');
+      else if(i===rvSel[k]&&!ok)el.classList.add('wrong');
+    }
+    if(ok){var ex=document.getElementById('rvexp_'+k);if(ex)ex.classList.add('show');}
+  }else if(it.dragdrop){
+    ok=true;
+    it.pairs.forEach(function(pair,ti){
+      var t=document.getElementById('rvddt_'+k+'_'+ti);
+      var mp=(rvDD[k]||{})[ti];
+      if(t.classList.contains('filled'))return;
+      if(mp&&mp.lv.trim()===pair.left.trim()){
+        t.classList.remove('pending');t.classList.add('filled');t.textContent='✓ '+mp.lv;
+        var li=document.getElementById('rvddi_'+k+'_'+mp.pi);
+        if(li){li.classList.remove('pending','sel','dragging');li.classList.add('matched');li.setAttribute('draggable','false');}
+      }else{
+        ok=false;
+        if(mp){t.classList.add('wrong-m');t.textContent='✗ '+mp.lv;}
+      }
+    });
+  }else if(it.type==='wireorder'){
+    ok=true;
+    it.order.forEach(function(key,i){
+      var slot=document.getElementById('rvpin_'+k+'_'+i);
+      slot.classList.remove('correct','wrong');
+      if((rvWire[k]||{})[i]===key)slot.classList.add('correct');
+      else{slot.classList.add('wrong');ok=false;}
+    });
+  }else if(it.type==='calc'){
+    ok=true;
+    it.fields.forEach(function(f){
+      var inp=document.getElementById('rvcalc_'+k+'_'+f.key);
+      var good=inp.value.trim()===it.answer[f.key];
+      inp.classList.remove('correct','wrong');
+      inp.classList.add(good?'correct':'wrong');
+      if(!good)ok=false;
+    });
+  }
+  card.classList.remove('ok','bad');
+  card.classList.add(ok?'ok':'bad');
+  if(ok){card.dataset.locked='1';mark.className='rv-mark ok';mark.textContent='✓ ถูกต้อง';}
+  else{mark.className='rv-mark bad';mark.textContent='✗ ยังไม่ถูก';}
+  return ok;
+}
+
+function rvResetWrong(s){
+  s.items.forEach(function(it,k){
+    var card=document.getElementById('rvitem_'+k);
+    if(!card||card.dataset.locked)return;
+    if(rvIsMcq(it)){
+      for(var i=0;i<it.opts.length;i++){
+        var el=document.getElementById('rvopt_'+k+'_'+i);
+        el.classList.remove('answered','correct','wrong','selected');
+      }
+      delete rvSel[k];
+    }else if(it.dragdrop){
+      it.pairs.forEach(function(pair,ti){
+        var t=document.getElementById('rvddt_'+k+'_'+ti);
+        if(t.classList.contains('filled'))return;
+        var mp=(rvDD[k]||{})[ti];
+        if(mp){var li=document.getElementById('rvddi_'+k+'_'+mp.pi);if(li)li.classList.remove('pending','sel');delete rvDD[k][ti];}
+        t.classList.remove('wrong-m','pending','drag-over');
+        t.textContent=t.dataset.answer;
+      });
+    }
+  });
+}
+
+function submitReview(){
+  var s=STEPS[APP.step-1];
+  var fb=document.getElementById('cpFb');
+  var okCount=0;
+  s.items.forEach(function(it,k){if(rvGradeItem(it,k))okCount++;});
+  var total=s.items.length;
+  if(okCount===total){
+    APP.wrong=0;
+    fb.textContent='✓ ถูกต้องครบทั้ง '+total+' ข้อ — จบบทเรียนแล้วครับ';
+    fb.className='checkpoint-fb ok';
+    showNextBtn();
+  }else{
+    APP.wrong++;APP.wrongSinceSave++;
+    fb.textContent='ถูก '+okCount+' จาก '+total+' ข้อ — ข้อที่ยังไม่ถูกถูกคืนกลับมาให้แก้ใหม่แล้วครับ';
+    fb.className='checkpoint-fb bad';
+    setTimeout(function(){rvResetWrong(s);},900);
+  }
+}
+
+function rvRevealAll(s){
+  s.items.forEach(function(it,k){
+    var card=document.getElementById('rvitem_'+k);
+    var mark=document.getElementById('rvmark_'+k);
+    if(card){card.classList.add('ok');card.dataset.locked='1';}
+    if(mark){mark.className='rv-mark ok';mark.textContent='✓ เฉลย';}
+    if(rvIsMcq(it)){
+      for(var i=0;i<it.opts.length;i++){
+        var el=document.getElementById('rvopt_'+k+'_'+i);
+        if(!el)continue;
+        el.classList.add('answered');
+        if(i===it.ans)el.classList.add('correct');
+      }
+      var ex=document.getElementById('rvexp_'+k);if(ex)ex.classList.add('show');
+    }else if(it.dragdrop){
+      it.pairs.forEach(function(p,ti){
+        var t=document.getElementById('rvddt_'+k+'_'+ti);
+        if(t){t.classList.add('filled');t.textContent='✓ '+p.left;}
+      });
+    }else if(it.type==='wireorder'){
+      it.order.forEach(function(key,i){
+        var slot=document.getElementById('rvpin_'+k+'_'+i);
+        if(!slot)return;
+        slot.className='wire-pin-slot filled correct';
+        slot.innerHTML='<div class="wire-chip '+WIRE_COLORS[key].cls+'" style="width:90%;height:80%;cursor:default"></div>';
+      });
+    }else if(it.type==='calc'){
+      it.fields.forEach(function(f){
+        var inp=document.getElementById('rvcalc_'+k+'_'+f.key);
+        if(!inp)return;
+        inp.value=it.answer[f.key];inp.classList.add('correct');inp.readOnly=true;
+      });
+    }
+  });
+}
+
+function renderStep(){
+  renderStepBase();
+  var s=STEPS[APP.step-1];
+  if(s&&isStepDone(s))applyReviewMode(s);
+}
+
+function renderStepBase(){
+  updateStepChip();
+  var s=STEPS[APP.step-1];
+  var wrap=document.getElementById('lessonWrap');
+  if(!s){wrap.innerHTML='';return;}
+  if(s.type==='review'||s.type==='quiz'){renderReview(s);return;}
+  if(s.type==='lesson'){
+    wrap.innerHTML='<div class="lesson-section-label">'+s.section+'</div>'
+      +'<div class="lesson-card"><div class="lesson-title">'+s.title+'</div>'
+      +'<div class="lesson-body">'+s.body+'</div>'
+      +(s.fig?'<div class="lesson-fig">'+s.fig+(s.figCap?'<div class="fig-cap">'+s.figCap+'</div>':'')+'</div>':'')
+      +'<div class="lesson-actions"><button class="btn-check" onclick="advanceStep()">เข้าใจแล้ว ถัดไป →</button></div></div>';
+  }else{
+    renderCheckpoint(s);
+  }
+}
+
+function renderCheckpoint(s){
+  var wrap=document.getElementById('lessonWrap');
+  ddSel=null;ddMap={};
+  var html='<div class="lesson-section-label">'+s.section+(s.final?' — คำถามทบทวนรวม':'')+'</div>';
+  if(s.dragdrop){
+    var sh=s.pairs.slice().sort(function(){return Math.random()-.5;});
+    html+='<div class="q-card" id="qcard_cp"><div class="q-num">'+(s.final?'ทบทวนท้ายบท — Drag &amp; Drop':'Checkpoint — Drag &amp; Drop')+'</div>'
+      +'<div class="q-text">'+s.q+'</div>'
+      +'<div class="dd-hint">ลากข้อความจากคอลัมน์ซ้ายไปวางบนคู่ที่ถูกต้องทางขวา (หรือจะคลิกเลือกแล้วคลิกช่องปลายทางก็ได้)</div>'
+      +'<div class="dd-grid"><div><div class="dd-col-label">คลิกเลือก</div>'
+      +'<div class="dd-items" id="ddL_cp">'+sh.map(function(p,pi){
+        var lv=p.left.replace(/'/g,"\\'");
+        return '<div class="dd-item" id="ddi_cp_'+pi+'" draggable="true"'
+          +' ondragstart="dragStartDD(event,'+pi+',\''+lv+'\')" ondragend="dragEndDD(event)"'
+          +' onclick="selDD('+pi+',\''+lv+'\')">'+p.left+'</div>';
+      }).join('')+'</div></div>'
+      +'<div><div class="dd-col-label">จับคู่กับ</div>'
+      +'<div class="dd-items" id="ddR_cp">'+s.pairs.map(function(p,pi){
+        return '<div class="dd-target" id="ddt_cp_'+pi+'" data-answer="'+p.right+'"'
+          +' ondragover="dragOverDD(event,'+pi+')" ondragleave="dragLeaveDD('+pi+')"'
+          +' ondrop="dropOnDD(event,'+pi+')" onclick="dropDD('+pi+')">'+p.right+'</div>';
+      }).join('')+'</div></div></div>'
+      +'<div class="checkpoint-fb" id="cpFb"></div>'
+      +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitCheckpoint()">ตรวจคำตอบ</button></div>'
+      +'<div class="hint-box" id="hintBox"><div class="hint-title">เฉลย</div><div class="hint-text" id="hintText"></div></div>'
+      +'</div>';
+  }else{
+    html+='<div class="q-card" id="qcard_cp" data-ans="'+s.ans+'"><div class="q-num">'+(s.final?'ทบทวนท้ายบท':'Checkpoint')+'</div>'
+      +'<div class="q-text">'+s.q+'</div>'
+      +'<div class="q-opts">'+s.opts.map(function(o,oi){
+        return '<div class="q-opt" id="qopt_cp_'+oi+'" onclick="selOptCp('+oi+')"><div class="q-dot"></div><span>'+o+'</span></div>';
+      }).join('')+'</div>'
+      +'<div class="q-explain" id="qexpCp">'+s.exp+'</div>'
+      +'<div class="checkpoint-fb" id="cpFb"></div>'
+      +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitCheckpoint()">ตรวจคำตอบ</button></div>'
+      +'</div>';
+  }
+  wrap.innerHTML=html;
+}
+
+function selOptCp(oi){
+  var card=document.getElementById('qcard_cp');if(card.dataset.answered)return;
+  var opts=card.querySelectorAll('.q-opt');
+  opts.forEach(function(el){el.classList.remove('selected');});
+  document.getElementById('qopt_cp_'+oi).classList.add('selected');
+  card.dataset.selected=oi;
+}
+
+function dragStartDD(ev,pi,value){
+  var item=document.getElementById('ddi_cp_'+pi);
+  if(item.classList.contains('matched')){ev.preventDefault();return;}
+  if(ddSel)ddSel.el.classList.remove('sel');
+  ddSel={el:item,value:value,pi:pi};
+  item.classList.add('dragging');
+  try{ev.dataTransfer.setData('text/plain',String(pi));ev.dataTransfer.effectAllowed='move';}catch(e){}
+}
+
+function dragEndDD(ev){
+  var items=document.querySelectorAll('.dd-item.dragging');
+  for(var i=0;i<items.length;i++)items[i].classList.remove('dragging');
+}
+
+function dragOverDD(ev,ti){
+  if(!ddSel)return;
+  ev.preventDefault();
+  try{ev.dataTransfer.dropEffect='move';}catch(e){}
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t&&!t.classList.contains('filled'))t.classList.add('drag-over');
+}
+
+function dragLeaveDD(ti){
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t)t.classList.remove('drag-over');
+}
+
+function dropOnDD(ev,ti){
+  ev.preventDefault();
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t)t.classList.remove('drag-over');
+  dropDD(ti);
+}
+
+function clearWrongDD(s){
+  s.pairs.forEach(function(pair,ti){
+    var target=document.getElementById('ddt_cp_'+ti);
+    if(!target||target.classList.contains('filled'))return;
+    var mp=ddMap[ti];
+    if(mp){
+      var item=document.getElementById('ddi_cp_'+mp.lpi);
+      if(item)item.classList.remove('pending','sel','dragging');
+      delete ddMap[ti];
+    }
+    target.classList.remove('wrong-m','pending','drag-over');
+    target.textContent=target.dataset.answer;
+  });
+}
+
+function selDD(pi,value){
+  var item=document.getElementById('ddi_cp_'+pi);
+  if(item.classList.contains('checked'))return;
+  if(ddSel&&ddSel.el===item){item.classList.remove('sel');ddSel=null;return;}
+  if(ddSel)ddSel.el.classList.remove('sel');
+  item.classList.add('sel');
+  ddSel={el:item,value:value,pi:pi};
+}
+
+function dropDD(ti){
+  if(!ddSel)return;
+  var target=document.getElementById('ddt_cp_'+ti);
+  Object.keys(ddMap).forEach(function(k){
+    if(ddMap[k].lpi===ddSel.pi){
+      var old=document.getElementById('ddt_cp_'+k);
+      if(old){old.classList.remove('pending');old.textContent=old.dataset.answer;}
+      delete ddMap[k];
+    }
+  });
+  ddMap[ti]={lpi:ddSel.pi,lv:ddSel.value};
+  ddSel.el.classList.remove('sel');ddSel.el.classList.add('pending');
+  target.classList.add('pending');target.textContent='→ '+ddSel.value;
+  ddSel=null;
+}
+
+function maybeShowHint(s){
+  if(APP.wrong<3)return;
+  if(s.dragdrop){
+    var hb=document.getElementById('hintBox');
+    if(hb){
+      hb.classList.add('show');
+      document.getElementById('hintText').textContent=s.pairs.map(function(p){return p.left+' → '+p.right;}).join('\n');
+    }
+  }else{
+    var exp=document.getElementById('qexpCp');
+    if(exp)exp.classList.add('show');
+  }
+}
+
+function submitCheckpoint(){
+  var s=STEPS[APP.step-1];
+  var card=document.getElementById('qcard_cp');
+  var fb=document.getElementById('cpFb');
+  if(s.dragdrop){
+    var allCorrect=true;
+    s.pairs.forEach(function(pair,ti){
+      var target=document.getElementById('ddt_cp_'+ti);
+      var mp=ddMap[ti];
+      target.classList.remove('pending','wrong-m','filled');
+      if(mp&&mp.lv.trim()===pair.left.trim()){
+        target.classList.add('filled');target.textContent='✓ '+mp.lv;
+        var lel=document.getElementById('ddi_cp_'+mp.lpi);
+        if(lel){lel.classList.remove('pending','dragging');lel.classList.add('matched');lel.setAttribute('draggable','false');}
+      }else{
+        allCorrect=false;
+        target.textContent=mp?('✗ '+mp.lv):pair.right;
+        if(mp)target.classList.add('wrong-m');
+      }
+    });
+    if(allCorrect){
+      fb.textContent='✓ ถูกต้องทั้งหมดครับ!';fb.className='checkpoint-fb ok';
+      APP.wrong=0;
+      showNextBtn();
+    }else{
+      APP.wrong++;APP.wrongSinceSave++;
+      var okCount=0;
+      s.pairs.forEach(function(p,ti){
+        var t=document.getElementById('ddt_cp_'+ti);
+        if(t&&t.classList.contains('filled'))okCount++;
+      });
+      fb.textContent='ถูก '+okCount+' จาก '+s.pairs.length+' คู่ — คู่ที่ยังไม่ถูกถูกคืนกลับไปให้ลากใหม่แล้วครับ';
+      fb.className='checkpoint-fb bad';
+      maybeShowHint(s);
+      setTimeout(function(){clearWrongDD(s);},900);
+    }
+  }else{
+    var sel=card.dataset.selected!=null&&card.dataset.selected!==''?parseInt(card.dataset.selected):-1;
+    var opts=card.querySelectorAll('.q-opt');
+    opts.forEach(function(el,i){
+      el.classList.add('answered');
+      if(i===s.ans)el.classList.add('correct');
+      else if(i===sel)el.classList.add('wrong');
+    });
+    if(sel===s.ans){
+      document.getElementById('qexpCp').classList.add('show');
+      fb.textContent='✓ ถูกต้องครับ! — อ่านคำอธิบายด้านบน แล้วกด "ถัดไป"';fb.className='checkpoint-fb ok';
+      APP.wrong=0;
+      showNextBtn();
+    }else{
+      APP.wrong++;APP.wrongSinceSave++;
+      fb.textContent='ยังไม่ถูกครับ ลองใหม่อีกครั้ง';fb.className='checkpoint-fb bad';
+      maybeShowHint(s);
+      setTimeout(function(){
+        opts.forEach(function(el){el.classList.remove('answered','correct','wrong','selected');});
+        card.dataset.answered='';
+        card.dataset.selected='';
+      },900);
+    }
+  }
+}
+
+function showNextBtn(){
+  var act=document.querySelector('.checkpoint-actions');
+  if(!act)return;
+  var last=APP.step>=STEPS.length;
+  act.innerHTML='<button class="btn-check" onclick="advanceStep()">'+(last?'จบ Lab — ดูสรุปผล →':'ถัดไป →')+'</button>';
+}
+
+function REVIEW_EXTRA(s){}
+
+function isStepDone(s){return s&&APP.stepsDone.indexOf(s.id)>=0;}
+
+function isLockedInTest(){
+  var s=STEPS[APP.step-1];
+  if(!s||s.type==='lesson')return false;
+  return APP.stepsDone.indexOf(s.id)<0;
+}
+
+function flashTestLock(){
+  var fb=document.getElementById('cpFb');
+  if(!fb)return;
+  fb.textContent='ตอบคำถามข้อนี้ให้ถูกก่อนครับ ระหว่างทำแบบทดสอบจะย้อนกลับไปดูเนื้อหาไม่ได้';
+  fb.className='checkpoint-fb bad';
+}
+
+function goToStep(n){
+  if(n<1||n>STEPS.length)return;
+  if(n>APP.maxStep)return;
+  if(isLockedInTest()&&n!==APP.step){
+    flashTestLock();
+    return;
+  }
+  APP.step=n;APP.wrong=0;
+  renderStep();renderSidebar();
+  var view=document.querySelector('.lesson-view');
+  if(view)view.scrollTop=0;
+}
+
+function reviewNavHtml(){
+  var h='<div class="checkpoint-actions">';
+  if(APP.step>1)h+='<button class="btn-skip2" onclick="goToStep('+(APP.step-1)+')">← ย้อนกลับ</button>';
+  if(APP.step<STEPS.length)h+='<button class="btn-check" onclick="goToStep('+(APP.step+1)+')">ถัดไป →</button>';
+  else h+='<button class="btn-check" onclick="openLabComplete()">ดูสรุปผล Lab →</button>';
+  h+='</div><div class="review-note"><b>โหมดทบทวน</b> — ข้อนี้ทำผ่านไปแล้ว เฉลยจึงแสดงไว้ให้ ย้อนดูข้อก่อนหน้าได้จากรายการด้านซ้าย</div>';
+  return h;
+}
+
+function applyReviewMode(s){
+  var act=document.querySelector('.checkpoint-actions');
+  if(s.type==='lesson'){
+    var la=document.querySelector('.lesson-actions');
+    if(la)la.outerHTML=reviewNavHtml();
+    return;
+  }
+  if(s.type==='checkpoint'&&s.dragdrop){
+    s.pairs.forEach(function(p,ti){
+      var t=document.getElementById('ddt_cp_'+ti);
+      if(t){t.classList.add('filled');t.textContent='✓ '+p.left;}
+    });
+    var left=document.querySelectorAll('#ddL_cp .dd-item');
+    for(var i=0;i<left.length;i++)left[i].classList.add('matched');
+  }else if(s.type==='checkpoint'){
+    var card=document.getElementById('qcard_cp');
+    if(card){
+      card.dataset.answered='1';
+      var opts=card.querySelectorAll('.q-opt');
+      for(var j=0;j<opts.length;j++){
+        opts[j].classList.add('answered');
+        if(j===s.ans)opts[j].classList.add('correct');
+      }
+    }
+    var exp=document.getElementById('qexpCp');
+    if(exp)exp.classList.add('show');
+  }
+  if(s.type==='review'||s.type==='quiz'){rvRevealAll(s);}
+  REVIEW_EXTRA(s);
+  if(act)act.outerHTML=reviewNavHtml();
+}
+
+function advanceStep(){
+  var cur=STEPS[APP.step-1];
+  var already=APP.stepsDone.indexOf(cur.id)>=0;
+  if(!already)APP.stepsDone.push(cur.id);
+  if(APP.step<STEPS.length){
+    APP.step++;
+    if(APP.step>APP.maxStep)APP.maxStep=APP.step;
+    renderStep();renderSidebar();
+    if(!already)saveProgress(false);
+  }else if(already){
+    openLabComplete();
+  }else{
+    completeLab();
+  }
+}
+
+function completeLab(){
+  renderSidebar();
+  document.getElementById('labComplete').classList.add('show');
+  document.getElementById('completeChip').classList.add('show');
+  document.getElementById('nextLabChip').classList.add('show');
+  addMsg('ai','ยินดีด้วยครับ! Lab Ch.1 เสร็จสมบูรณ์!\n\nสรุป:\n• เครือข่ายและประเภทตามขนาด (PAN/LAN/MAN/WAN)\n• Topology และอุปกรณ์เครือข่ายพื้นฐาน (Hub/Switch/Router/AP)\n• สื่อกลาง, Bandwidth/Throughput/Latency\n• OSI Model 7 ชั้น และ TCP/IP Model 4 ชั้น พร้อม Encapsulation\n• IP Address, Public/Private IP, MAC Address เบื้องต้น\n\nพร้อมไปเรียนรู้การเข้าหัวสาย UTP ใน Lab 2 ต่อได้เลยครับ');
+  saveProgress(true);
+}
+
+function closeLabComplete(){
+  document.getElementById('labComplete').classList.remove('show');
+}
+function openLabComplete(){
+  document.getElementById('labComplete').classList.add('show');
+}
+function goNextLab(){
+  location.href='../lab02-cable-termination/lab2.html';
+}
+
+function resetLab(){
+  document.getElementById('labComplete').classList.remove('show');
+  document.getElementById('completeChip').classList.remove('show');
+  document.getElementById('nextLabChip').classList.remove('show');
+  APP.step=1;APP.maxStep=1;APP.stepsDone=[];APP.wrong=0;
+  STEPS.forEach(function(st){if(st.pool)st.drawn=false;});
+  APP.wrongSinceSave=0;APP.lastSaveTime=Date.now();
+  renderStep();renderSidebar();
+}
+
+function saveProgress(completed){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var now=Date.now();
+  var elapsedSec=Math.round((now-APP.lastSaveTime)/1000);
+  var payload={
+    studentId:studentId, labId:1, courseId:'netlab1',
+    stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
+    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:!!completed
+  };
+  APP.lastSaveTime=now;APP.wrongSinceSave=0;
+  fetch(API_BASE+'/progress',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)}).catch(function(){});
+}
+
+async function loadSavedProgress(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var row;
+  try{
+    var res=await fetch(API_BASE+'/progress/'+encodeURIComponent(studentId));
+    var data=await res.json();
+    row=(data.labs||[]).filter(function(r){return r.lab_id===1&&(r.course_id==null||r.course_id==='netlab1');})[0];
+  }catch(e){return;}
+  if(!row||!row.steps_done)return;
+  var n=Math.min(row.steps_done,STEPS.length);
+  APP.stepsDone=STEPS.slice(0,n).map(function(s){return s.id;});
+  if(n>=STEPS.length){
+    APP.step=STEPS.length;
+    APP.maxStep=STEPS.length;
+    renderStep();renderSidebar();
+    document.getElementById('labComplete').classList.add('show');
+    document.getElementById('completeChip').classList.add('show');
+    document.getElementById('nextLabChip').classList.add('show');
+  }else{
+    APP.step=n+1;
+    APP.maxStep=APP.step;
+    renderStep();renderSidebar();
+  }
+}
+
+function buildSys(){
+  var s=STEPS[APP.step-1];
+  var topic=s?(s.title||s.q):'';
+  return 'Role: Networking Fundamentals Tutor\nLanguage: Thai, ใช้ครับ\nSubject: Ch.1 Course Introduction — เครือข่ายเบื้องต้น, ประเภทเครือข่าย, Topology, อุปกรณ์เครือข่าย, สื่อกลาง, OSI/TCP-IP Model, IP Address เบื้องต้น\nRules: ตอบสั้นไม่เกิน 4 ประโยค เข้าใจง่าย\nUI ที่ผู้เรียนเห็นบนหน้าจอ (อ้างอิงได้เฉพาะสิ่งเหล่านี้เท่านั้น): เนื้อหาบทเรียนพร้อมภาพประกอบและตารางในหน้าปัจจุบัน | รายการหัวข้อด้านซ้าย. Lab นี้เป็นเนื้อหาทฤษฎี ไม่มีเทอร์มินัล Cisco ไม่มีแผนภาพ Topology และไม่มีตาราง IP. ห้ามอ้างถึงเอกสาร ใบงาน ไฟล์ PDF หรือหน้าจออื่นที่ไม่มีอยู่จริง\nCurrent: Step '+APP.step+'/'+STEPS.length+' — '+topic+' | Wrong: '+APP.wrong;
+}
+
+function askAboutTopic(){
+  var s=STEPS[APP.step-1];
+  var topic=s?(s.title||s.q):'';
+  quickAsk('ช่วยอธิบายเรื่อง "'+topic+'" เพิ่มเติมแบบเข้าใจง่ายหน่อยครับ');
+}
+
+function showProgressSummary(){
+  quickAsk('สรุปสิ่งที่เรียนมาแล้วในหัวข้อที่ทำเสร็จให้หน่อยครับ');
+}
+
+function addMsg(role,text){
+  var msgs=document.getElementById('messages');
+  var wrap=document.createElement('div');wrap.className='msg'+(role==='user'?' user':'');
+  var av=document.createElement('div');av.className='av '+(role==='ai'?'ai-av':'user-av');av.textContent=role==='ai'?'AI':'U';
+  var bub=document.createElement('div');bub.className='bub '+(role==='ai'?'ai-b':'user-b');bub.textContent=text;
+  wrap.appendChild(av);wrap.appendChild(bub);msgs.appendChild(wrap);msgs.scrollTop=99999;
+  APP.chatHistory=APP.chatHistory.concat([{role:role==='ai'?'assistant':'user',content:text}]).slice(-16);
+}
+
+function showTyping(){
+  var msgs=document.getElementById('messages');
+  var w=document.createElement('div');w.className='msg';w.id='typing';
+  var av=document.createElement('div');av.className='av ai-av';av.textContent='AI';
+  var d=document.createElement('div');d.className='typing-dots';
+  d.innerHTML='<span></span><span></span><span></span>';
+  w.appendChild(av);w.appendChild(d);msgs.appendChild(w);msgs.scrollTop=99999;
+}
+function hideTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+
+async function callAI(msg,sys){
+  var res=await fetch(API_BASE+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages:APP.chatHistory.slice(-8).concat([{role:'user',content:msg}]),
+    system:sys||buildSys(),max_tokens:150})});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return (await res.json()).content||'ขออภัยครับ';
+}
+
+async function sendChat(){
+  if(isBusy)return;
+  var inp=document.getElementById('chatIn');
+  var msg=inp.value.trim();if(!msg)return;
+  inp.value='';isBusy=true;document.getElementById('sendBtn').disabled=true;
+  addMsg('user',msg);showTyping();
+  try{var r=await callAI(msg);hideTyping();addMsg('ai',r);}
+  catch(e){hideTyping();addMsg('ai',e.message);}
+  finally{isBusy=false;document.getElementById('sendBtn').disabled=false;}
+}
+
+function quickAsk(msg){document.getElementById('chatIn').value=msg;sendChat();}
+
+async function checkHealth(){
+  var pill=document.getElementById('aiStatus'),dot=document.getElementById('aiDot');
+  try{
+    var res=await fetch(API_BASE+'/health',{signal:AbortSignal.timeout(5000)});
+    var d=await res.json();
+    if(d.model_ready){
+      pill.className='ai-pill ai-on';dot.classList.add('pulse');
+      document.getElementById('aiStatusText').textContent='AI พร้อม';
+      document.getElementById('chatDot').style.background='var(--green)';
+      var m=d.model||(d.models&&d.models.default)||'';
+      if(m)document.getElementById('modelTag').textContent=m.split('/').pop();
+    }else{throw new Error();}
+  }catch(e){
+    pill.className='ai-pill ai-off';dot.classList.remove('pulse');
+    document.getElementById('aiStatusText').textContent='AI ออฟไลน์';
+    document.getElementById('chatDot').style.background='var(--red)';
+  }
+}
+</script>
+</body>
+</html>
+

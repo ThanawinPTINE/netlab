@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home — NETLab</title>
+<link rel="stylesheet" href="styles/tokens.css?v=2">
+<link rel="stylesheet" href="styles/shared.css?v=1">
+<style>
+body{min-height:100vh}
+.topbar{height:72px;gap:28px;padding:0 var(--space-6);position:sticky;top:0;z-index:20}
+.brand{font-size:20px}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(180deg,var(--panel2),var(--bg));border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6);overflow:hidden;position:relative}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;display:block;filter:blur(1px) saturate(.85);
+  -webkit-mask-image:linear-gradient(to left, black 10%, transparent 55%);
+  mask-image:linear-gradient(to left, black 10%, transparent 55%);opacity:.28}
+.hero-inner{position:relative;z-index:1;max-width:none;margin:0}
+.hero-content{max-width:640px;text-align:left}
+.hero-eyebrow{font-size:var(--step-xs);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.hero-title{font-size:42px;font-weight:800;letter-spacing:-0.02em;margin:0 0 var(--space-3);line-height:1.2;text-wrap:balance}
+.hero-sub{font-size:var(--step-lg);color:var(--text2);max-width:560px;line-height:1.75}
+.hero-actions{margin-top:var(--space-6);display:flex;gap:var(--space-3);flex-wrap:wrap}
+.hero-actions .btn-primary,.hero-actions .btn-secondary{padding:14px 26px;font-size:var(--step-base)}
+
+/* ── Reference: rail + panel ── */
+.wrap{max-width:none;margin:0;padding:var(--space-6) var(--space-6) var(--space-8)}
+.ref-mobile-bar{display:none;margin-bottom:var(--space-4)}
+.ref-toggle{display:inline-flex;align-items:center;gap:8px;font-size:var(--step-sm);font-weight:600;color:var(--text);background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 16px;cursor:pointer;width:100%;justify-content:center}
+.ref-toggle:hover{border-color:var(--cyan);color:var(--cyan)}
+.ref-toggle:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.ref-backdrop{display:none}
+
+.ref-body{display:grid;grid-template-columns:260px 1fr;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--panel)}
+.ref-rail{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;max-height:680px;padding:var(--space-2) 0}
+.ref-rail-group{padding:var(--space-2) 0}
+.ref-rail-label{font-size:var(--step-xs);font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);padding:var(--space-2) var(--space-4)}
+.ref-tab{display:flex;align-items:center;gap:var(--space-2);width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;padding:var(--space-2) var(--space-4);font-size:var(--step-sm);color:var(--text2);cursor:pointer;font-family:inherit;line-height:1.4}
+.ref-tab:hover{background:var(--panel2);color:var(--text)}
+.ref-tab[aria-selected="true"]{background:var(--cyan-wash);color:var(--cyan);border-left-color:var(--cyan);font-weight:600}
+.ref-tab:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+
+.ref-panels{position:relative;padding:var(--space-7) var(--space-8);min-height:420px}
+.ref-panel{position:relative}
+.ref-panel-head{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-5);max-width:1100px;position:relative;z-index:1}
+.ref-panel-title{font-size:var(--step-2xl);font-weight:700;letter-spacing:-0.01em;text-wrap:balance}
+.ref-panel-body{display:grid;grid-template-columns:1fr;gap:var(--space-6);align-items:stretch}
+.ref-panel-body .topic-list{min-width:0;margin-bottom:0}
+.ref-panel-visual{width:100%;min-height:0;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+/* panels with no illustration: let the prose and tables use the whole frame */
+.ref-panel-body.rpb-wide{grid-template-columns:1fr}
+.ref-panel-body.rpb-wide .topic-cmds{min-width:0;max-width:none}
+.ref-panel-head.rph-wide{max-width:none}
+.ref-panel-visual img{width:100%;height:100%;object-fit:contain;display:block}
+.ref-panel-doclink{margin-top:var(--space-6);max-width:1100px;position:relative;z-index:1}
+
+.topic-list{list-style:none;display:flex;flex-direction:column;gap:var(--space-3)}
+.topic-list li{font-size:var(--step-base);color:var(--text2);line-height:1.75;padding:14px 18px 14px 34px;position:relative;background:var(--panel2);border-radius:10px;border-left:3px solid var(--border)}
+.topic-list li::before{content:'▸';position:absolute;left:14px;top:14px;color:var(--cyan);font-size:var(--step-base)}
+.topic-list li:has(code){border-left-color:var(--cyan-d)}
+.topic-list li b{color:var(--text)}
+.topic-list code{font-family:var(--mono);font-size:var(--step-sm);background:var(--panel);color:var(--cyan);padding:2px 8px;border-radius:4px}
+.ref-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:9px;margin:var(--space-4) 0 0}
+.ref-table{width:100%;border-collapse:collapse;font-size:var(--step-sm);min-width:460px}
+.ref-table caption{caption-side:top;text-align:left;padding:9px 12px;font-size:var(--step-xs);font-weight:700;color:var(--text2);background:var(--panel2);border-bottom:1px solid var(--border)}
+.ref-table th{text-align:left;padding:9px 12px;background:var(--panel2);color:var(--text2);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
+.ref-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;line-height:1.55}
+.ref-table tbody tr:last-child td{border-bottom:none}
+.ref-table code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:.94em}
+.ref-table .rt-ok{color:var(--green);font-weight:700}
+.ref-table .rt-no{color:var(--red);font-weight:700}
+.ios-reply{font-family:var(--mono);font-size:var(--step-sm);background:var(--panel2);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:7px;padding:10px 13px;margin:var(--space-3) 0;line-height:1.6;white-space:pre-wrap}
+.topic-cmds{display:flex;flex-direction:column;gap:var(--space-3);flex:1;min-width:260px}
+.cmd-row{display:flex;align-items:baseline;gap:var(--space-3);font-size:var(--step-base);background:var(--panel2);border-radius:8px;padding:var(--space-3) var(--space-4)}
+.cmd-row code{font-family:var(--mono);font-size:var(--step-base);color:var(--cyan);flex-shrink:0;min-width:190px}
+.cmd-row span{color:var(--text2);line-height:1.6}
+.doc-link{display:inline-flex;align-items:center;gap:8px;font-size:var(--step-sm);font-weight:700;color:var(--cyan);text-decoration:none;background:none;border:1.5px solid var(--cyan);border-radius:999px;padding:var(--space-3) var(--space-5);width:fit-content;transition:background .12s,color .12s;font-family:inherit}
+.doc-link:hover{background:var(--cyan);color:var(--btn-text)}
+.doc-link:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.doc-link:disabled,.doc-link[disabled]{color:var(--text3);border-color:var(--border);cursor:not-allowed;opacity:.75}
+.doc-link:disabled:hover,.doc-link[disabled]:hover{background:none;color:var(--text3)}
+.doc-hint{font-size:var(--step-xs);color:var(--text3);font-weight:400}
+@media (max-width:480px){
+  .doc-link{flex-wrap:wrap;width:100%;justify-content:center;text-align:center}
+}
+
+
+.footer-note{max-width:none}
+
+@media (max-width:760px){
+  .ref-mobile-bar{display:block}
+  .ref-body{grid-template-columns:1fr}
+  .ref-rail{position:fixed;top:0;left:0;bottom:0;width:82%;max-width:300px;z-index:30;
+    transform:translateX(-100%);transition:transform .25s ease;box-shadow:6px 0 24px rgba(0,0,0,.4);max-height:none}
+  .ref-rail.open{transform:translateX(0)}
+  .ref-backdrop.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:25}
+  .ref-panels{padding:var(--space-4)}
+  .ref-panel-body{grid-template-columns:1fr}
+  .ref-panel-visual{width:100%;height:220px}
+}
+@media (max-width:640px){
+  .hero{padding:var(--space-5) var(--space-4)}
+  .hero-title{font-size:23px}
+  .cmd-row{flex-direction:column;gap:2px}
+  .cmd-row code{min-width:0}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar topbar-main">
+  <div class="topbar-left">
+    <button class="nav-toggle" id="navToggle" onclick="toggleNav()" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="navLinks">เมนู</button>
+    <a class="brand" href="index.html">NET<span>Lab</span></a>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a class="nav-link active" href="index.html">Home</a>
+    <a class="nav-link" href="labs.html">Lab</a>
+    <a class="nav-link" href="dashboard.html">Dashboard</a>
+  </div>
+  <div class="topbar-right">
+    <div id="authSlot"></div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-bg"><img src="assets/topic-images/hero-network-dashboard.png" alt=""></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-title">NET<span style="color:var(--cyan)">Lab</span> for INE</div>
+      <div class="hero-sub">ระบบนี้ช่วยลดช่องว่างความรู้พื้นฐาน ให้ผู้เรียนฝึกปฏิบัติได้ทุกที่ทุกเวลาผ่านเว็บเบราว์เซอร์ ยกระดับการเรียนการสอนวิชา Network Engineering Lab ให้มีประสิทธิภาพมากขึ้น</div>
+
+      <div class="hero-actions" id="heroActionsLoggedIn" style="display:none">
+        <a class="btn-primary" href="labs.html">เริ่มทำ Lab →</a>
+        <a class="btn-secondary" href="dashboard.html">ดูความคืบหน้า</a>
+      </div>
+
+      <div class="hero-actions" id="heroActionsLoggedOut">
+        <a class="btn-primary" href="login.html">เข้าสู่ระบบ →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="ref-mobile-bar">
+    <button class="ref-toggle" id="refToggle" onclick="toggleRefRail()" aria-expanded="false" aria-controls="refRail">หัวข้ออ้างอิง</button>
+  </div>
+  <div class="ref-backdrop" id="refBackdrop" onclick="closeRefRail()"></div>
+
+  <div class="ref-body">
+    <div class="ref-rail" id="refRail" role="tablist" aria-label="หัวข้ออ้างอิง">
+
+      <div class="ref-rail-group">
+        <div class="ref-rail-label">Quick Reference</div>
+        <button class="ref-tab" role="tab" id="tab-cmd" aria-selected="false" aria-controls="panel-cmd" tabindex="-1" data-topic="cmd" onclick="selectTopic('cmd')">คำสั่งที่ต้องเจอบ่อยในการทำ Lab</button>
+        <button class="ref-tab" role="tab" id="tab-abbr" aria-selected="false" aria-controls="panel-abbr" tabindex="-1" data-topic="abbr" onclick="selectTopic('abbr')">การพิมพ์คำสั่งแบบย่อ (Command Abbreviation)</button>
+      </div>
+
+      <div class="ref-rail-group">
+        <div class="ref-rail-label">Static Routing Fundamentals</div>
+        <button class="ref-tab" role="tab" id="tab-static" aria-selected="false" aria-controls="panel-static" tabindex="-1" data-topic="static" onclick="selectTopic('static')">Static Route คืออะไร</button>
+        <button class="ref-tab" role="tab" id="tab-components" aria-selected="false" aria-controls="panel-components" tabindex="-1" data-topic="components" onclick="selectTopic('components')">ส่วนประกอบของคำสั่ง ip route</button>
+        <button class="ref-tab" role="tab" id="tab-nexthop" aria-selected="false" aria-controls="panel-nexthop" tabindex="-1" data-topic="nexthop" onclick="selectTopic('nexthop')">Next-Hop IP Address คืออะไร</button>
+        <button class="ref-tab" role="tab" id="tab-iosmodes" aria-selected="false" aria-controls="panel-iosmodes" tabindex="-1" data-topic="iosmodes" onclick="selectTopic('iosmodes')">โหมดการทำงานบน Cisco IOS</button>
+      </div>
+
+      <div class="ref-rail-group">
+        <div class="ref-rail-label">Addressing &amp; Subnetting</div>
+        <button class="ref-tab" role="tab" id="tab-ipsubnet" aria-selected="false" aria-controls="panel-ipsubnet" tabindex="-1" data-topic="ipsubnet" onclick="selectTopic('ipsubnet')">IP Address และ Subnet พื้นฐาน</button>
+        <button class="ref-tab" role="tab" id="tab-vlsm" aria-selected="false" aria-controls="panel-vlsm" tabindex="-1" data-topic="vlsm" onclick="selectTopic('vlsm')">VLSM (Variable Length Subnet Mask)</button>
+        <button class="ref-tab" role="tab" id="tab-cidr" aria-selected="false" aria-controls="panel-cidr" tabindex="-1" data-topic="cidr" onclick="selectTopic('cidr')">CIDR (Classless Inter-Domain Routing)</button>
+      </div>
+
+      <div class="ref-rail-group">
+        <div class="ref-rail-label">Dynamic Routing Protocols</div>
+        <button class="ref-tab" role="tab" id="tab-rip" aria-selected="false" aria-controls="panel-rip" tabindex="-1" data-topic="rip" onclick="selectTopic('rip')">RIP (Routing Information Protocol)</button>
+        <button class="ref-tab" role="tab" id="tab-ospf" aria-selected="false" aria-controls="panel-ospf" tabindex="-1" data-topic="ospf" onclick="selectTopic('ospf')">OSPF (Open Shortest Path First)</button>
+        <button class="ref-tab" role="tab" id="tab-eigrp" aria-selected="false" aria-controls="panel-eigrp" tabindex="-1" data-topic="eigrp" onclick="selectTopic('eigrp')">EIGRP</button>
+        <button class="ref-tab" role="tab" id="tab-bgp" aria-selected="false" aria-controls="panel-bgp" tabindex="-1" data-topic="bgp" onclick="selectTopic('bgp')">BGP (Border Gateway Protocol)</button>
+      </div>
+
+      <div class="ref-rail-group">
+        <div class="ref-rail-label">Other Services</div>
+        <button class="ref-tab" role="tab" id="tab-dhcp" aria-selected="false" aria-controls="panel-dhcp" tabindex="-1" data-topic="dhcp" onclick="selectTopic('dhcp')">DHCP</button>
+      </div>
+
+    </div>
+
+    <div class="ref-panels">
+
+      <div class="ref-panel" role="tabpanel" id="panel-cmd" aria-labelledby="tab-cmd" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">คำสั่งที่ต้องเจอบ่อยในการทำ Lab</div></div>
+        <div class="ref-panel-body rpb-wide">
+        <div class="topic-cmds">
+          <div class="cmd-row"><code>enable</code><span>เข้าสู่ Privileged EXEC mode</span></div>
+          <div class="cmd-row"><code>configure terminal</code><span>เข้าสู่ Global Configuration mode</span></div>
+          <div class="cmd-row"><code>interface g0/0</code><span>เข้าตั้งค่า Interface ที่ระบุ</span></div>
+          <div class="cmd-row"><code>ip address [ip] [mask]</code><span>กำหนด IP Address ให้ Interface</span></div>
+          <div class="cmd-row"><code>no shutdown</code><span>เปิดใช้งาน Interface (ค่าเริ่มต้นถูกปิดไว้)</span></div>
+          <div class="cmd-row"><code>ip route ...</code><span>ตั้งค่า Static หรือ Default Route</span></div>
+          <div class="cmd-row"><code>end</code><span>ออกจาก Configuration mode กลับสู่ Privileged EXEC</span></div>
+          <div class="cmd-row"><code>write memory</code><span>บันทึก config ลง NVRAM ให้ถาวร (หรือ <code>wr</code>)</span></div>
+          <div class="cmd-row"><code>show ip route</code><span>ดู Routing Table ปัจจุบันของ Router</span></div>
+          <div class="cmd-row"><code>show ip interface brief</code><span>ดูสถานะ/IP ของทุก Interface แบบย่อ</span></div>
+          <div class="cmd-row"><code>ping [ip]</code><span>ทดสอบว่าเชื่อมต่อถึงปลายทางได้หรือไม่</span></div>
+          <div class="cmd-row"><code>traceroute [ip]</code><span>ดูเส้นทางที่ packet เดินทางผ่านแต่ละ Router</span></div>
+        </div>
+<div class="ref-table-wrap"><table class="ref-table"><caption>คำสั่งทั้งหมดที่ต้องใช้จริงใน Lab 4-11 เรียงตามโหมดที่พิมพ์</caption><thead><tr><th>โหมด</th><th>คำสั่ง</th><th>ใช้ทำอะไร</th><th>เจอใน Lab</th></tr></thead><tbody><tr><td>User EXEC</td><td><code>enable</code></td><td>เข้าสู่ Privileged EXEC</td><td>4-11</td></tr><tr><td>Privileged EXEC</td><td><code>configure terminal</code></td><td>เข้าสู่ Global Config</td><td>4-11</td></tr><tr><td>Privileged EXEC</td><td><code>show running-config</code></td><td>ดู config ที่กำลังทำงานอยู่</td><td>4-11</td></tr><tr><td>Privileged EXEC</td><td><code>show ip route</code></td><td>ดู Routing Table</td><td>5-11</td></tr><tr><td>Privileged EXEC</td><td><code>show ip protocols</code></td><td>ดูว่า Routing Protocol ตัวไหนทำงานอยู่</td><td>6-11</td></tr><tr><td>Privileged EXEC</td><td><code>show ip ospf neighbor</code></td><td>ดูเพื่อนบ้าน OSPF</td><td>9, 10</td></tr><tr><td>Privileged EXEC</td><td><code>show ip eigrp neighbors</code></td><td>ดูเพื่อนบ้าน EIGRP</td><td>8, 10</td></tr><tr><td>Privileged EXEC</td><td><code>write memory</code></td><td>บันทึก config ลง NVRAM</td><td>4-11</td></tr><tr><td>Privileged EXEC</td><td><code>traceroute [ip]</code></td><td>ไล่ดูเส้นทางทีละ hop</td><td>4, 5</td></tr><tr><td>Global Config</td><td><code>hostname [ชื่อ]</code></td><td>ตั้งชื่ออุปกรณ์</td><td>4-11</td></tr><tr><td>Global Config</td><td><code>interface g0/0</code></td><td>เข้าไปตั้งค่า Interface</td><td>4-11</td></tr><tr><td>Global Config</td><td><code>ip route [net] [mask] [next-hop]</code></td><td>เขียนเส้นทางเอง</td><td>4, 5</td></tr><tr><td>Global Config</td><td><code>router rip</code> / <code>router ospf 1</code></td><td>เปิด Routing Protocol</td><td>6-11</td></tr><tr><td>Interface Config</td><td><code>ip address [ip] [mask]</code></td><td>กำหนด IP ให้ Interface</td><td>4-11</td></tr><tr><td>Interface Config</td><td><code>no shutdown</code></td><td>เปิดใช้งาน Interface</td><td>4-11</td></tr><tr><td>Router Config</td><td><code>network [net] [wildcard]</code></td><td>ประกาศวงให้ Protocol เรียนรู้</td><td>6-11</td></tr><tr><td>Router Config</td><td><code>no auto-summary</code></td><td>ปิดการสรุปเส้นทางอัตโนมัติ</td><td>7, 8, 10</td></tr><tr><td>Line Config</td><td><code>login local</code> / <code>transport input ssh</code></td><td>บังคับล็อกอินและจำกัดให้ใช้ SSH</td><td>4</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>ลำดับที่ต้องจำ:</b> ทุก Lab เริ่มเหมือนกันหมดคือ เข้า Privileged EXEC ด้วย <code>enable</code> แล้วเข้า Global Config ด้วย <code>configure terminal</code> จากนั้นค่อยแยกไปตามงาน — ตั้ง IP ให้ครบทุก Interface ก่อนเสมอ แล้วจึงเปิด Routing Protocol เพราะ Protocol จะประกาศได้เฉพาะวงที่ Interface มี IP และเปิดใช้งานแล้วเท่านั้น</p><p><b>ข้อผิดพลาดที่เจอบ่อยที่สุด:</b> ลืม <code>no shutdown</code> — Interface ของ Router ถูกปิดไว้จากโรงงาน ตั้ง IP แล้วแต่ไม่เปิดใช้งาน เส้นทางจะไม่ขึ้นใน Routing Table และ ping ไม่ผ่าน ทั้งที่ config ดูถูกทุกอย่าง</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — คำสั่ง Cisco IOS ที่ใช้บ่อย <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-abbr" aria-labelledby="tab-abbr" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">การพิมพ์คำสั่งแบบย่อ (Command Abbreviation)</div></div>
+        <div class="ref-panel-body rpb-wide">
+        <div class="topic-cmds">
+<p>Cisco IOS ยอมให้พิมพ์คำสั่งแบบย่อได้ โดยไม่ต้องพิมพ์เต็มทุกตัวอักษร หลักการมีข้อเดียวคือ <b>พิมพ์ให้ยาวพอที่จะไม่กำกวมกับคำสั่งอื่นในโหมดเดียวกัน</b> ถ้าตัวอักษรที่พิมพ์ชี้ไปที่คำสั่งได้เพียงคำสั่งเดียว IOS จะเข้าใจทันที</p><p>ยกตัวอย่างในโหมด Interface Configuration คำสั่งที่ขึ้นต้นด้วยตัว <code>s</code> มีหลายคำ เช่น <code>shutdown</code>, <code>speed</code>, <code>standby</code> การพิมพ์แค่ <code>s</code> จึงยังไม่รู้ว่าหมายถึงคำไหน แต่พอเติมเป็น <code>sh</code> ก็เหลือคำเดียวคือ <code>shutdown</code> ดังนั้น <code>no sh</code> จึงใช้งานได้จริง และเป็นรูปที่ช่างเครือข่ายพิมพ์กันเป็นปกติ</p><p>ข้อสำคัญคือ <b>ความกำกวมขึ้นกับโหมดที่อยู่ตอนนั้น</b> คำย่อเดียวกันอาจใช้ได้ในโหมดหนึ่งแต่กำกวมในอีกโหมดหนึ่ง เพราะแต่ละโหมดมีชุดคำสั่งไม่เหมือนกัน</p><div class="ref-table-wrap"><table class="ref-table"><caption>คำสั่งที่ใช้บ่อยใน Lab 4-11 กับรูปย่อที่สั้นที่สุดที่ระบบรับ</caption><thead><tr><th>คำสั่งเต็ม</th><th>ย่อสั้นสุด</th><th>ตัวอย่างที่ใช้ได้</th><th>ทำไมสั้นกว่านี้ไม่ได้</th></tr></thead><tbody><tr><td><code>enable</code></td><td><code>en</code></td><td><code>en</code></td><td><code>e</code> ชนกับ <code>exit</code></td></tr><tr><td><code>configure terminal</code></td><td><code>conf t</code></td><td><code>conf t</code> / <code>config t</code></td><td><code>con</code> ชนกับ <code>connect</code></td></tr><tr><td><code>interface g0/0</code></td><td><code>in g0/0</code></td><td><code>int g0/0</code> / <code>inter gig0/0</code></td><td>ใน Global config ไม่มีคำสั่งอื่นขึ้นต้นด้วย <code>in</code></td></tr><tr><td><code>ip address</code></td><td><code>ip ad</code></td><td><code>ip ad 10.0.0.1 255.255.255.0</code></td><td><code>a</code> ชนกับ <code>access-group</code></td></tr><tr><td><code>no shutdown</code></td><td><code>no sh</code></td><td><code>no sh</code> / <code>no shut</code></td><td><code>s</code> ชนกับ <code>speed</code>, <code>standby</code></td></tr><tr><td><code>hostname</code></td><td><code>ho</code></td><td><code>ho R1</code></td><td><code>h</code> ชนกับคำสั่งอื่นในโหมดเดียวกัน</td></tr><tr><td><code>network</code></td><td><code>net</code></td><td><code>net 10.0.0.0 0.0.0.3 ar 0</code></td><td><code>ne</code> ชนกับ <code>neighbor</code></td></tr><tr><td><code>neighbor</code></td><td><code>nei</code></td><td><code>nei 10.0.0.2 remote-as 200</code></td><td><code>ne</code> ชนกับ <code>network</code></td></tr><tr><td><code>redistribute</code></td><td><code>red</code></td><td><code>red ospf 2 sub</code></td><td><code>re</code> ยังกำกวมในโหมด router</td></tr><tr><td><code>no auto-summary</code></td><td><code>no au</code></td><td><code>no au</code></td><td><code>a</code> ชนกับคำสั่งอื่น</td></tr><tr><td><code>traceroute</code></td><td><code>tr</code></td><td><code>tr 192.168.3.10</code></td><td><code>t</code> ชนกับ <code>telnet</code>, <code>terminal</code></td></tr><tr><td><code>show running-config</code></td><td><code>sh run</code></td><td><code>sh run</code></td><td><code>s</code> และ <code>ru</code> ยังกำกวม</td></tr><tr><td><code>write memory</code></td><td><code>wr</code></td><td><code>wr</code> / <code>wr m</code></td><td><code>wr</code> เป็นรูปย่อที่ IOS รับได้ทั้งคำสั่ง</td></tr><tr><td><code>username</code></td><td><code>us</code></td><td><code>us admin secret 1234</code></td><td><code>u</code> ยังกำกวม</td></tr><tr><td><code>transport input ssh</code></td><td><code>tr i ssh</code></td><td><code>tr i ssh</code></td><td>ในโหมด line ไม่มีคำสั่งอื่นขึ้นต้นด้วย <code>tr</code></td></tr><tr><td><code>exit</code></td><td><code>ex</code></td><td><code>ex</code></td><td><code>e</code> ชนกับ <code>enable</code>, <code>end</code></td></tr></tbody></table></div><p style="margin-top:var(--space-5)">เมื่อพิมพ์ย่อสั้นเกินไปจนกำกวม IOS จะไม่เดาให้ แต่จะตอบกลับว่า:</p><div class="ios-reply">R1(config)# ip ro 10.0.0.0 255.255.255.0 192.168.1.2
+% Ambiguous command:  "ip ro"</div><p>ส่วนถ้าพิมพ์คำสั่งถูกแต่ใส่ค่าไม่ครบ จะได้คำตอบคนละแบบ ซึ่งบอกว่าคำสั่งถูกแล้วแต่ยังขาดข้อมูล:</p><div class="ios-reply">R1(config)# ip route 10.0.0.0
+% Incomplete command.</div><p>การแยกสองข้อความนี้ให้ออกช่วยแก้ปัญหาได้เร็วขึ้นมาก — <b>Ambiguous</b> แปลว่าต้องพิมพ์ให้ยาวขึ้น ส่วน <b>Incomplete</b> แปลว่าต้องใส่ค่าต่อท้ายให้ครบ</p><div class="ref-table-wrap"><table class="ref-table"><caption>คำที่ดูเหมือนย่อได้ แต่ย่อแล้วกำกวม — ต้องพิมพ์ยาวกว่าที่คิด</caption><thead><tr><th>ตั้งใจจะพิมพ์</th><th>ย่อแบบที่มักพลาด</th><th>ปัญหา</th><th>ต้องพิมพ์อย่างน้อย</th></tr></thead><tbody><tr><td><code>ip route</code></td><td><code class="rt-no">ip ro</code></td><td>ชนกับ <code>ip routing</code> ซึ่งเป็นคนละคำสั่ง</td><td><code class="rt-ok">ip route</code> (เต็มคำ)</td></tr><tr><td><code>router ospf 1</code></td><td><code class="rt-no">rout ospf 1</code></td><td>ชนกับ <code>route</code> และ <code>routing</code></td><td><code class="rt-ok">router ospf 1</code> (เต็มคำ)</td></tr><tr><td><code>ip domain-name</code></td><td><code class="rt-no">ip domain</code></td><td>ชนกับ <code>ip domain-lookup</code> และ <code>ip domain-list</code></td><td><code class="rt-ok">ip domain-n</code></td></tr></tbody></table></div><p style="margin-top:var(--space-5)">เครื่องมือช่วยอีกสองอย่างที่ควรใช้ควบคู่กันคือ</p><ul><li><b>ปุ่ม Tab</b> — พิมพ์บางส่วนแล้วกด Tab IOS จะเติมคำที่เหลือให้อัตโนมัติถ้าไม่กำกวม เช่นพิมพ์ <code>conf</code> แล้วกด Tab จะได้ <code>configure</code> ทันที วิธีนี้ช่วยให้พิมพ์เร็วโดยไม่ต้องเสี่ยงสะกดผิด</li><li><b>เครื่องหมาย ?</b> — พิมพ์ <code>?</code> เพื่อดูว่าตำแหน่งนั้นใส่อะไรได้บ้าง หรือพิมพ์ติดกับตัวอักษร เช่น <code>sh?</code> เพื่อดูเฉพาะคำสั่งที่ขึ้นต้นด้วย sh ในโหมดปัจจุบัน</li></ul><p>ในเทอร์มินัลจำลองของ Lab 4-11 รองรับการพิมพ์ย่อตามกฎเดียวกันนี้ และรองรับปุ่ม Tab ด้วย จึงฝึกพิมพ์แบบย่อได้เหมือนอุปกรณ์จริงตั้งแต่ใน Lab</p>
+        </div>
+        </div>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-static" aria-labelledby="tab-static" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">Static Route คืออะไร</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>คำสั่งที่ผู้ดูแลระบบ<b>กำหนดเส้นทางเอง</b>ให้ Router รู้จักวิธีไปยัง network ปลายทาง ตรงข้ามกับ Dynamic Routing ที่ Router เรียนรู้เส้นทางอัตโนมัติผ่าน Protocol (RIP, OSPF, EIGRP) — เหมาะกับเครือข่ายขนาดเล็กหรือเส้นทางที่ไม่ซับซ้อน เพราะ config ง่าย ไม่กิน CPU/Bandwidth</li>
+            <li>รูปแบบคำสั่งพื้นฐาน: <code>ip route [destination-network] [subnet-mask] [next-hop-ip]</code></li>
+            <li>มี <b>Administrative Distance (AD) = 1</b> โดยดีฟอลต์ — น่าเชื่อถือรองจาก Directly Connected (AD=0) เท่านั้น ทำให้ Router เลือกใช้ static route ก่อน Dynamic Routing Protocol ทุกตัวเสมอถ้ามีปลายทางเดียวกัน</li>
+            <li><b>ข้อเสียหลัก</b>: ไม่ปรับตัวอัตโนมัติเมื่อ topology เปลี่ยน (เช่นลิงก์ขาด) ผู้ดูแลระบบต้องเข้ามาแก้ config เองทุกครั้ง ต่างจาก Dynamic Routing ที่คำนวณเส้นทางใหม่ให้เอง</li>
+            <li><b>Default Route</b> (<code>ip route 0.0.0.0 0.0.0.0 [next-hop]</code>) คือ static route แบบพิเศษที่ใช้ดักจับ traffic ทุกปลายทางที่ไม่มีอยู่ใน routing table — มักใช้ที่ Router ขอบเครือข่ายออกสู่ Internet</li>
+            <li><b>Floating Static Route</b> — ตั้ง AD ให้สูงกว่าเส้นทางหลัก (ต่อท้ายคำสั่งด้วยเลข AD) เพื่อใช้เป็นเส้นทางสำรองที่จะทำงานเฉพาะตอนเส้นทางหลักล่มเท่านั้น</li>
+            <li>คำสั่ง <code>show ip route static</code> ใช้ดูเฉพาะเส้นทางที่เป็น Static Route ในตาราง Routing Table แยกจากเส้นทางที่มาจาก Dynamic Routing Protocol</li>
+            <li>Static Route ที่ระบุ Next-hop IP เรียกว่า <b>Recursive Static Route</b> เพราะ Router ต้องเปิด routing table ซ้ำอีกครั้งเพื่อหา Interface ที่จะออกจริง ต่างจากแบบระบุ Exit Interface ที่ไม่ต้องเปิดซ้ำ</li>
+            <li>เปรียบเทียบ Administrative Distance ที่ Router ใช้เลือกเส้นทาง: Directly Connected = 0, Static = 1, EIGRP = 90, OSPF = 110, RIP = 120 — ยิ่งค่าน้อยยิ่งน่าเชื่อถือกว่า</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>ค่า Administrative Distance ที่ Router ใช้ตัดสินว่าจะเชื่อเส้นทางไหน</caption><thead><tr><th>ที่มาของเส้นทาง</th><th>AD</th><th>ความหมาย</th></tr></thead><tbody><tr><td>Directly Connected</td><td>0</td><td>ต่ออยู่กับ Interface ตัวเองโดยตรง เชื่อถือที่สุด</td></tr><tr><td>Static Route</td><td>1</td><td>ผู้ดูแลระบบเขียนเอง</td></tr><tr><td>eBGP</td><td>20</td><td>เรียนรู้จาก AS อื่น (Lab 11)</td></tr><tr><td>EIGRP</td><td>90</td><td>เรียนรู้อัตโนมัติ (Lab 8)</td></tr><tr><td>OSPF</td><td>110</td><td>เรียนรู้อัตโนมัติ (Lab 9)</td></tr><tr><td>RIP</td><td>120</td><td>เรียนรู้อัตโนมัติ (Lab 6, 7)</td></tr><tr><td>iBGP</td><td>200</td><td>เรียนรู้จาก Router ใน AS เดียวกัน</td></tr><tr><td>Unusable</td><td>255</td><td>ไม่ถูกใช้งาน</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>ตัวเลขนี้สำคัญตอนทำ Lab 10 (Redistribution)</b> เพราะเมื่อ Router รู้จักปลายทางเดียวกันจากหลายแหล่ง มันจะเลือกแหล่งที่ AD ต่ำที่สุดเสมอ ไม่ได้ดูว่าเส้นทางไหนสั้นกว่า — เส้นทาง Static ที่เขียนมือไว้จึงชนะ OSPF และ EIGRP ทุกครั้ง</p><div class="ref-table-wrap"><table class="ref-table"><caption>ตัวอย่างจาก Lab 5 — เขียนเส้นทางให้ครบทั้งไปและกลับ</caption><thead><tr><th>ที่ Router</th><th>คำสั่ง</th><th>หมายความว่า</th></tr></thead><tbody><tr><td>R1</td><td><code>ip route 192.168.3.0 255.255.255.0 10.0.0.2</code></td><td>จะไป LAN ฝั่ง R3 ให้ส่งต่อให้ R2</td></tr><tr><td>R2</td><td><code>ip route 192.168.1.0 255.255.255.0 10.0.0.1</code></td><td>จะไป LAN ฝั่ง R1 ให้ส่งต่อให้ R1</td></tr><tr><td>R2</td><td><code>ip route 192.168.3.0 255.255.255.0 10.0.1.2</code></td><td>จะไป LAN ฝั่ง R3 ให้ส่งต่อให้ R3</td></tr></tbody></table></div><p style="margin-top:var(--space-4)"><b>กับดักที่ทำให้ ping ไม่ผ่านบ่อยที่สุด:</b> เขียนเส้นทางขาไปแล้วลืมขากลับ — packet เดินทางไปถึงปลายทางได้จริง แต่ปลายทางไม่รู้ทางกลับ ผลคือ ping ขึ้น Request timed out เหมือนกับตอนที่ไปไม่ถึงเลย ต้องไล่ตรวจทั้งสองทิศทางเสมอ</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — Static Routing <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-components" aria-labelledby="tab-components" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">ส่วนประกอบของคำสั่ง ip route</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li><b>Destination Network</b> — เครือข่ายปลายทางที่ต้องการให้ Router รู้จัก เช่น <code>192.168.3.0</code></li>
+            <li><b>Subnet Mask</b> — กำหนดขอบเขตของเครือข่ายปลายทางนั้น เช่น <code>255.255.255.0</code></li>
+            <li><b>Next-hop IP หรือ Exit Interface</b> — บอก Router ว่าให้ส่ง packet ออกไปทางไหนเพื่อไปถึงปลายทาง</li>
+            <li><b>Administrative Distance (ไม่บังคับ)</b> — ใส่ตัวเลขต่อท้ายคำสั่งเพื่อกำหนดความน่าเชื่อถือของเส้นทางนี้เอง เช่น <code>ip route 192.168.3.0 255.255.255.0 10.0.0.2 120</code> ใช้ทำ Floating Static Route</li>
+            <li>ตัวอย่างคำสั่งเต็ม: <code>ip route 192.168.3.0 255.255.255.0 10.0.0.2</code> หมายถึง "ให้ไปที่เครือข่าย 192.168.3.0/24 โดยส่งผ่าน Router ที่ IP 10.0.0.2"</li>
+            <li>เลือกใช้ <b>Exit Interface</b> แทน Next-hop IP ได้เฉพาะลิงก์แบบ Point-to-Point เท่านั้น (เช่น Serial link) เพราะมี Router ปลายทางเดียวให้ส่งออกได้อยู่แล้ว ถ้าเป็น Ethernet/Multi-access ควรระบุ Next-hop IP เสมอ ไม่งั้นอาจเกิดปัญหา ARP ไม่สมบูรณ์</li>
+            <li>คำสั่งเต็มยังรองรับ keyword <code>permanent</code> ต่อท้าย เพื่อให้เส้นทางไม่ถูกลบออกจาก routing table แม้ Interface ที่ใช้จะ down ไปชั่วคราว</li>
+            <li>ถ้าลืมใส่ Subnet Mask หรือใส่ผิดรูปแบบ คำสั่งจะ error ทันทีเพราะ IOS ตรวจสอบไวยากรณ์นี้อย่างเข้มงวด ต่างจาก Next-hop ที่ผิดแล้วยังรันคำสั่งผ่านได้</li>
+            <li>ลบ Static Route ที่ตั้งไว้ด้วยการพิมพ์คำสั่งเดิมซ้ำแต่เติม <code>no</code> นำหน้า เช่น <code>no ip route 192.168.3.0 255.255.255.0 10.0.0.2</code></li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>แยกส่วนคำสั่ง ip route ทีละช่อง</caption><thead><tr><th>ตำแหน่ง</th><th>ค่าที่ใส่</th><th>ตัวอย่าง</th><th>ใส่ผิดแล้วเกิดอะไร</th></tr></thead><tbody><tr><td>1</td><td>คำสั่ง</td><td><code>ip route</code></td><td>พิมพ์ย่อเกินไปจะขึ้น Ambiguous เพราะชนกับ <code>ip routing</code></td></tr><tr><td>2</td><td>Network ปลายทาง</td><td><code>192.168.3.0</code></td><td>ถ้าใส่ IP ของเครื่องแทน Network Address เส้นทางจะไม่ครอบคลุมทั้งวง</td></tr><tr><td>3</td><td>Subnet Mask</td><td><code>255.255.255.0</code></td><td>ใส่ผิดขนาดวง จะครอบคลุมกว้างหรือแคบเกินไป</td></tr><tr><td>4</td><td>Next-hop หรือ Exit Interface</td><td><code>10.0.0.2</code></td><td>ใส่ IP ที่ไม่ได้อยู่ติดกัน คำสั่งผ่านแต่ใช้งานไม่ได้</td></tr><tr><td>5 (ไม่บังคับ)</td><td>Administrative Distance</td><td><code>120</code></td><td>ใส่เพื่อทำเส้นทางสำรอง (Floating Static)</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>Default Route เป็นกรณีพิเศษของคำสั่งเดียวกัน</b> — <code>ip route 0.0.0.0 0.0.0.0 [next-hop]</code> หมายถึง "ปลายทางไหนก็ตามที่ไม่รู้จัก ให้ส่งไปทางนี้" เพราะ mask เป็น 0 ทั้งหมดจึงจับคู่กับทุก IP แต่ Router จะเลือกเส้นทางที่เจาะจงกว่าก่อนเสมอ Default Route จึงถูกใช้เป็นทางสุดท้ายเท่านั้น</p><p><b>วิธีตรวจว่าเขียนถูกไหม</b> — สั่ง <code>show ip route</code> แล้วดูว่าเส้นทางที่เพิ่งเขียน ขึ้นมาพร้อมตัวอักษร <b>S</b> นำหน้า (S = Static) ถ้าเป็น Default Route จะเห็นเป็น <code>S*</code> ถ้าไม่ขึ้นเลยแปลว่า Next-hop ที่ใส่ไปยังไปไม่ถึง</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — ส่วนประกอบของ Route <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-nexthop" aria-labelledby="tab-nexthop" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">Next-Hop IP Address คืออะไร</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>คือ IP Address ของ Router <b>ตัวถัดไป</b> ที่จะรับ packet เพื่อส่งต่อไปยังปลายทางสุดท้าย</li>
+            <li>ต้องเป็น IP ที่ Router ปัจจุบัน "มองเห็น" ได้โดยตรง คืออยู่ใน Subnet เดียวกันกับ Interface ที่เชื่อมต่อถึงกัน (เช่นลิงก์ WAN ระหว่าง 2 Router)</li>
+            <li>ถ้าใส่ Next-hop ผิด (ไม่ได้อยู่ใน subnet เดียวกัน) คำสั่งจะไม่ error ทันทีแต่เส้นทางจะใช้งานไม่ได้จริง</li>
+            <li>เมื่อ Router ได้รับ packet จะทำ <b>Recursive Lookup</b> — ค้นหาใน routing table ซ้ำไปเรื่อยๆ จนกว่าจะเจอ Interface จริงที่จะส่ง packet ออก</li>
+            <li>ถ้า Next-hop ที่ตั้งไว้ไม่มีเส้นทางไปถึงเลย Recursive Lookup จะหาไม่เจอ ทำให้เกิด Routing Loop หรือ Route ใช้งานไม่ได้ในทางปฏิบัติ</li>
+            <li>ตัวอย่าง: ลิงก์ WAN ระหว่าง R1 (10.0.0.1/30) กับ R2 (10.0.0.2/30) — ที่ R1 ต้องตั้ง Next-hop เป็น <code>10.0.0.2</code> เพราะเป็น IP ของ Interface อีกฝั่งที่อยู่ใน subnet /30 เดียวกัน</li>
+            <li>ตรวจสอบ Next-hop ที่ตั้งไว้แล้วด้วยคำสั่ง <code>show ip route</code> — ถ้าเส้นทางไม่ขึ้นในตารางแสดงว่า Next-hop ยังใช้งานไม่ได้จริง</li>
+            <li>บนลิงก์แบบ Point-to-Point (เช่น Serial) สามารถใช้ <b>Exit Interface</b> แทน Next-hop IP ได้เลย เพราะมีปลายทางเดียวให้ส่งออก ไม่ต้องระบุ IP ปลายทางก็หาเจอ</li>
+            <li>ในเครือข่ายจริง Next-hop ที่ตั้งผิด subnet เป็นสาเหตุการตั้งค่า Static Route ผิดพลาดที่พบบ่อยที่สุด ควรตรวจสอบด้วย <code>show ip interface brief</code> ก่อนตั้งค่าเสมอ</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>เลือกระหว่าง Next-hop IP กับ Exit Interface</caption><thead><tr><th>แบบ</th><th>เขียนอย่างไร</th><th>ข้อดี</th><th>ควรใช้เมื่อ</th></tr></thead><tbody><tr><td>Next-hop IP</td><td><code>ip route 192.168.3.0 255.255.255.0 10.0.0.2</code></td><td>ชัดเจนว่าส่งให้ Router ตัวไหน ใช้ได้กับทุกชนิดลิงก์</td><td>ลิงก์แบบ Ethernet และเป็นแบบที่ใช้ในทุก Lab</td></tr><tr><td>Exit Interface</td><td><code>ip route 192.168.3.0 255.255.255.0 g0/1</code></td><td>ไม่ต้องค้น Routing Table ซ้ำ จึงเร็วกว่าเล็กน้อย</td><td>ลิงก์แบบจุดต่อจุดเท่านั้น</td></tr><tr><td>ใส่ทั้งคู่</td><td><code>ip route 192.168.3.0 255.255.255.0 g0/1 10.0.0.2</code></td><td>ได้ทั้งความเร็วและความชัดเจน</td><td>เครือข่ายจริงที่ต้องการประสิทธิภาพสูงสุด</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>ทำไม Ethernet ไม่ควรใช้ Exit Interface อย่างเดียว:</b> สาย Ethernet หนึ่งเส้นอาจมีอุปกรณ์หลายตัวต่ออยู่ Router จึงไม่รู้ว่าจะส่งเฟรมไปให้ MAC ของใคร ต้องส่ง ARP ถามทุกปลายทางที่ไม่รู้จัก ทำให้ตาราง ARP บวมและช้าลง — ระบุ Next-hop IP ไปเลยจะตรงกว่า</p><p><b>Recursive Lookup คือขั้นตอนที่มองไม่เห็น</b> — เมื่อ Router เจอเส้นทางที่ชี้ไป Next-hop IP มันต้องเปิด Routing Table อีกรอบเพื่อหาว่า IP นั้นออกทาง Interface ไหน ถ้าหาไม่เจอ เส้นทางนั้นจะไม่ถูกติดตั้งลงตารางเลย นี่คือเหตุผลที่ Next-hop ต้องเป็น IP ที่อยู่ในวงเดียวกับ Interface ของเราเสมอ</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — Next-Hop <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-iosmodes" aria-labelledby="tab-iosmodes" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">โหมดการทำงานบน Cisco IOS</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li><code>Router&gt;</code> <b>User EXEC</b> — โหมดแรกที่เข้ามา ดูข้อมูลพื้นฐานได้ แก้ config ไม่ได้</li>
+            <li><code>Router#</code> <b>Privileged EXEC</b> — เข้าด้วยคำสั่ง <code>enable</code> ใช้คำสั่งขั้นสูงและดู config เต็มได้</li>
+            <li><code>Router(config)#</code> <b>Global Configuration</b> — เข้าด้วย <code>configure terminal</code> ตั้งค่า Router ทั้งเครื่อง</li>
+            <li><code>Router(config-if)#</code> <b>Interface Configuration</b> — ตั้งค่าเฉพาะ Interface ที่เลือก เช่น IP Address</li>
+            <li>ใช้ <code>exit</code> เพื่อ<b>ถอยกลับทีละ 1 ระดับ</b> (เช่นจาก Interface Config กลับไป Global Config) ส่วน <code>end</code> หรือ <code>Ctrl+Z</code> จะ<b>กระโดดกลับ</b> ไปที่ Privileged EXEC ทันทีไม่ว่าจะอยู่ระดับไหน</li>
+            <li><code>Rommon&gt;</code> <b>ROM Monitor Mode</b> — โหมดฉุกเฉินระดับต่ำสุด เข้าถึงได้ตอน Router หา IOS image ไม่เจอหรือกด Break ระหว่าง boot ใช้กู้คืนระบบ/reset password (ใช้คำสั่ง <code>?</code> ดูรายการคำสั่งที่ใช้ได้ในโหมดปัจจุบัน และ <code>Tab</code> เติมคำสั่งอัตโนมัติได้ทุกโหมด)</li>
+            <li>คำสั่ง <code>show running-config</code> ใช้ดู config ปัจจุบันที่ใช้งานอยู่ใน RAM ส่วน <code>show startup-config</code> ใช้ดู config ที่จะโหลดตอนเปิดเครื่องใหม่ (เก็บใน NVRAM)</li>
+            <li>โหมด <b>Setup Mode</b> จะเข้ามาอัตโนมัติเมื่อ Router ไม่มี startup-config เลย เป็นตัวช่วยถาม-ตอบตั้งค่าพื้นฐานทีละขั้นตอน</li>
+            <li>คำสั่ง <code>Ctrl+Shift+6</code> ใช้หยุดการทำงานของคำสั่งที่กำลังรันอยู่ (เช่น ping ที่ค้าง) โดยไม่ต้องออกจากโหมดปัจจุบัน</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>โหมดทั้งหมดที่จะเจอใน Lab พร้อมวิธีเข้าและออก</caption><thead><tr><th>โหมด</th><th>Prompt ที่เห็น</th><th>เข้าด้วยคำสั่ง</th><th>ทำอะไรได้</th></tr></thead><tbody><tr><td>User EXEC</td><td><code>Router&gt;</code></td><td>เข้ามาตอนแรกอัตโนมัติ</td><td>ดูข้อมูลพื้นฐาน ping ได้ แต่แก้ config ไม่ได้</td></tr><tr><td>Privileged EXEC</td><td><code>Router#</code></td><td><code>enable</code></td><td>ดู config ทั้งหมด บันทึก และ reload</td></tr><tr><td>Global Config</td><td><code>Router(config)#</code></td><td><code>configure terminal</code></td><td>แก้ค่าที่มีผลกับทั้งอุปกรณ์ เช่น hostname</td></tr><tr><td>Interface Config</td><td><code>Router(config-if)#</code></td><td><code>interface g0/0</code></td><td>ตั้ง IP และเปิดปิด Interface นั้น</td></tr><tr><td>Router Config</td><td><code>Router(config-router)#</code></td><td><code>router ospf 1</code></td><td>ตั้งค่า Routing Protocol</td></tr><tr><td>Line Config</td><td><code>Router(config-line)#</code></td><td><code>line vty 0 4</code></td><td>ตั้งค่าการล็อกอินระยะไกล</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>วิธีออกจากโหมด:</b> <code>exit</code> ถอยออกทีละชั้น ส่วน <code>end</code> หรือกด Ctrl+Z กระโดดกลับไป Privileged EXEC ทันทีไม่ว่าอยู่ลึกแค่ไหน</p><p><b>ทำไมต้องแบ่งโหมด:</b> เพื่อกันการแก้ค่าโดยไม่ตั้งใจและเพื่อจำกัดสิทธิ์ คนที่ล็อกอินเข้ามาดูสถานะเฉยๆ จะอยู่แค่ User EXEC ส่วนคนที่จะแก้ config ต้องรู้รหัสผ่าน ที่ตั้งไว้ด้วย <code>enable secret</code> ถึงจะเข้า Privileged EXEC ได้ (ฝึกตั้งจริงใน Lab 4)</p><p><b>อ่าน prompt ให้เป็นคือทักษะสำคัญ</b> — เวลาพิมพ์คำสั่งแล้วไม่ผ่าน ให้ดูก่อนว่าตอนนี้อยู่โหมดไหน เพราะคำสั่งส่วนใหญ่ใช้ได้เฉพาะโหมดของมัน เช่น <code>ip address</code> ต้องอยู่ใน Interface Config เท่านั้น พิมพ์ใน Global Config จะไม่รู้จัก</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — โหมดการทำงาน Cisco IOS <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-ipsubnet" aria-labelledby="tab-ipsubnet" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">IP Address และ Subnet พื้นฐาน</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>IPv4 มีทั้งหมด 32 bit แบ่งเป็นส่วน <b>Network</b> และส่วน <b>Host</b></li>
+            <li>Subnet Mask เป็นตัวกำหนดว่า bit ไหนเป็น Network ส่วนไหนเป็น Host เช่น <code>/24</code> (255.255.255.0) มี Host ใช้ได้ 254 เครื่อง</li>
+            <li><code>/30</code> (255.255.255.252) นิยมใช้กับลิงก์ WAN แบบ Point-to-Point ระหว่าง Router 2 ตัว เพราะมี Host address ใช้งานได้พอดี 2 ตัว ไม่เปลืองพื้นที่ IP</li>
+            <li><b>Private IP Ranges</b> (ใช้ในเครือข่ายภายใน ไม่ routing บน Internet จริง): <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code></li>
+            <li><b>Classful เดิม</b>: Class A (1-126, /8), Class B (128-191, /16), Class C (192-223, /24) — ปัจจุบันแทบไม่ใช้แบ่งตาม Class แล้ว เปลี่ยนมาใช้ CIDR แทน</li>
+            <li><b>Network Address</b> (host bits เป็น 0 ทั้งหมด) และ <b>Broadcast Address</b> (host bits เป็น 1 ทั้งหมด) ของแต่ละ subnet ใช้เป็น Host IP จริงไม่ได้ ต้องหักออกจากจำนวน Host ที่ใช้งานได้เสมอ</li>
+            <li>Subnet Mask ต้องเป็นบิต 1 ต่อเนื่องกันจากซ้ายเสมอ (เช่น <code>11111111.11111111.11111111.00000000</code>) จะสลับ 0 แทรกกลาง 1 ไม่ได้</li>
+            <li>Loopback Address <code>127.0.0.0/8</code> สงวนไว้ทดสอบเครื่องตัวเอง (เช่น <code>127.0.0.1</code>) ไม่ใช้งานจริงบนเครือข่าย</li>
+            <li>APIPA <code>169.254.0.0/16</code> คือ IP ที่เครื่องตั้งให้ตัวเองอัตโนมัติเมื่อหา DHCP Server ไม่เจอ บ่งบอกปัญหาการเชื่อมต่อ DHCP</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>ค่าประจำหลักของหนึ่ง Octet — ใช้แปลงเลขฐานสิบเป็นฐานสอง</caption><thead><tr><th>bit ที่</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead><tbody><tr><td>ค่าประจำหลัก</td><td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td></tr><tr><td>ตัวอย่าง 192</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>ตัวอย่าง 255</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table></div><p style="margin-top:var(--space-5)">บวกเฉพาะช่องที่เป็น 1 จะได้เลขฐานสิบกลับมา — 192 มาจาก 128+64 ส่วน 255 มาจากทุกช่องรวมกัน ซึ่งเป็นเหตุผลที่แต่ละ Octet มีค่าเกิน 255 ไม่ได้ (ฝึกคำนวณจริงใน Lab 3)</p><div class="ref-table-wrap"><table class="ref-table"><caption>ช่วง Private IP ทั้งสามช่วงตาม RFC1918</caption><thead><tr><th>ช่วง</th><th>ตั้งแต่ถึง</th><th>จำนวนหมายเลข</th><th>Lab ที่ใช้ช่วงนี้</th></tr></thead><tbody><tr><td><code>10.0.0.0/8</code></td><td>10.0.0.0 – 10.255.255.255</td><td>ราว 16.7 ล้าน</td><td>Lab 8 (10.80.x.x)</td></tr><tr><td><code>172.16.0.0/12</code></td><td>172.16.0.0 – 172.31.255.255</td><td>ราว 1 ล้าน</td><td>Lab 6, 7, 10, 11</td></tr><tr><td><code>192.168.0.0/16</code></td><td>192.168.0.0 – 192.168.255.255</td><td>65,536</td><td>Lab 4, 5, 9</td></tr></tbody></table></div><p style="margin-top:var(--space-4)"><b>ข้อสอบชอบหลอกตรงนี้:</b> ช่วง 172 จบที่ <code>172.31</code> ไม่ใช่ 172.32 — หมายเลขที่ขึ้นต้นด้วย 172.32 ขึ้นไปเป็น Public IP แล้ว</p><div class="ref-table-wrap"><table class="ref-table"><caption>หมายเลขพิเศษที่ตั้งให้เครื่องไม่ได้</caption><thead><tr><th>หมายเลข</th><th>คืออะไร</th><th>สังเกตได้จาก</th></tr></thead><tbody><tr><td>Network Address</td><td>หมายเลขแรกของวง ใช้เรียกทั้งวง</td><td>Host bits เป็น 0 ทั้งหมด</td></tr><tr><td>Broadcast Address</td><td>หมายเลขสุดท้ายของวง ส่งถึงทุกเครื่อง</td><td>Host bits เป็น 1 ทั้งหมด</td></tr><tr><td><code>127.0.0.1</code></td><td>Loopback ทดสอบตัวเอง</td><td>ขึ้นต้นด้วย 127</td></tr><tr><td><code>169.254.x.x</code></td><td>APIPA เครื่องตั้งเองเมื่อหา DHCP ไม่เจอ</td><td>เห็นเลขนี้แปลว่า DHCP มีปัญหา</td></tr></tbody></table></div>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — IP Address &amp; Subnetting <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-vlsm" aria-labelledby="tab-vlsm" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">VLSM (Variable Length Subnet Mask)</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>แบ่ง subnet จาก network เดียวกันให้มี<b>ขนาดไม่เท่ากัน</b> ตามจำนวน Host จริงที่แต่ละวงต้องใช้ ไม่เปลือง IP เหมือนแบ่งขนาดเท่ากันทุกวง (FLSM)</li>
+            <li>ตัวอย่าง: แบ่ง <code>/24</code> วงใหญ่ ออกเป็น <code>/26</code>, <code>/28</code>, <code>/30</code> ตามขนาดของแต่ละ LAN/WAN link</li>
+            <li>ต้องคำนวณ Network Address, Broadcast Address และช่วง Usable Host ให้ถูกต้องในแต่ละ subnet ที่แบ่งย่อยออกมา</li>
+            <li><b>ขั้นตอนคำนวณ (1-2)</b>: เรียงลำดับความต้องการ Host จากมากไปน้อย แล้วหาขนาด subnet ที่เล็กที่สุดที่รองรับ Host ได้พอในแต่ละวง</li>
+            <li><b>ขั้นตอนคำนวณ (3)</b>: จัดสรร block ให้ไม่ทับซ้อนกัน โดยเริ่มจาก block ใหญ่สุดก่อนเสมอ เพื่อไม่ให้ IP วงเล็กไปแทรกกลางวงใหญ่</li>
+            <li>ตัวอย่าง: จาก <code>192.168.1.0/24</code> ถ้า LAN A ต้องการ 100 Host จะได้ <code>/25</code> (ใช้ได้ 126 Host), LAN B ต้องการ 50 Host จะได้ <code>/26</code> (62 Host), ลิงก์ WAN ต้องการแค่ 2 Host จะได้ <code>/30</code> (2 Host)</li>
+            <li>VLSM ช่วยแก้ปัญหา IP ขาดแคลนได้ดีกว่า FLSM (แบ่งขนาดเท่ากันทุกวง) เพราะจัดสรรตามความต้องการจริงของแต่ละ LAN/WAN</li>
+            <li>ข้อควรระวัง: ต้องจัดสรร block ขนาดใหญ่ก่อนเสมอ ถ้าจัดสรร block เล็กก่อนอาจทำให้ไม่มีพื้นที่ต่อเนื่องพอสำหรับ block ใหญ่ที่เหลือ</li>
+            <li>ในการสอบเชิงปฏิบัติ ควรร่างตาราง Subnet ที่ต้องใช้ทั้งหมดก่อนเริ่ม config จริงบน Router เพื่อลดข้อผิดพลาดจากการคำนวณสด</li>
+          </ul>
+<p><b>ตัวอย่างการแบ่งจริง</b> — บล็อก <code>192.168.1.0/24</code> ต้องรองรับ ฝ่ายขาย 100 เครื่อง ฝ่ายบัญชี 20 เครื่อง และลิงก์ระหว่าง Router อีก 1 เส้น กฎคือ<b>แบ่งจากวงใหญ่ไปเล็กเสมอ</b></p><div class="ref-table-wrap"><table class="ref-table"><caption>ลำดับการแบ่งที่ถูกต้อง</caption><thead><tr><th>ลำดับ</th><th>วง</th><th>ต้องการ</th><th>เลือก Prefix</th><th>ช่วงที่ได้</th><th>เหลือทิ้ง</th></tr></thead><tbody><tr><td>1</td><td>ฝ่ายขาย</td><td>100</td><td><code>/25</code></td><td>192.168.1.0 – 192.168.1.127</td><td>26</td></tr><tr><td>2</td><td>ฝ่ายบัญชี</td><td>20</td><td><code>/27</code></td><td>192.168.1.128 – 192.168.1.159</td><td>10</td></tr><tr><td>3</td><td>ลิงก์ Router</td><td>2</td><td><code>/30</code></td><td>192.168.1.160 – 192.168.1.163</td><td>0</td></tr><tr><td>เหลือว่าง</td><td>เผื่ออนาคต</td><td>—</td><td>—</td><td>192.168.1.164 ขึ้นไป</td><td>—</td></tr></tbody></table></div><p style="margin-top:var(--space-4)"><b>ทำไมต้องเรียงจากใหญ่ไปเล็ก:</b> ซับเน็ตขนาดหนึ่งต้องเริ่มที่ ตำแหน่งที่หารด้วยขนาดตัวเองลงตัว ถ้าแบ่งวงเล็กไปก่อน จะเกิดช่องว่างที่วางวงใหญ่ต่อไม่ได้ และต้องเสียหมายเลขทิ้งทั้งก้อน</p><p><b>VLSM ใช้ได้กับ Protocol แบบ Classless เท่านั้น</b> — RIPv2, EIGRP, OSPF และ BGP รองรับ เพราะส่ง Subnet Mask ไปกับ update ด้วย ส่วน RIPv1 ใน Lab 6 ไม่ส่ง จึงบังคับให้ทุกวงใช้ mask เท่ากันหมด นี่คือเหตุผลที่ Lab 6 ใช้ <code>/24</code> ทั้งเครือข่าย แต่ Lab 7 เป็นต้นไปใช้ <code>/30</code> กับลิงก์ WAN ได้</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — VLSM <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-cidr" aria-labelledby="tab-cidr" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">CIDR (Classless Inter-Domain Routing)</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>วิธีเขียน Subnet Mask แบบย่อด้วย Prefix Length เช่น <code>/24</code> แทน <code>255.255.255.0</code></li>
+            <li>ช่วยลดขนาด Routing Table ด้วยการรวมหลาย Network เข้าด้วยกันเป็นเส้นทางเดียว (Route Summarization)</li>
+            <li>เป็นมาตรฐานที่ใช้แทนระบบ Classful Addressing (Class A/B/C) แบบเดิมที่แบ่ง subnet ตายตัวไม่ยืดหยุ่น</li>
+            <li>ตัวอย่าง Prefix ที่พบบ่อย (วงใหญ่): <code>/24</code> = 254 Host, <code>/25</code> = 126 Host, <code>/26</code> = 62 Host</li>
+            <li>ตัวอย่าง Prefix ที่พบบ่อย (วงเล็ก): <code>/27</code> = 30 Host, <code>/28</code> = 14 Host, <code>/29</code> = 6 Host, <code>/30</code> = 2 Host</li>
+            <li><b>Supernetting</b> — ตรงข้ามกับ Subnetting คือการรวมหลาย network เล็กๆ ที่ติดกันให้เป็น block ใหญ่ block เดียว ช่วยลดจำนวนแถวใน Routing Table ของ Router ต้นทาง</li>
+            <li><b>Wildcard Mask</b> (ใช้กับ OSPF/ACL) คือค่าผกผันของ Subnet Mask เช่น <code>/24</code> มี Subnet Mask <code>255.255.255.0</code> แต่ Wildcard Mask คือ <code>0.0.0.255</code></li>
+            <li>Route Summarization ด้วย CIDR ช่วยลดภาระ CPU และ Memory ของ Router เพราะไม่ต้องเก็บทุก subnet ย่อยแยกกันในตาราง</li>
+            <li>เงื่อนไขสำคัญของการทำ Supernetting คือ network ที่จะรวมกันต้องเป็นบล็อกที่ติดกันและมีขนาดเท่ากัน (power of 2) เท่านั้น</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>ตารางแปลง Prefix ที่ใช้บ่อยที่สุด</caption><thead><tr><th>Prefix</th><th>Subnet Mask</th><th>Wildcard Mask</th><th>Block Size</th><th>Host ใช้ได้</th><th>ใช้กับ</th></tr></thead><tbody><tr><td><code>/24</code></td><td>255.255.255.0</td><td>0.0.0.255</td><td>256</td><td>254</td><td>วง LAN ของผู้ใช้</td></tr><tr><td><code>/25</code></td><td>255.255.255.128</td><td>0.0.0.127</td><td>128</td><td>126</td><td>แผนกใหญ่</td></tr><tr><td><code>/26</code></td><td>255.255.255.192</td><td>0.0.0.63</td><td>64</td><td>62</td><td>แผนกขนาดกลาง</td></tr><tr><td><code>/27</code></td><td>255.255.255.224</td><td>0.0.0.31</td><td>32</td><td>30</td><td>ห้องเรียน</td></tr><tr><td><code>/28</code></td><td>255.255.255.240</td><td>0.0.0.15</td><td>16</td><td>14</td><td>ห้องเล็ก</td></tr><tr><td><code>/29</code></td><td>255.255.255.248</td><td>0.0.0.7</td><td>8</td><td>6</td><td>กลุ่มเซิร์ฟเวอร์</td></tr><tr><td><code>/30</code></td><td>255.255.255.252</td><td>0.0.0.3</td><td>4</td><td>2</td><td>ลิงก์ระหว่าง Router</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>Wildcard Mask คือค่ากลับด้านของ Subnet Mask</b> คำนวณโดยเอา 255 ลบแต่ละ Octet — ใช้ตอนประกาศ <code>network</code> ให้ OSPF และ EIGRP (Lab 8, 9, 10) ส่วน Subnet Mask แบบปกติใช้ตอนตั้ง <code>ip address</code> และเขียน <code>ip route</code></p><p><b>ทางลัดหา Block Size:</b> เอา 256 ลบค่าใน Octet ที่ถูกตัด เช่น mask ลงท้าย .192 จะได้ 256−192 = 64 แปลว่าขอบของแต่ละวงคือ 0, 64, 128, 192 — เร็วกว่านับ bit มาก</p><p><b>ค่าที่เป็นไปได้ของ Octet ใน Subnet Mask มีแค่ 9 ค่า</b> คือ <code>0, 128, 192, 224, 240, 248, 252, 254, 255</code> เพราะเลข 1 ต้องเรียงติดกันจากซ้ายเสมอ เจอค่าอื่นเช่น 255.255.255.100 ให้ตอบได้ทันทีว่าใช้ไม่ได้</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — CIDR <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-rip" aria-labelledby="tab-rip" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">RIP (Routing Information Protocol)</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>Dynamic Routing Protocol แบบ <b>Distance Vector</b> ใช้ Hop Count เป็นตัวชี้วัดเส้นทางที่ดีที่สุด (ไปได้สูงสุด 15 hop)</li>
+            <li><b>RIPv1</b> เป็น Classful ไม่ส่ง Subnet Mask ไปด้วย ส่วน <b>RIPv2</b> เป็น Classless ส่ง Subnet Mask ไปด้วย รองรับ VLSM</li>
+            <li>ส่งตารางเส้นทางทั้งหมดไปให้ Router ข้างเคียงทุก 30 วินาที (Periodic Update) ทำให้ Convergence ช้ากว่า Protocol อื่น</li>
+            <li><b>Timer สำคัญ</b>: Update Timer 30s (ส่งตารางเป็นระยะ), Invalid Timer 180s (ถ้าไม่ได้ update เส้นทางนั้นถือว่าใช้ไม่ได้), Holddown Timer 180s (กันไม่ให้เส้นทางที่เพิ่งล่มกลับมาเร็วเกินไปจนเกิด Loop), Flush Timer 240s (ลบเส้นทางออกจากตารางถาวร)</li>
+            <li>คำสั่งตั้งค่าเบื้องต้น: <code>router rip</code> เข้าสู่โหมดตั้งค่า RIP แล้วตามด้วย <code>network [network-address]</code> เพื่อประกาศ interface ที่ต้องการให้ RIP ทำงาน</li>
+            <li>มีปัญหา <b>Routing Loop</b> ได้ง่ายเพราะอาศัย Hop Count ล้วนๆ — ป้องกันด้วยเทคนิคเช่น Split Horizon และ Route Poisoning</li>
+            <li>คำสั่ง <code>show ip protocols</code> ใช้ตรวจสอบว่า RIP กำลังทำงานอยู่จริง พร้อม Timer และ Network ที่ประกาศไว้</li>
+            <li>RIPv2 รองรับ <b>Authentication</b> ป้องกัน Router ปลอมส่ง update เข้ามาแทรกในเครือข่าย ต่างจาก RIPv1 ที่ไม่มีระบบนี้</li>
+            <li>เมื่อ Router เรียนรู้เส้นทางเดียวกันจากหลายเพื่อนบ้านด้วย Hop Count เท่ากัน RIP จะทำ <b>Load Balancing</b> แบบ Equal-Cost อัตโนมัติสูงสุด 4 เส้นทาง (ค่าเริ่มต้น)</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>RIP v1 เทียบ RIP v2 — ความต่างที่กำหนดว่า Lab ออกแบบอย่างไร</caption><thead><tr><th>หัวข้อ</th><th>RIP v1 (Lab 6)</th><th>RIP v2 (Lab 7)</th></tr></thead><tbody><tr><td>ส่ง Subnet Mask ไปกับ update</td><td><span class="rt-no">ไม่ส่ง</span> (Classful)</td><td><span class="rt-ok">ส่ง</span> (Classless)</td></tr><tr><td>รองรับ VLSM</td><td><span class="rt-no">ไม่ได้</span></td><td><span class="rt-ok">ได้</span></td></tr><tr><td>ทุกวงต้องใช้ mask เท่ากัน</td><td>ใช่ — Lab 6 จึงใช้ /24 ทั้งหมด</td><td>ไม่ — Lab 7 ใช้ LAN /24 กับ WAN /30</td></tr><tr><td>วิธีส่ง update</td><td>Broadcast ไป 255.255.255.255</td><td>Multicast ไป 224.0.0.9</td></tr><tr><td>ปิด auto-summary ได้</td><td><span class="rt-no">ไม่ได้</span></td><td><span class="rt-ok">ได้</span> ด้วย <code>no auto-summary</code></td></tr><tr><td>รองรับการยืนยันตัวตน</td><td>ไม่มี</td><td>มี</td></tr></tbody></table></div><div class="ref-table-wrap"><table class="ref-table"><caption>คำสั่งที่ต้องพิมพ์จริง</caption><thead><tr><th>Lab</th><th>คำสั่ง</th><th>ทำอะไร</th></tr></thead><tbody><tr><td>6, 7</td><td><code>router rip</code></td><td>เข้าโหมดตั้งค่า RIP</td></tr><tr><td>6</td><td><code>version 1</code></td><td>บังคับใช้ v1</td></tr><tr><td>7</td><td><code>version 2</code></td><td>บังคับใช้ v2</td></tr><tr><td>7</td><td><code>no auto-summary</code></td><td>เลิกสรุปเส้นทางกลับเป็น Classful</td></tr><tr><td>6, 7</td><td><code>network 172.16.1.0</code></td><td>ประกาศวง — RIP ใช้เลข Network เปล่าๆ ไม่ต้องใส่ wildcard</td></tr><tr><td>6, 7</td><td><code>show ip protocols</code></td><td>ตรวจว่า version ที่ตั้งมีผลจริง</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>จุดที่ต่างจาก OSPF และ EIGRP:</b> คำสั่ง <code>network</code> ของ RIP ใส่แค่เลขเครือข่าย ไม่ต้องตามด้วย wildcard mask — ถ้าเผลอใส่ wildcard ไปด้วย IOS จะไม่รับคำสั่ง</p><p><b>ข้อจำกัดที่ทำให้ RIP ไม่เหมาะกับเครือข่ายใหญ่:</b> นับระยะทางเป็นจำนวน hop และจำกัดที่ <b>15 hop</b> เกินกว่านั้นถือว่าไปไม่ถึง อีกทั้งวัดแค่จำนวน hop ไม่ได้ดูความเร็วสาย เส้นทางที่ผ่าน Router น้อยกว่าแต่สายช้ากว่าจึงถูกเลือกเสมอ</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — RIP <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-ospf" aria-labelledby="tab-ospf" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">OSPF (Open Shortest Path First)</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>Dynamic Routing Protocol แบบ <b>Link-State</b> คำนวณเส้นทางที่ดีที่สุดด้วยค่า Cost (อิงจาก Bandwidth) ผ่านอัลกอริทึม Dijkstra (SPF)</li>
+            <li>แบ่งเครือข่ายออกเป็น <b>Area</b> เพื่อลดภาระการคำนวณเส้นทางและช่วยให้ขยายเครือข่ายขนาดใหญ่ได้ดี</li>
+            <li>เป็น Open Standard ใช้ได้กับอุปกรณ์หลายยี่ห้อ ไม่ผูกติดกับ Cisco เท่านั้นเหมือน EIGRP</li>
+            <li>ก่อนแลกเปลี่ยนเส้นทางกันได้ Router ต้องผ่านสถานะ <b>Neighbor States</b> ตามลำดับ: Down → Init → 2-Way → ExStart → Exchange → Loading → <b>Full</b> (พร้อมใช้งานสมบูรณ์)</li>
+            <li>บนเครือข่ายแบบ Multi-access (เช่น Ethernet) จะเลือก <b>DR (Designated Router)</b> และ <b>BDR (Backup DR)</b> เพื่อลดจำนวนการแลกเปลี่ยนข้อมูลระหว่าง Router ทุกตัว ไม่ต้องคุยกันแบบ full-mesh</li>
+            <li>คำสั่งตั้งค่าเบื้องต้น: <code>router ospf [process-id]</code> ตามด้วย <code>network [address] [wildcard-mask] area [area-id]</code></li>
+            <li>คำสั่ง <code>show ip ospf neighbor</code> ใช้ตรวจสอบสถานะความสัมพันธ์กับ Router ข้างเคียง ต้องเป็น Full หรือ 2-Way (บน Multi-access ที่ไม่ใช่ DR/BDR) จึงจะแลกเปลี่ยนเส้นทางสมบูรณ์</li>
+            <li>OSPF ใช้ <b>Router ID</b> (เลข 32 บิตรูปแบบเดียวกับ IP) เป็นตัวระบุตัวตน Router แต่ละเครื่องในกระบวนการเลือก DR/BDR และคำนวณเส้นทาง</li>
+            <li><b>Cost</b> คำนวณจากสูตร Reference Bandwidth หารด้วย Bandwidth ของ Interface นั้น — ยิ่ง Bandwidth สูง Cost ยิ่งต่ำ ทำให้ถูกเลือกเป็นเส้นทางหลัก</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>คำสั่ง OSPF ที่ใช้ใน Lab 9 และ Lab 10</caption><thead><tr><th>คำสั่ง</th><th>ตัวอย่าง</th><th>อธิบาย</th></tr></thead><tbody><tr><td><code>router ospf [process-id]</code></td><td><code>router ospf 1</code></td><td>Process ID เป็นเลขที่ใช้ภายใน Router ตัวนั้นเท่านั้น ไม่ต้องตรงกันระหว่าง Router</td></tr><tr><td><code>network [net] [wildcard] area [n]</code></td><td><code>network 192.168.1.0 0.0.0.255 area 0</code></td><td>ประกาศวง พร้อมบอกว่าอยู่ Area ไหน — ต้องใช้ wildcard mask ไม่ใช่ subnet mask</td></tr><tr><td><code>show ip ospf neighbor</code></td><td>—</td><td>ดูว่าจับคู่เพื่อนบ้านสำเร็จหรือยัง (สะกดเอกพจน์)</td></tr><tr><td><code>show ip protocols</code></td><td>—</td><td>ดูว่า OSPF ประกาศวงไหนไปแล้วบ้าง</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>Area 0 คือ Backbone</b> — เครือข่ายที่มีหลาย Area ทุก Area ต้องต่อเข้า Area 0 เสมอ Lab 9 เป็นแบบ Single-Area จึงใช้ <code>area 0</code> ทั้งหมด</p><div class="ref-table-wrap"><table class="ref-table"><caption>เงื่อนไขที่ต้องตรงกันสองฝั่ง ไม่งั้นจับคู่เพื่อนบ้านไม่สำเร็จ</caption><thead><tr><th>ต้องตรงกัน</th><th>ไม่จำเป็นต้องตรงกัน</th></tr></thead><tbody><tr><td>หมายเลข Area</td><td>Process ID</td></tr><tr><td>ค่า Hello และ Dead Interval</td><td>Router ID</td></tr><tr><td>Subnet Mask ของลิงก์ที่เชื่อมกัน</td><td>ลำดับการ config</td></tr><tr><td>การตั้งค่ายืนยันตัวตน (ถ้าเปิดใช้)</td><td>—</td></tr></tbody></table></div><p style="margin-top:var(--space-4)"><b>OSPF เลือกเส้นทางจาก Cost</b> ซึ่งคำนวณจากความเร็วสาย ไม่ใช่จำนวน hop จึงฉลาดกว่า RIP — สายเร็วกว่าได้ Cost ต่ำกว่าและถูกเลือกก่อน ค่า Administrative Distance ของ OSPF คือ 110</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — OSPF <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-eigrp" aria-labelledby="tab-eigrp" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">EIGRP (Enhanced Interior Gateway Routing Protocol)</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>พัฒนาโดย Cisco เป็น Advanced Distance Vector (บางตำราเรียก Hybrid) ใช้ <b>DUAL Algorithm</b> หาเส้นทางสำรองเตรียมไว้ล่วงหน้า</li>
+            <li>คำนวณ Metric จากหลายปัจจัยร่วมกัน (Bandwidth, Delay, Reliability, Load) ไม่ใช่แค่ Hop Count เหมือน RIP</li>
+            <li>Convergence เร็วกว่า RIP มาก เพราะมีเส้นทางสำรอง (Feasible Successor) พร้อมสลับใช้งานได้ทันทีที่เส้นทางหลักล่ม</li>
+            <li>Router ที่จะเป็นเพื่อนบ้านกันได้ต้องอยู่ <b>Autonomous System (AS) number เดียวกัน</b> — ตั้งค่าตอนเริ่มคำสั่งด้วย <code>router eigrp [as-number]</code></li>
+            <li>เดิม Cisco เป็นเจ้าของเทคโนโลยีนี้แต่เดียว (Proprietary) ภายหลังเปิดบางส่วนเป็น Open Standard ผ่าน RFC 7868 แล้ว แต่ในทางปฏิบัติยังพบใช้งานเฉพาะอุปกรณ์ Cisco เป็นหลัก</li>
+            <li>คำสั่งตั้งค่าเบื้องต้น: <code>router eigrp [as-number]</code> ตามด้วย <code>network [network-address]</code></li>
+            <li>คำสั่ง <code>show ip eigrp neighbors</code> ใช้ดูรายชื่อ Router เพื่อนบ้านที่จับคู่ AS number กันสำเร็จแล้ว</li>
+            <li><b>Feasible Successor</b> คือเส้นทางสำรองที่ EIGRP เตรียมไว้ล่วงหน้าโดยไม่ต้องคำนวณใหม่ตอนเส้นทางหลักล่ม ทำให้ Convergence เร็วกว่า Distance Vector ทั่วไปมาก</li>
+            <li>EIGRP รองรับทั้ง IPv4 และ IPv6 ในตัวเดียวกัน (ผ่าน Address-family configuration) ต่างจาก RIP ที่ต้องแยกเวอร์ชันชัดเจน</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>คำสั่ง EIGRP ที่ใช้ใน Lab 8 และ Lab 10</caption><thead><tr><th>คำสั่ง</th><th>ตัวอย่าง</th><th>อธิบาย</th></tr></thead><tbody><tr><td><code>router eigrp [AS]</code></td><td><code>router eigrp 100</code></td><td>เลข AS <b>ต้องตรงกันทุก Router</b> ไม่งั้นจะไม่คุยกันเลย — ต่างจาก Process ID ของ OSPF</td></tr><tr><td><code>network [net] [wildcard]</code></td><td><code>network 10.80.2.0 0.0.0.3</code></td><td>ประกาศวง ต้องใช้ wildcard mask เช่นกัน แต่ไม่มี area</td></tr><tr><td><code>no auto-summary</code></td><td>—</td><td>ปิดการสรุปกลับเป็น Classful ที่ขอบเครือข่าย จำเป็นเมื่อใช้ VLSM</td></tr><tr><td><code>show ip eigrp neighbors</code></td><td>—</td><td>ดูเพื่อนบ้าน (สะกดพหูพจน์ ต่างจาก OSPF)</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>ทำไม EIGRP ถึงเรียกว่า Advanced Distance Vector</b> — เก็บข้อมูลเพื่อนบ้านไว้ในตารางเหมือน Link-State แต่แลกเปลี่ยนเฉพาะส่วนที่เปลี่ยนแปลง จึงเร็วกว่า RIP มากและกินแบนด์วิดท์น้อยกว่า OSPF</p><div class="ref-table-wrap"><table class="ref-table"><caption>ค่า Metric ห้าตัวที่ใช้ตอนทำ Redistribution ใน Lab 10</caption><thead><tr><th>ลำดับ</th><th>ค่า</th><th>หน่วย</th><th>ตัวอย่างที่ใช้ใน Lab</th></tr></thead><tbody><tr><td>1</td><td>Bandwidth</td><td>Kbps</td><td>10000</td></tr><tr><td>2</td><td>Delay</td><td>สิบไมโครวินาที</td><td>100</td></tr><tr><td>3</td><td>Reliability</td><td>0–255</td><td>255</td></tr><tr><td>4</td><td>Load</td><td>1–255</td><td>1</td></tr><tr><td>5</td><td>MTU</td><td>byte</td><td>1500</td></tr></tbody></table></div><p style="margin-top:var(--space-4)">เวลาดึงเส้นทางจาก Protocol อื่นเข้า EIGRP <b>ต้องระบุ metric ครบทั้งห้าค่า</b> เพราะ EIGRP ไม่มีค่าเริ่มต้นให้ ถ้าไม่ใส่ เส้นทางจะถูกมองว่า ไปไม่ถึงและไม่ถูกกระจายต่อ ค่า Administrative Distance ของ EIGRP คือ 90 ซึ่งต่ำกว่า OSPF จึงชนะเมื่อรู้จักปลายทางเดียวกัน</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — EIGRP <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-bgp" aria-labelledby="tab-bgp" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">BGP (Border Gateway Protocol)</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>Path-Vector Protocol ใช้เชื่อมต่อระหว่าง <b>Autonomous System (AS)</b> เช่น ระหว่าง ISP กับองค์กร หรือ ISP กับ ISP</li>
+            <li>เป็นโปรโตคอลหลักที่ขับเคลื่อน Internet ทั้งโลก ให้แต่ละ AS แลกเปลี่ยนเส้นทางกันได้</li>
+            <li>เลือกเส้นทางจาก Attribute หลายตัว (เช่น AS-Path, Local Preference) ไม่ได้เลือกแค่เส้นทางที่สั้นที่สุดเหมือน IGP ทั่วไป</li>
+            <li>แบ่งเป็น <b>eBGP</b> (External — เชื่อมระหว่างคนละ AS เช่น องค์กรกับ ISP) และ <b>iBGP</b> (Internal — เชื่อม Router ภายใน AS เดียวกัน)</li>
+            <li>คำสั่งตั้งค่าเบื้องต้น: <code>router bgp [as-number]</code> ตามด้วย <code>neighbor [neighbor-ip] remote-as [as-number]</code> เพื่อระบุ Router เพื่อนบ้านที่จะแลกเปลี่ยนเส้นทางด้วย</li>
+            <li>ต่างจาก IGP (RIP/OSPF/EIGRP) ที่เน้นหาเส้นทาง "เร็วที่สุด" ภายในองค์กรเดียว BGP เน้นความสัมพันธ์เชิงนโยบาย (Policy-based Routing) ระหว่างองค์กรมากกว่าความเร็วอย่างเดียว</li>
+            <li>คำสั่ง <code>show ip bgp summary</code> ใช้ตรวจสอบสถานะ Neighbor และจำนวนเส้นทางที่ได้รับจากแต่ละ AS</li>
+            <li>BGP ใช้ TCP Port 179 ในการสร้างการเชื่อมต่อกับ Neighbor ต่างจาก IGP ทั่วไปที่ส่งข้อมูลผ่าน Multicast/Broadcast โดยตรง</li>
+            <li>เนื่องจากตาราง BGP บน Internet มีขนาดใหญ่มาก (หลายแสนเส้นทาง) การตั้งค่า Route Filtering และ Route-map จึงสำคัญมากในการควบคุมนโยบายที่แลกเปลี่ยนกัน</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>คำสั่ง BGP ที่ใช้ใน Lab 11</caption><thead><tr><th>คำสั่ง</th><th>ตัวอย่าง</th><th>อธิบาย</th></tr></thead><tbody><tr><td><code>router bgp [AS]</code></td><td><code>router bgp 100</code></td><td>เลข AS ของตัวเอง</td></tr><tr><td><code>neighbor [ip] remote-as [AS]</code></td><td><code>neighbor 172.30.2.2 remote-as 200</code></td><td>ระบุเพื่อนบ้านทีละตัว พร้อมบอกว่าอยู่ AS ไหน</td></tr><tr><td><code>network [net] mask [mask]</code></td><td><code>network 172.30.1.0 mask 255.255.255.0</code></td><td>ประกาศวงที่ต้องการบอกต่อ — ใช้ mask ปกติ ไม่ใช่ wildcard</td></tr><tr><td><code>show ip bgp summary</code></td><td>—</td><td>ดูสถานะเพื่อนบ้านและจำนวนเส้นทางที่ได้รับ</td></tr></tbody></table></div><p style="margin-top:var(--space-5)"><b>สิ่งที่ทำให้ BGP ต่างจาก Protocol อื่นทั้งหมด</b> — RIP, OSPF และ EIGRP ค้นหาเพื่อนบ้านเองอัตโนมัติ แต่ BGP ไม่ทำ ต้องพิมพ์ <code>neighbor</code> ระบุทีละตัว เพราะ BGP ออกแบบมาเชื่อมระหว่างองค์กรที่ไม่ไว้ใจกัน จึงต้องประกาศชัดเจนว่าจะคุยกับใคร</p><div class="ref-table-wrap"><table class="ref-table"><caption>eBGP เทียบ iBGP</caption><thead><tr><th>หัวข้อ</th><th>eBGP</th><th>iBGP</th></tr></thead><tbody><tr><td>คุยกับใคร</td><td>Router ที่อยู่คนละ AS</td><td>Router ที่อยู่ AS เดียวกัน</td></tr><tr><td>ค่า remote-as</td><td>ต่างจาก AS ตัวเอง</td><td>เท่ากับ AS ตัวเอง</td></tr><tr><td>Administrative Distance</td><td>20</td><td>200</td></tr><tr><td>ใช้ใน Lab 11</td><td><span class="rt-ok">ใช่</span> — R1(AS100), R2(AS200), R3(AS300)</td><td>ไม่ได้ใช้</td></tr></tbody></table></div><p style="margin-top:var(--space-4)"><b>สถานะเพื่อนบ้านที่ต้องรอ:</b> ตอนเพิ่งสั่ง <code>neighbor</code> สถานะจะเป็น Active หรือ Idle ก่อน แล้วค่อยเปลี่ยนเป็น <b>Established</b> เมื่อทั้งสองฝั่งตั้งค่าตรงกันแล้ว จึงต้องตั้งให้ครบทั้งคู่ก่อนถึงจะเห็นผล BGP ใช้เวลาจับคู่นานกว่า OSPF และ EIGRP อย่างเห็นได้ชัด</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — BGP <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+      <div class="ref-panel" role="tabpanel" id="panel-dhcp" aria-labelledby="tab-dhcp" hidden>
+        <div class="ref-panel-head rph-wide"><div class="ref-panel-title">DHCP (Dynamic Host Configuration Protocol)</div></div>
+        <div class="ref-panel-body rpb-wide">
+          <ul class="topic-list">
+            <li>แจก IP Address ให้อุปกรณ์ในเครือข่ายโดยอัตโนมัติ ไม่ต้องตั้งค่า IP แบบ Static เองทีละเครื่อง</li>
+            <li>ทำงานผ่านกระบวนการ <b>DORA</b>: Discover → Offer → Request → Acknowledge</li>
+            <li>นอกจาก IP Address แล้วยังแจก Subnet Mask, Default Gateway และ DNS Server ให้พร้อมกันได้ในครั้งเดียว</li>
+            <li>IP ที่แจกไปมี <b>Lease Time</b> กำหนดระยะเวลาการเช่าใช้ เมื่อหมดอายุอุปกรณ์ต้องขอต่ออายุ (Renew) หรือขอ IP ใหม่</li>
+            <li>ถ้า DHCP Server อยู่คนละ Subnet กับเครื่องลูกข่าย ต้องตั้ง <b>DHCP Relay</b> ด้วยคำสั่ง <code>ip helper-address [dhcp-server-ip]</code> ที่ Interface ฝั่งเครื่องลูกข่าย เพื่อส่งต่อ request ข้าม subnet ไปหา Server</li>
+            <li>คำสั่งตั้งค่า Router เป็น DHCP Server เบื้องต้น: <code>ip dhcp pool [ชื่อ]</code> ตามด้วย <code>network [address] [mask]</code> และ <code>default-router [gateway-ip]</code></li>
+            <li>คำสั่ง <code>show ip dhcp binding</code> ใช้ดูรายการ IP ที่แจกไปแล้วพร้อม MAC Address ของเครื่องที่ได้รับ</li>
+            <li>กำหนด <code>ip dhcp excluded-address</code> เพื่อกันไม่ให้ DHCP Pool แจก IP บางช่วงที่ถูกใช้แบบ Static ไปแล้ว (เช่น IP ของ Server, Gateway)</li>
+            <li>ถ้าไม่ได้รับ IP จากกระบวนการ DORA ภายในเวลาที่กำหนด เครื่องลูกข่ายจะ fallback ไปใช้ APIPA (<code>169.254.x.x</code>) แทนโดยอัตโนมัติ</li>
+          </ul>
+<div class="ref-table-wrap"><table class="ref-table"><caption>ขั้นตอนการขอ IP สี่ขั้น (จำว่า DORA)</caption><thead><tr><th>ขั้น</th><th>ชื่อ</th><th>ใครส่ง</th><th>เนื้อหา</th></tr></thead><tbody><tr><td>1</td><td>Discover</td><td>เครื่องลูกข่าย</td><td>ตะโกนถามทั้งวงว่ามี DHCP Server ไหม</td></tr><tr><td>2</td><td>Offer</td><td>DHCP Server</td><td>เสนอ IP ที่ว่างอยู่ให้</td></tr><tr><td>3</td><td>Request</td><td>เครื่องลูกข่าย</td><td>ตอบรับว่าจะใช้ IP นั้น</td></tr><tr><td>4</td><td>Acknowledge</td><td>DHCP Server</td><td>ยืนยันและจดว่าใครถือ IP นี้อยู่</td></tr></tbody></table></div><div class="ref-table-wrap"><table class="ref-table"><caption>คำสั่งตั้ง DHCP Server บน Router</caption><thead><tr><th>คำสั่ง</th><th>ทำอะไร</th></tr></thead><tbody><tr><td><code>ip dhcp excluded-address 192.168.1.1 192.168.1.10</code></td><td>กันหมายเลขที่ตั้งไว้ให้อุปกรณ์แบบตายตัว</td></tr><tr><td><code>ip dhcp pool [ชื่อ]</code></td><td>สร้างคลังหมายเลขที่จะแจก</td></tr><tr><td><code>network 192.168.1.0 255.255.255.0</code></td><td>วงที่จะแจกให้</td></tr><tr><td><code>default-router 192.168.1.1</code></td><td>บอก Gateway ให้เครื่องลูกข่าย</td></tr><tr><td><code>dns-server 8.8.8.8</code></td><td>บอก DNS ให้เครื่องลูกข่าย</td></tr><tr><td><code>show ip dhcp binding</code></td><td>ดูว่าแจกหมายเลขไหนให้ใครไปแล้ว</td></tr></tbody></table></div><p style="margin-top:var(--space-4)"><b>เรื่องที่ต้องรู้คู่กับ DHCP:</b> Discover ถูกส่งแบบ Broadcast ซึ่ง Router ไม่ส่งข้ามวง ถ้า DHCP Server อยู่คนละวงกับเครื่องลูกข่าย ต้องตั้ง <code>ip helper-address</code> ที่ Interface ฝั่งลูกข่าย เพื่อให้ Router ส่งต่อคำขอไปให้</p><p><b>หมายเหตุ:</b> Lab 4-11 ในวิชานี้ตั้ง IP ให้ PC เองทุกครั้ง (คลิกที่ไอคอน PC บนแผนภาพ) ยังไม่มี Lab ที่ตั้ง DHCP Server จริง หัวข้อนี้จึงเป็นความรู้ประกอบสำหรับการใช้งานจริง และมักออกสอบคู่กับเรื่อง APIPA ที่อธิบายไว้ในหัวข้อ IP Address และ Subnet พื้นฐาน</p>
+        </div>
+        <button class="doc-link ref-panel-doclink" type="button" disabled aria-disabled="true">เอกสารฉบับเต็ม — DHCP <span class="doc-hint">(จะเพิ่มไฟล์ภายหลัง)</span></button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-note">ระบบจำลองเพื่อการศึกษา — ไม่มีความเกี่ยวข้องกับ Cisco Networking Academy (NetAcad)<br><span style="opacity:.75">Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span></div>
+
+<script src="scripts/auth.js?v=2"></script>
+<script src="scripts/theme.js?v=1"></script>
+<script>
+'use strict';
+
+function updateAuthUI(){
+  var profile = getProfile();
+  document.getElementById('heroActionsLoggedIn').style.display = profile ? 'flex' : 'none';
+  document.getElementById('heroActionsLoggedOut').style.display = profile ? 'none' : 'flex';
+  renderAuthNav();
+}
+updateAuthUI();
+
+function getTabs(){
+  return Array.prototype.slice.call(document.querySelectorAll('.ref-tab'));
+}
+
+function selectTopic(id, opts){
+  opts = opts || {};
+  if(!document.getElementById('panel-'+id)) id = 'cmd';
+
+  getTabs().forEach(function(tab){
+    var match = tab.getAttribute('data-topic') === id;
+    tab.setAttribute('aria-selected', match ? 'true' : 'false');
+    tab.tabIndex = match ? 0 : -1;
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.ref-panel'), function(p){
+    p.hidden = p.id !== 'panel-'+id;
+  });
+
+  if(!opts.silent){
+    if(opts.replace || location.hash === '#'+id) history.replaceState(null,'','#'+id);
+    else history.pushState(null,'','#'+id);
+  }
+  if(opts.focus){
+    var t = document.getElementById('tab-'+id);
+    if(t) t.focus();
+  }
+  closeRefRail();
+}
+
+function toggleRefRail(){
+  var rail = document.getElementById('refRail');
+  var open = rail.classList.toggle('open');
+  document.getElementById('refBackdrop').classList.toggle('show', open);
+  document.getElementById('refToggle').setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+function closeRefRail(){
+  var rail = document.getElementById('refRail');
+  rail.classList.remove('open');
+  document.getElementById('refBackdrop').classList.remove('show');
+  var t = document.getElementById('refToggle');
+  if(t) t.setAttribute('aria-expanded','false');
+}
+
+document.getElementById('refRail').addEventListener('keydown', function(e){
+  if(e.target.getAttribute('role') !== 'tab') return;
+  var tabs = getTabs();
+  var idx = tabs.indexOf(e.target);
+  var next = null;
+  if(e.key === 'ArrowDown'){ next = tabs[(idx+1) % tabs.length]; }
+  else if(e.key === 'ArrowUp'){ next = tabs[(idx-1+tabs.length) % tabs.length]; }
+  else if(e.key === 'Home'){ next = tabs[0]; }
+  else if(e.key === 'End'){ next = tabs[tabs.length-1]; }
+  if(next){
+    e.preventDefault();
+    selectTopic(next.getAttribute('data-topic'), {focus:true});
+  }
+});
+
+window.addEventListener('popstate', function(){
+  var id = (location.hash || '#cmd').slice(1);
+  selectTopic(id, {silent:true});
+});
+
+(function initTopic(){
+  var id = (location.hash || '').slice(1) || 'cmd';
+  selectTopic(id, {silent:true});
+})();
+</script>
+</body>
+</html>

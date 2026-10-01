@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Engineering Laboratory I — NETLab</title>
+<link rel="stylesheet" href="styles/tokens.css?v=2">
+<link rel="stylesheet" href="styles/shared.css?v=1">
+<script src="scripts/auth.js?v=2"></script>
+<style>
+body{min-height:100vh}
+.topbar{height:56px;gap:10px}
+.settings-wrap{margin-left:auto}
+
+.hero{background:linear-gradient(180deg,var(--panel2),var(--bg));border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6);overflow:hidden;position:relative}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;display:block;filter:blur(1px) saturate(.85);
+  -webkit-mask-image:linear-gradient(to left, black 10%, transparent 55%);
+  mask-image:linear-gradient(to left, black 10%, transparent 55%);opacity:.28}
+.overview{position:relative;z-index:1;max-width:900px}
+.ov-tag{display:inline-flex;font-size:var(--step-xs);font-weight:700;padding:4px 10px;border-radius:8px;background:var(--cyan-wash);color:var(--cyan);letter-spacing:.06em;margin-bottom:var(--space-4)}
+.ov-title{font-size:42px;font-weight:800;letter-spacing:-0.02em;margin-bottom:var(--space-3);line-height:1.2;text-wrap:balance}
+.ov-desc{font-size:var(--step-lg);color:var(--text2);line-height:1.75;max-width:640px}
+.ov-actions{display:flex;gap:var(--space-3);margin-top:var(--space-6);flex-wrap:wrap}
+
+.stat-bar{position:relative;z-index:1;display:flex;gap:var(--space-7);flex-wrap:wrap;padding:var(--space-5) var(--space-6) 0}
+.stat-item b{display:block;font-size:var(--step-xl);font-weight:800;color:var(--cyan)}
+.stat-item span{font-size:var(--step-xs);color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+.stat-bar .progress-bar{width:160px;height:8px;background:var(--panel2);border:1px solid var(--border);border-radius:5px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:5px}
+
+.lab-section{max-width:900px;margin:var(--space-7) auto var(--space-8);padding:0 var(--space-5)}
+.lab-section-title{font-size:var(--step-xl);font-weight:700;margin-bottom:var(--space-2);letter-spacing:-0.01em}
+.lab-section-sub{font-size:var(--step-sm);color:var(--text3);margin-bottom:var(--space-6)}
+.roadmap{position:relative}
+.road-step{position:relative;display:flex;gap:var(--space-4);padding-bottom:var(--space-4)}
+.road-step:last-child{padding-bottom:0}
+.road-step::before{content:'';position:absolute;left:19px;top:44px;bottom:0;width:2px;background:var(--border)}
+.road-step:last-child::before{display:none}
+.road-num{flex-shrink:0;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--step-sm);z-index:1;border:2px solid var(--border);background:var(--panel)}
+.road-step.done .road-num{background:var(--green-l);color:var(--green);border-color:var(--green)}
+.road-step.active .road-num{background:var(--cyan-wash);color:var(--cyan);border-color:var(--cyan)}
+.road-step.locked .road-num{color:var(--text3)}
+.road-card{flex:1;min-width:0;display:flex;align-items:center;gap:var(--space-3);background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:var(--space-4);text-decoration:none;color:var(--text);transition:border-color .12s}
+.road-card.clickable:hover{border-color:var(--cyan)}
+.road-card.clickable:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.road-card.locked{opacity:.55;cursor:not-allowed}
+.road-info{flex:1;min-width:0}
+.road-title{font-size:var(--step-base);font-weight:600}
+.road-sub{font-size:var(--step-xs);color:var(--text3);margin-top:2px}
+.road-status{font-size:var(--step-xs);font-weight:700;padding:4px 10px;border-radius:8px;flex-shrink:0;white-space:nowrap}
+.ls-done{background:var(--green-l);color:var(--green)}
+.ls-active{background:var(--cyan-wash);color:var(--cyan)}
+.ls-locked{background:var(--panel2);color:var(--text3)}
+.footer-note{max-width:1080px}
+@media (max-width:640px){
+  .ov-title{font-size:26px}
+  .road-card{padding:12px 14px;gap:12px}
+  .road-sub{display:none}
+  .topbar .crumb{display:none}
+}
+</style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="topbar">
+  <a class="brand" href="index.html">NET<span>Lab</span></a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="labs.html">Lab</a>
+  <span class="crumb-sep">›</span>
+  <span class="crumb current">Network Engineering Laboratory I</span>
+  <div class="topbar-right">
+    <div id="authSlot"></div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-bg"><img src="assets/topic-images/hero-network-dashboard.png" alt=""></div>
+  <div class="overview">
+    <span class="ov-tag">รายวิชาปฏิบัติการ</span>
+    <div class="ov-title">Network Engineering Laboratory I</div>
+    <div class="ov-desc">การฝึกปฏิบัติการ การรับส่งสารสนเทศ การสื่อสารข้อมูล การกำหนดค่าต่าง ๆ ให้กับอุปกรณ์เราเตอร์ การกำหนดค่าโปรโตคอลเลือกเส้นทาง ได้แก่ Static route default route rip ospf eigrp เรื่องอื่น ๆ ที่สัมพันธ์กับเนื้อหาวิชาทางด้านเทคโนโลยีเครือข่าย</div>
+    <div class="ov-actions" id="ovActions"></div>
+  </div>
+  <div class="stat-bar">
+    <div class="stat-item"><b id="statTotal">–</b><span>Labs ทั้งหมด</span></div>
+    <div class="stat-item"><b id="statDone">–</b><span>เรียนจบแล้ว</span></div>
+    <div class="stat-item"><b id="statPct">–</b><span>ความคืบหน้ารวม</span>
+      <div class="progress-bar"><div class="progress-fill" id="statPctBar" style="width:0%"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="lab-section">
+  <div class="lab-section-title">Lab ทั้งหมดในรายวิชา</div>
+  <div class="lab-section-sub">เรียงตามลำดับ — ต้องเรียนจบ Lab ก่อนหน้าให้ครบก่อนถึงจะปลดล็อก Lab ถัดไป</div>
+  <div class="roadmap" id="labList"></div>
+</div>
+
+<div class="footer-note">ระบบจำลองเพื่อการศึกษา — ไม่มีความเกี่ยวข้องกับ Cisco Networking Academy (NetAcad)<br><span style="opacity:.75">Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span></div>
+
+<script>
+'use strict';
+var API_BASE=(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
+  ?'http://localhost:8000':'http://'+window.location.hostname+'/api';
+
+var LAB_META=[
+  {n:1,title:'Course Introduction and Basic Network Knowledge Review',href:'labnetwork1/lab01-course-intro/lab1.html'},
+  {n:2,title:'UTP CAT5 Cable Termination, RJ45, Keystone Jack and Patch Panel',href:'labnetwork1/lab02-cable-termination/lab2.html'},
+  {n:3,title:'IP Address และ Subnet IPv4',href:'labnetwork1/lab03-ip-subnetting/lab3.html'},
+  {n:4,title:'Basic Configuration',href:'labnetwork1/lab04-basic-configuration/lab4.html'},
+  {n:5,title:'Static Route',href:'labnetwork1/lab05-static-route/lab5.html'},
+  {n:6,title:'RIP v1',href:'labnetwork1/lab06-rip-v1/lab6.html'},
+  {n:7,title:'RIP v2',href:'labnetwork1/lab07-rip-v2/lab7.html'},
+  {n:8,title:'EIGRP',href:'labnetwork1/lab08-eigrp/lab8.html'},
+  {n:9,title:'OSPF',href:'labnetwork1/lab09-ospf/lab9.html'},
+  {n:10,title:'Redistribution',href:'labnetwork1/lab10-redistribution/lab10.html'},
+  {n:11,title:'BGP',href:'labnetwork1/lab11-bgp/lab11.html'}
+];
+// ยังไม่มี Lab ให้เล่นจริง (เช่น Lab 6 ขึ้นไป) ถือว่า "locked" เสมอแม้จะเป็น Lab ถัดไปตามลำดับ
+var LAB_BUILT={1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,9:true,10:true,11:true};
+var STATUS_LABEL={done:'เรียนจบแล้ว',active:'กำลังเรียน',locked:'ยังไม่ปลดล็อก'};
+var LABS=[];
+
+// หน้านี้เป็นตัวแทนของวิชา Network Eng. Lab I (เทอมนี้) เท่านั้น — กรองด้วย course_id
+// กันไว้ล่วงหน้า เผื่อวันที่มีวิชา Network Eng. Lab II (เทอม 2, course_id='netlab2')
+// แล้ว lab_id ของสองวิชาชนกัน (เช่น ทั้งคู่มี Lab 4) จะได้ไม่ดึงข้อมูลผิดวิชา
+var COURSE_ID='netlab1';
+function buildLabsFromProgress(rows){
+  var byId={};
+  (rows||[]).forEach(function(r){if(!r.course_id||r.course_id===COURSE_ID)byId[r.lab_id]=r;});
+  // ไล่ลำดับปลดล็อกเฉพาะในกลุ่ม Lab ที่สร้างแล้ว (LAB_BUILT) — Lab ที่ยังไม่มีหน้าจริง
+  // ถือเป็น "โปร่งใส" ไม่นับเป็นตัวกั้นคิว ไม่งั้น Lab 5 จะล็อกค้างเพราะ Lab 1-3 ยังไม่มีหน้าให้ทำ
+  var unlockedSoFar=true;
+  return LAB_META.map(function(meta){
+    var p=byId[meta.n];
+    var done=!!(p&&p.completed);
+    var started=!!(p&&p.steps_done>0);
+    var status='locked';
+    if(!LAB_BUILT[meta.n]){
+      status='locked';
+    }else if(done){
+      status='done';
+      unlockedSoFar=true;
+    }else if(started||unlockedSoFar){
+      status='active';
+      unlockedSoFar=false;
+    }
+    return {n:meta.n,title:meta.title,href:meta.href,status:status};
+  });
+}
+
+function renderLabs(){
+  var cont=document.getElementById('labList');
+  cont.innerHTML=LABS.map(function(l){
+    var statusClass=l.status==='done'?'ls-done':l.status==='active'?'ls-active':'ls-locked';
+    var icon=l.status==='done'?'✓':l.status==='locked'?'–':l.n;
+    var clickable=(l.status==='done'||l.status==='active')&&l.href;
+    var tag=clickable?'a':'div';
+    var hrefAttr=clickable?' href="'+l.href+'"':'';
+    return '<div class="road-step '+l.status+'">'
+      +'<div class="road-num">'+icon+'</div>'
+      +'<'+tag+' class="road-card'+(clickable?' clickable':'')+(l.status==='locked'?' locked':'')+'"'+hrefAttr+'>'
+      +'<div class="road-info"><div class="road-title">Lab '+l.n+' — '+l.title+'</div>'
+      +'<div class="road-sub">'+(l.status==='locked'?'ปลดล็อกหลังเรียน Lab '+(l.n-1)+' จบ':'Network Engineering Laboratory I')+'</div></div>'
+      +'<div class="road-status '+statusClass+'">'+STATUS_LABEL[l.status]+'</div>'
+      +'</'+tag+'>'
+      +'</div>';
+  }).join('');
+
+  var total=LABS.length;
+  var done=LABS.filter(function(l){return l.status==='done';}).length;
+  var pct=Math.round(done/total*100);
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('statDone').textContent=done;
+  document.getElementById('statPct').textContent=pct+'%';
+  document.getElementById('statPctBar').style.width=pct+'%';
+
+  var active=LABS.filter(function(l){return l.status==='active';})[0];
+  var actions=document.getElementById('ovActions');
+  actions.innerHTML=active
+    ?'<a class="btn-primary" href="'+active.href+'">ไปต่อที่ Lab '+active.n+' (กำลังเรียน) →</a><a class="btn-secondary" href="dashboard.html">ดู Dashboard</a>'
+    :'<a class="btn-secondary" href="dashboard.html">ดู Dashboard</a>';
+}
+
+async function loadProgress(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(studentId){
+    try{
+      var res=await fetch(API_BASE+'/progress/'+encodeURIComponent(studentId));
+      var data=await res.json();
+      LABS=buildLabsFromProgress(data.labs);
+    }catch(e){
+      LABS=buildLabsFromProgress([]);
+    }
+  }else{
+    LABS=buildLabsFromProgress([]);
+  }
+  renderLabs();
+}
+loadProgress();
+</script>
+<script src="scripts/theme.js?v=1"></script>
+<script>renderAuthNav();</script>
+</body>
+</html>

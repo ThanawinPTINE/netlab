@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch.3 IP Address and Subnetting — NETLab</title>
+<link rel="stylesheet" href="../../styles/tokens.css?v=2">
+<link rel="stylesheet" href="../../styles/shared.css?v=1">
+<script src="../../scripts/auth.js?v=2"></script>
+<style>
+body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;padding:0 var(--space-4);gap:var(--space-3);flex-shrink:0}
+.chapter-badge{background:var(--cyan-d);color:#fff;font-size:var(--step-xs);font-weight:700;padding:4px 11px;border-radius:10px}
+.ai-pill{display:flex;align-items:center;gap:6px;font-size:var(--step-xs);padding:4px 11px;border-radius:10px;font-weight:600;margin-left:auto;flex-shrink:0}
+.lab-topbar-right{display:flex;align-items:center;gap:var(--space-3);flex-shrink:0}
+.ai-on{background:var(--green-l);color:var(--green);border:1px solid var(--green-border)}
+.ai-off{background:var(--red-l);color:var(--red);border:1px solid var(--red-border)}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.ai-dot.pulse{animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.main{flex:1;display:grid;grid-template-columns:290px minmax(0,1fr) 360px;overflow:hidden}
+.sidebar{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.sb-section{padding:8px 0}
+.sb-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:9px var(--space-4) 5px}
+.step-item{display:flex;align-items:flex-start;gap:var(--space-2);padding:8px var(--space-4);border-left:2px solid transparent}
+.step-item.active{background:var(--cyan-wash);border-left-color:var(--cyan)}
+.step-item.clickable{cursor:pointer}
+.step-item.clickable:hover{background:var(--panel2)}
+.review-note{display:flex;align-items:center;gap:7px;font-size:var(--step-xs);color:var(--text3);margin-top:var(--space-3);padding:7px 11px;border-radius:7px;background:var(--panel2);border:1px solid var(--border)}
+.review-note b{color:var(--text2);font-weight:700}
+.step-item.done{opacity:.7}
+.step-num{width:23px;height:23px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:var(--step-xs);font-weight:700;margin-top:2px}
+.sn-done{background:var(--green-l);color:var(--green)}
+.sn-active{background:var(--cyan-wash);color:var(--cyan)}
+.sn-next{background:var(--panel2);color:var(--text3)}
+.step-info{flex:1;min-width:0}
+.step-title{font-size:var(--step-sm);line-height:1.4}
+.step-sub{font-size:var(--step-xs);color:var(--text3);margin-top:2px}
+.progress-wrap{padding:var(--space-3) var(--space-4);border-top:1px solid var(--border);margin-top:auto}
+.prog-label{font-size:var(--step-xs);color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:3px;transition:width .5s}
+.center{display:flex;flex-direction:column;overflow:hidden}
+.content-area{flex:1;position:relative;overflow:hidden}
+.lesson-view{position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto}
+.lesson-status{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-5) 0}
+.topo-chip{font-size:var(--step-sm);color:var(--text2);background:var(--panel2);padding:4px 11px;border-radius:7px;font-weight:600}
+.complete-reopen-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--green-l);color:var(--green);border:1px solid var(--green-border);cursor:pointer;display:none}
+.complete-reopen-chip.show{display:inline-block}
+.next-lab-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--green);color:var(--btn-text);border:1px solid var(--green);cursor:pointer;display:none}
+.next-lab-chip.show{display:inline-block}
+.lesson-wrap{padding:var(--space-5);width:100%}
+.lesson-section-label{font-size:var(--step-xs);font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.lesson-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:var(--space-6)}
+.lesson-title{font-size:var(--step-xl);font-weight:700;letter-spacing:-0.01em;margin-bottom:var(--space-4)}
+.lesson-body{font-size:var(--step-base);color:var(--text2);line-height:1.75}
+.lesson-body p{margin:0 0 12px}
+.lesson-body ul{margin:0 0 12px;padding-left:22px}
+.lesson-body li{margin-bottom:6px}
+.lesson-body b{color:var(--text)}
+.lesson-body code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:.92em}
+.wk-table tbody tr.wk-hit{background:var(--cyan-wash)}
+.wk-table td{font-family:var(--mono)}
+.wk-table td:nth-child(3),.wk-table td:nth-child(5){font-family:var(--font)}
+.wk-table .wk-bit{font-weight:700;font-size:var(--step-md);color:var(--text)}
+.wk-table tbody tr.wk-hit .wk-bit{color:var(--cyan)}
+.bit-table{table-layout:fixed}
+.bit-table th:first-child,.bit-table td:first-child{width:92px}
+.bit-table th:last-child,.bit-table td:last-child{width:148px}
+.bit-table th:not(:first-child):not(:last-child),
+.bit-table td:not(:first-child):not(:last-child){width:42px}
+.bit-table td{text-align:center;font-family:var(--mono)}
+.bit-table td:first-child,.bit-table td:last-child{text-align:left;font-family:var(--font);white-space:nowrap}
+.bit-table th{text-align:center;font-family:var(--mono)}
+.bit-table th:first-child,.bit-table th:last-child{text-align:left;font-family:var(--font)}
+.bit-table th:not(:first-child):not(:last-child),
+.bit-table td:not(:first-child):not(:last-child){border-left:1px solid var(--border)}
+.bit-table td:last-child{border-left:1px solid var(--border)}
+.bit-table th:last-child{border-left:1px solid var(--border)}
+.bit-table .bit-on,.bit-table .bit-off{padding:0}
+.bit-table .bit-on span,.bit-table .bit-off span{display:block;margin:4px 6px;border-radius:5px;padding:5px 0}
+.bit-table .bit-on span{color:var(--cyan);font-weight:700;background:var(--cyan-wash);border:1px solid var(--cyan-d)}
+.bit-table .bit-off span{color:var(--text3)}
+.calc-steps{margin:var(--space-3) 0 0;padding:0;list-style:none;border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.calc-steps li{display:flex;gap:var(--space-3);align-items:baseline;padding:8px 12px;border-bottom:1px solid var(--border);font-size:var(--step-sm)}
+.calc-steps li:last-child{border-bottom:none}
+.calc-steps li.hit{background:var(--cyan-wash)}
+.calc-steps .cs-q{font-family:var(--mono);color:var(--text);min-width:132px}
+.calc-steps .cs-a{color:var(--text2)}
+.review-intro{font-size:var(--step-sm);color:var(--text2);margin-bottom:var(--space-4);line-height:1.6}
+.rv-item{border:1px solid var(--border);border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-3);background:var(--panel)}
+.rv-item.ok{border-color:var(--green);background:var(--green-wash)}
+.rv-item.bad{border-color:var(--red)}
+.rv-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:9px}
+.rv-num{font-size:var(--step-xs);font-weight:700;color:var(--text3);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 11px;white-space:nowrap}
+.rv-mark{margin-left:auto;font-size:var(--step-sm);font-weight:700}
+.rv-mark.ok{color:var(--green)}
+.rv-mark.bad{color:var(--red)}
+.rv-q{font-size:var(--step-base);color:var(--text);line-height:1.6;margin-bottom:10px;font-weight:600}
+.rv-score{font-size:var(--step-md);font-weight:700;margin-top:var(--space-3)}
+.lesson-table-wrap{overflow-x:auto;margin:var(--space-4) 0 0;border:1px solid var(--border);border-radius:9px}
+.lesson-table{width:100%;border-collapse:collapse;font-size:var(--step-sm);min-width:440px}
+.lesson-table caption{caption-side:top;text-align:left;padding:9px 12px;font-size:var(--step-xs);font-weight:700;color:var(--text2);background:var(--panel2);border-bottom:1px solid var(--border)}
+.lesson-table th{text-align:left;padding:9px 12px;background:var(--panel2);color:var(--text2);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
+.lesson-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;line-height:1.55}
+.lesson-table tbody tr:last-child td{border-bottom:none}
+.lesson-table td:first-child{font-weight:700;white-space:nowrap;color:var(--text)}
+.lesson-table .t-ok{color:var(--green);font-weight:700}
+.lesson-table .t-no{color:var(--red);font-weight:700}
+.lesson-table code{font-family:var(--mono);background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:.92em}
+.lesson-fig{margin:var(--space-4) 0 0;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:var(--space-4) var(--space-3) var(--space-3)}
+.lesson-fig svg{display:block;width:100%;height:auto;margin:0 auto;max-width:600px;overflow:visible}
+.fig-cap{text-align:center;color:var(--text2);font-size:var(--step-xs);margin-top:10px;line-height:1.5}
+.f-box{fill:var(--panel);stroke:var(--border);stroke-width:1.4}
+.f-box-a{fill:var(--cyan-wash);stroke:var(--cyan);stroke-width:1.4}
+.f-box-g{fill:var(--green-wash);stroke:var(--green);stroke-width:1.4}
+.f-box-am{fill:var(--amber-wash);stroke:var(--amber);stroke-width:1.4}
+.f-box-p{fill:var(--purple-wash);stroke:var(--purple);stroke-width:1.4}
+.f-box-r{fill:var(--red-l);stroke:var(--red);stroke-width:1.4}
+.f-ln{stroke:var(--border);stroke-width:1.4;fill:none}
+.f-ln-a{stroke:var(--cyan);stroke-width:1.8;fill:none}
+.f-ln-g{stroke:var(--green);stroke-width:1.8;fill:none}
+.f-ln-d{stroke:var(--text3);stroke-width:1.2;fill:none;stroke-dasharray:4 3}
+.f-fill-a{fill:var(--cyan)}
+.f-fill-g{fill:var(--green)}
+.f-fill-am{fill:var(--amber)}
+.f-fill-p{fill:var(--purple)}
+.f-fill-r{fill:var(--red)}
+.f-t{fill:var(--text);font-size:12.5px;font-family:var(--font)}
+.f-tb{fill:var(--text);font-size:13.5px;font-weight:700;font-family:var(--font)}
+.f-ts{fill:var(--text2);font-size:12.5px;font-family:var(--font)}
+.f-tm{fill:var(--text);font-size:13.5px;font-family:var(--mono)}
+.f-ta{fill:var(--cyan);font-size:12.5px;font-weight:700;font-family:var(--font)}
+.f-tg{fill:var(--green);font-size:12.5px;font-weight:700;font-family:var(--font)}
+.lesson-actions{display:flex;justify-content:flex-end;margin-top:var(--space-5)}
+.q-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-3)}
+.q-num{font-size:var(--step-xs);color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.q-text{font-size:var(--step-md);font-weight:600;margin-bottom:var(--space-3);line-height:1.55}
+.q-opts{display:flex;flex-direction:column;gap:6px}
+.q-opt{display:flex;align-items:center;gap:var(--space-2);padding:9px 13px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:var(--step-sm);color:var(--text2);transition:all .1s}
+.q-opt:hover:not(.answered){border-color:var(--cyan-d);color:var(--text)}
+.q-opt.selected{background:var(--cyan-wash);border-color:var(--cyan);color:var(--cyan)}
+.q-opt.correct{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.q-opt.wrong{background:var(--red-l);border-color:var(--red);color:var(--red)}
+.q-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+.q-opt.selected .q-dot{border-color:var(--cyan);background:var(--cyan)}
+.q-opt.correct .q-dot{border-color:var(--green);background:var(--green)}
+.q-opt.wrong .q-dot{border-color:var(--red);background:var(--red)}
+.q-explain{margin-top:9px;font-size:var(--step-xs);padding:9px 11px;border-radius:8px;border:1px solid var(--green);background:var(--green-l);color:var(--explain-text);line-height:1.55;display:none}
+.q-explain.show{display:block}
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:10px}
+.dd-col-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.dd-items{display:flex;flex-direction:column;gap:5px}
+.dd-item{padding:7px 11px;border-radius:7px;border:1px solid var(--border);font-size:var(--step-xs);color:var(--text2);cursor:pointer;background:var(--panel2);transition:all .1s}
+.dd-item:hover:not(.checked){border-color:var(--cyan-d);color:var(--text)}
+.dd-item.sel{border-color:var(--cyan);background:var(--cyan-wash);color:var(--cyan)}
+.dd-item.matched{border-color:var(--green);background:var(--green-l);color:var(--green);cursor:default}
+.dd-item.pending{border-color:var(--cyan-d);background:rgba(61,139,255,.06)}
+.dd-item.checked{cursor:default}
+.dd-target{padding:7px 11px;border-radius:7px;border:2px dashed var(--border);font-size:var(--step-xs);color:var(--text2);min-height:36px;display:flex;align-items:center;cursor:pointer;transition:all .1s}
+.dd-target.pending{border-style:solid;border-color:var(--cyan-d);background:rgba(61,139,255,.06);color:var(--cyan)}
+.dd-target.filled{border-style:solid;border-color:var(--green);background:var(--green-l);color:var(--green)}
+.dd-target.wrong-m{border-color:var(--red);background:var(--red-l)}
+.dd-item[draggable="true"]{cursor:grab}
+.dd-item.dragging{opacity:.45;cursor:grabbing}
+.dd-target.drag-over{border-style:solid;border-color:var(--cyan);background:var(--cyan-wash)}
+.dd-hint{font-size:var(--step-xs);color:var(--text2);margin-top:8px}
+.checkpoint-actions{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-4)}
+.btn-check{padding:8px 20px;border-radius:8px;background:var(--cyan);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-base);font-weight:700}
+.btn-skip2{padding:8px 16px;border-radius:8px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;font-size:var(--step-sm);font-weight:600}
+.btn-next-lab{padding:9px 18px;border-radius:8px;background:var(--green);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-base);font-weight:700}
+.checkpoint-fb{font-size:var(--step-sm);font-weight:600}
+.checkpoint-fb.ok{color:var(--green)}
+.checkpoint-fb.bad{color:var(--red)}
+.calc-scenario{font-size:var(--step-sm);color:var(--text2);line-height:1.65;margin-bottom:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--panel2);border-radius:8px}
+.calc-fields{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)}
+.calc-field{display:flex;flex-direction:column;gap:5px}
+.calc-field-label{font-size:var(--step-xs);color:var(--text2);font-weight:600}
+.calc-field-input{font-family:var(--mono);font-size:var(--step-base);padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel2);color:var(--text);outline:none}
+.calc-field-input:focus{border-color:var(--cyan-d)}
+.calc-field-input.correct{border-color:var(--green);background:var(--green-l)}
+.calc-field-input.wrong{border-color:var(--red);background:var(--red-l)}
+.calc-field-ans{font-size:12.5px;color:var(--green);margin-top:2px;display:none}
+.calc-field-ans.show{display:block}
+.hint-box{display:none;background:var(--amber-l);border:1px solid var(--amber-border);border-radius:10px;padding:var(--space-3);margin-top:var(--space-3)}
+.hint-box.show{display:block}
+.hint-title{font-size:var(--step-xs);font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.hint-text{font-size:var(--step-sm);color:var(--text2);line-height:1.55}
+.hint-answer-btn{margin-top:8px;padding:6px 14px;border-radius:7px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;font-size:var(--step-xs);font-weight:600;display:none}
+.hint-answer-btn.show{display:inline-block}
+.lab-complete{display:none;position:fixed;inset:0;background:var(--overlay);z-index:60;align-items:center;justify-content:center}
+.lab-complete.show{display:flex}
+.lab-complete-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:var(--space-7);width:440px;max-width:92vw;box-shadow:0 16px 50px rgba(0,0,0,.5);position:relative;text-align:center}
+.lab-complete-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px}
+.complete-title{font-size:var(--step-2xl);font-weight:700;color:var(--green);letter-spacing:-0.01em}
+.complete-sub{font-size:var(--step-base);color:var(--text2);max-width:400px;line-height:1.6;margin:12px auto 0}
+.lab-complete-actions{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-5)}
+.chat-panel{border-left:1px solid var(--border);display:grid;grid-template-rows:42px 1fr auto 50px;overflow:hidden;background:var(--panel)}
+.chat-header{display:flex;align-items:center;gap:7px;padding:0 var(--space-3);border-bottom:1px solid var(--border);background:var(--panel2)}
+.chat-title{font-size:var(--step-sm);font-weight:700;flex:1}
+.model-tag{font-size:11.5px;color:var(--text3);background:var(--panel);padding:2px 7px;border-radius:6px;border:1px solid var(--border)}
+.messages{overflow-y:auto;padding:var(--space-3);display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:8px;max-width:100%}
+.msg.user{flex-direction:row-reverse}
+.av{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700}
+.ai-av{background:var(--cyan-wash);color:var(--cyan)}
+.user-av{background:var(--panel2);color:var(--text2)}
+.bub{padding:8px 12px;border-radius:10px;font-size:var(--step-sm);line-height:1.55;white-space:pre-wrap;max-width:100%}
+.ai-b{background:var(--panel2);color:var(--text)}
+.user-b{background:var(--cyan-wash);color:var(--text)}
+.typing-dots{display:flex;gap:3px;padding:8px 12px;background:var(--panel2);border-radius:10px}
+.typing-dots span{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:blink 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+.chat-chips{display:flex;gap:6px;flex-wrap:wrap;padding:var(--space-2) var(--space-3);border-top:1px solid var(--border)}
+.chip{font-size:12.5px;padding:4px 10px;border-radius:20px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;white-space:nowrap}
+.chip:hover{border-color:var(--cyan-d);color:var(--text)}
+.chat-input-row{display:flex;gap:8px;padding:0 var(--space-3);align-items:center;border-top:1px solid var(--border)}
+.chat-in{flex:1;padding:9px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel2);color:var(--text);outline:none;font-size:var(--step-sm)}
+.send-btn{width:32px;height:32px;border-radius:50%;background:var(--cyan);color:var(--btn-text);border:none;cursor:pointer;font-size:14px;flex-shrink:0}
+.mobile-toggle{display:none}
+@media (max-width:900px){
+  .topbar .crumb:not(.current),.topbar .crumb-sep{display:none}
+  .topbar .crumb.current{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar .ai-pill span{display:none}
+  .topbar{overflow:hidden}
+  .main{grid-template-columns:1fr;position:relative}
+  .sidebar,.chat-panel{position:fixed;top:52px;bottom:0;width:280px;z-index:40;transition:transform .2s}
+  .sidebar{left:0;transform:translateX(-100%)}
+  .sidebar.mobile-open{transform:translateX(0)}
+  .chat-panel{right:0;transform:translateX(100%)}
+  .chat-panel.mobile-open{transform:translateX(0)}
+  .mobile-toggle{display:block;background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer}
+  .mobile-backdrop{display:none;position:fixed;inset:0;background:var(--overlay);z-index:35}
+  .mobile-backdrop.show{display:block}
+}
+@media (max-width:480px){
+  .chapter-badge{display:none}
+  .topbar>span:first-child{font-size:14px}
+  .q-card{padding:12px}
+  .lesson-title{font-size:18px}
+}
+</style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="topbar">
+  <button class="mobile-toggle" id="sidebarToggle" onclick="toggleMobilePanel('sidebar')" title="Steps">☰</button>
+  <a class="brand" href="../../index.html">NET<span>Lab</span></a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="../../labs.html">Lab</a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="../../course.html">Network Eng. Lab I</a>
+  <span class="crumb-sep">›</span>
+  <span class="chapter-badge">Lab 3</span>
+  <span class="crumb current">IP Address and Subnetting</span>
+  <div class="ai-pill ai-off" id="aiStatus">
+    <div class="ai-dot" id="aiDot"></div>
+    <span id="aiStatusText">กำลังเชื่อมต่อ...</span>
+  </div>
+  <div class="lab-topbar-right">
+    <div id="authSlot"></div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
+    <button class="mobile-toggle" id="chatToggle" onclick="toggleMobilePanel('chat')" title="AI Tutor">💬</button>
+  </div>
+</div>
+
+<div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobilePanels()"></div>
+
+<div class="main">
+  <div class="sidebar" id="sidebarPanel">
+    <div class="sb-section"><div id="sidebarSteps"></div></div>
+    <div class="progress-wrap">
+      <div class="prog-label"><span>ความคืบหน้า</span><span id="progText">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="content-area">
+      <div class="lesson-view">
+        <div class="lesson-status">
+          <div class="topo-chip" id="stepChip">Step 1/22</div>
+          <div class="complete-reopen-chip" id="completeChip" onclick="openLabComplete()">✓ Lab สำเร็จ — ดูสรุปผล</div>
+          <div class="next-lab-chip" id="nextLabChip" onclick="goNextLab()">ไป Lab ถัดไป →</div>
+        </div>
+        <div class="lesson-wrap" id="lessonWrap"></div>
+        <div class="lab-complete" id="labComplete" onclick="if(event.target===this)closeLabComplete()">
+          <div class="lab-complete-box" role="dialog" aria-labelledby="completeTitle">
+            <button class="lab-complete-close" onclick="closeLabComplete()" title="ปิด (ดูทบทวนเนื้อหาได้)">✕</button>
+            <div class="complete-title" id="completeTitle">Lab Ch.3 สำเร็จ!</div>
+            <div class="complete-sub">คำนวณ Network Address, Broadcast Address, Host Range และ VLSM ครบทุกแบบฝึกหัด — พร้อมนำไปใช้คำนวณ IP จริงเวลาตั้งค่า Router ใน Lab ถัดไปแล้วครับ</div>
+            <div class="lab-complete-actions">
+              <button class="btn-skip2" onclick="closeLabComplete()">ปิด — ทบทวนเนื้อหา</button>
+              <button class="btn-check" onclick="resetLab()">ทำ Lab นี้อีกครั้ง →</button>
+              <button class="btn-next-lab" onclick="goNextLab()">ไป Lab ถัดไป →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <div id="chatDot" style="width:7px;height:7px;border-radius:50%;background:var(--text3)"></div>
+      <div class="chat-title">AI — Network Tutor</div>
+      <div class="model-tag" id="modelTag">Gemini 2.5 Flash</div>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="chat-chips">
+      <div class="chip" onclick="askAboutTopic()">อธิบายเพิ่มเติม</div>
+      <div class="chip" onclick="showProgressSummary()">สรุปที่เรียนมาแล้ว</div>
+      <div class="chip" onclick="location.href='../../index.html'">หน้าอ้างอิงหลัก</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-in" id="chatIn" placeholder="ถาม AI Tutor..." onkeydown="if(event.key==='Enter'&&!isBusy)sendChat()"/>
+      <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../scripts/theme.js?v=1"></script>
+<script>renderAuthNav();</script>
+<script>
+'use strict';
+var API_BASE=(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
+  ?'http://localhost:8000':'http://'+window.location.hostname+'/api';
+
+// ── เนื้อหา Lab: สลับกันระหว่าง 'lesson' (อ่านเนื้อหา กด ถัดไป ได้เลย) กับ 'checkpoint' (ต้องตอบถูกก่อนถึงจะไปต่อ) ──
+// final:true = อยู่ในช่วงทบทวนท้ายบท (สรุปรวมทุกหัวข้อที่ผ่านมา) ต่างจาก checkpoint ระหว่างบทที่เพิ่งเรียนจบหัวข้อเดียว
+var STEPS=[
+  // ── หมวด A: IP Address พื้นฐาน ──
+  {id:1,type:'lesson',fig:'<svg viewBox="0 0 600 178"><text x="300" y="22" class="f-ts" text-anchor="middle">เขียนแบบ Dotted Decimal เพื่อให้คนอ่านง่าย</text><rect x="20" y="34" width="130" height="44" rx="5" class="f-box-a"/><text x="85" y="64" class="f-ta" text-anchor="middle" font-size="19">192</text><rect x="20" y="88" width="130" height="30" rx="4" class="f-box"/><text x="85" y="108" class="f-tm" text-anchor="middle">11000000</text><text x="85" y="136" class="f-ts" text-anchor="middle">Octet 1 = 8 bits</text><text x="159" y="64" class="f-tb" text-anchor="middle">.</text><rect x="166" y="34" width="130" height="44" rx="5" class="f-box-a"/><text x="231" y="64" class="f-ta" text-anchor="middle" font-size="19">168</text><rect x="166" y="88" width="130" height="30" rx="4" class="f-box"/><text x="231" y="108" class="f-tm" text-anchor="middle">10101000</text><text x="231" y="136" class="f-ts" text-anchor="middle">Octet 2 = 8 bits</text><text x="305" y="64" class="f-tb" text-anchor="middle">.</text><rect x="312" y="34" width="130" height="44" rx="5" class="f-box-a"/><text x="377" y="64" class="f-ta" text-anchor="middle" font-size="19">1</text><rect x="312" y="88" width="130" height="30" rx="4" class="f-box"/><text x="377" y="108" class="f-tm" text-anchor="middle">00000001</text><text x="377" y="136" class="f-ts" text-anchor="middle">Octet 3 = 8 bits</text><text x="451" y="64" class="f-tb" text-anchor="middle">.</text><rect x="458" y="34" width="130" height="44" rx="5" class="f-box-a"/><text x="523" y="64" class="f-ta" text-anchor="middle" font-size="19">10</text><rect x="458" y="88" width="130" height="30" rx="4" class="f-box"/><text x="523" y="108" class="f-tm" text-anchor="middle">00001010</text><text x="523" y="136" class="f-ts" text-anchor="middle">Octet 4 = 8 bits</text><text x="300" y="164" class="f-ts" text-anchor="middle">เครื่องมองเป็นเลขฐานสอง 32 bits ทั้งหมด (4 x 8 = 32) จึงมีค่าได้ 0-255 ต่อท่อน</text></svg>',figCap:'IPv4 หนึ่งหมายเลขคือเลขฐานสอง 32 bits แบ่งเขียนเป็น 4 ท่อน ท่อนละ 8 bits',section:'A. IP Address พื้นฐาน',title:'IPv4 Address คืออะไร',
+   body:'<p>IPv4 Address คือเลขที่อยู่ 32 บิต เขียนแทนด้วยเลขฐาน 10 จำนวน 4 ชุด (Octet) คั่นด้วยจุด เช่น <code>192.168.1.10</code> — แต่ละ Octet คือเลขฐาน 2 จำนวน 8 บิต มีค่าได้ 0-255 (2⁸ = 256 ค่า)</p><p>ตัวอย่าง: <code>192</code> ในรูปแบบไบนารีคือ <code>11000000</code> — การเข้าใจว่า IP คือเลขไบนารีที่ซ่อนอยู่หลังตัวเลขฐาน 10 คือกุญแจสำคัญของการคำนวณ Subnet ในบทนี้ทั้งหมด</p><p>การแปลงเลขฐานสิบเป็นฐานสองเป็นทักษะที่ต้องใช้ตลอดทั้ง Lab นี้ วิธีที่เร็วที่สุดคือจำค่าประจำหลักทั้ง 8 ค่าไว้ คือ <b>128 64 32 16 8 4 2 1</b> แล้วไล่จากซ้ายไปขวาว่าใส่ได้หรือไม่</p><p><b>ตัวอย่างการแปลงเลข 200 เป็นเลขฐานสอง</b></p><p>วิธีคิดคือถามทีละค่าประจำหลักว่า <u>เลขที่เหลืออยู่ตอนนี้ลบด้วยค่านี้ได้ไหม</u> ถ้าลบได้ให้จด <b>1</b> แล้วลบออกจริง ถ้าลบไม่ได้ให้จด <b>0</b> แล้วผ่านไปค่าถัดไปโดยไม่เปลี่ยนอะไร</p><div class="lesson-table-wrap"><table class="lesson-table wk-table"><caption>ไล่ค่าประจำหลักจากซ้ายไปขวา — ลบได้จด 1 ลบไม่ได้จด 0</caption><thead><tr><th>ค่าประจำหลัก</th><th>เหลืออยู่</th><th>ลบได้ไหม</th><th>จดเลข</th><th>คิดยังไง</th></tr></thead><tbody><tr class="wk-hit"><td>128</td><td>200</td><td><span class="t-ok">ลบได้</span></td><td class="wk-bit">1</td><td>200 − 128 = <b>72</b></td></tr><tr class="wk-hit"><td>64</td><td>72</td><td><span class="t-ok">ลบได้</span></td><td class="wk-bit">1</td><td>72 − 64 = <b>8</b></td></tr><tr><td>32</td><td>8</td><td><span class="t-no">ลบไม่ได้</span></td><td class="wk-bit">0</td><td>เหลือ 8 เท่าเดิม</td></tr><tr><td>16</td><td>8</td><td><span class="t-no">ลบไม่ได้</span></td><td class="wk-bit">0</td><td>เหลือ 8 เท่าเดิม</td></tr><tr class="wk-hit"><td>8</td><td>8</td><td><span class="t-ok">ลบได้</span></td><td class="wk-bit">1</td><td>8 − 8 = <b>0</b></td></tr><tr><td>4</td><td>0</td><td><span class="t-no">ลบไม่ได้</span></td><td class="wk-bit">0</td><td>เหลือ 0 เท่าเดิม</td></tr><tr><td>2</td><td>0</td><td><span class="t-no">ลบไม่ได้</span></td><td class="wk-bit">0</td><td>เหลือ 0 เท่าเดิม</td></tr><tr><td>1</td><td>0</td><td><span class="t-no">ลบไม่ได้</span></td><td class="wk-bit">0</td><td>เหลือ 0 เท่าเดิม</td></tr></tbody></table></div><p>อ่านเลขในคอลัมน์ <b>จดเลข</b> จากบนลงล่างจะได้ <code>11001000</code> ซึ่งก็คือ 200 ในเลขฐานสอง</p><p>ตรวจกลับได้ด้วยการบวกเฉพาะแถวที่ลบได้ คือ 128 + 64 + 8 = <b>200</b> ตรงกับโจทย์</p><p>อ่านเลขที่จดไว้จากบนลงล่างได้ <code>11001000</code> ซึ่งก็คือ 200 ในฐานสอง ลองตรวจกลับด้วยการบวก 128 + 64 + 8 = 200 ถูกต้อง</p><div class="lesson-table-wrap"><table class="lesson-table bit-table"><caption>เทียบกับตารางค่าประจำหลัก</caption><thead><tr><th>เลขฐานสิบ</th><th>128</th><th>64</th><th>32</th><th>16</th><th>8</th><th>4</th><th>2</th><th>1</th><th>บวกกันได้</th></tr></thead><tbody><tr><td>200</td><td class="bit-on"><span>1</span></td><td class="bit-on"><span>1</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-on"><span>1</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td class="bit-off"><span>0</span></td><td>128 + 64 + 8</td></tr></tbody></table></div><p>และเพราะแต่ละ Octet มี 8 bit ค่าสูงสุดจึงเป็น 128+64+32+16+8+4+2+1 = <b>255</b> นี่คือเหตุผลที่ไม่มีทางเห็นเลขเกิน 255 ใน IPv4 — ถ้าเจอโจทย์ที่เขียนว่า 192.300.1.1 ให้ตอบทันทีว่าเป็นหมายเลขที่ใช้ไม่ได้</p><p>จำนวน IPv4 ทั้งหมดที่เป็นไปได้คือ 2 ยกกำลัง 32 หรือราว 4.3 พันล้านหมายเลข ซึ่งฟังดูเยอะแต่ไม่พอกับจำนวนอุปกรณ์ในโลกปัจจุบัน จึงต้องพึ่ง Private IP กับ NAT อย่างที่เรียนใน Lab 1</p>'},
+  {id:2,type:'lesson',fig:'<svg viewBox="0 0 600 220"><text x="300" y="20" class="f-ts" text-anchor="middle">แบ่ง Class จากค่าของ Octet แรกเท่านั้น</text><rect x="20" y="30" width="560" height="27" rx="4" class="f-box-a"/><text x="40" y="48" class="f-tb">Class A</text><text x="140" y="48" class="f-tm">1 - 126</text><text x="270" y="48" class="f-t">Default /8</text><text x="560" y="48" class="f-ts" text-anchor="end">องค์กรขนาดใหญ่มาก</text><rect x="20" y="62" width="560" height="27" rx="4" class="f-box-p"/><text x="40" y="80" class="f-tb">Class B</text><text x="140" y="80" class="f-tm">128 - 191</text><text x="270" y="80" class="f-t">Default /16</text><text x="560" y="80" class="f-ts" text-anchor="end">องค์กรขนาดกลาง</text><rect x="20" y="94" width="560" height="27" rx="4" class="f-box-g"/><text x="40" y="112" class="f-tb">Class C</text><text x="140" y="112" class="f-tm">192 - 223</text><text x="270" y="112" class="f-t">Default /24</text><text x="560" y="112" class="f-ts" text-anchor="end">องค์กรขนาดเล็ก</text><rect x="20" y="126" width="560" height="27" rx="4" class="f-box-am"/><text x="40" y="144" class="f-tb">Class D</text><text x="140" y="144" class="f-tm">224 - 239</text><text x="270" y="144" class="f-t">Default -</text><text x="560" y="144" class="f-ts" text-anchor="end">ใช้ทำ Multicast</text><rect x="20" y="158" width="560" height="27" rx="4" class="f-box"/><text x="40" y="176" class="f-tb">Class E</text><text x="140" y="176" class="f-tm">240 - 255</text><text x="270" y="176" class="f-t">Default -</text><text x="560" y="176" class="f-ts" text-anchor="end">สงวนไว้ทดลอง</text><text x="300" y="210" class="f-ts" text-anchor="middle">127 ถูกกันไว้เป็น Loopback (127.0.0.1) จึงไม่นับอยู่ใน Class A ที่ใช้งานจริง</text></svg>',figCap:'ดูเฉพาะ Octet แรกก็บอก Class ได้ทันที — ปัจจุบันใช้ CIDR แทนแล้ว แต่ยังต้องรู้เพราะข้อสอบและอุปกรณ์เก่ายังอ้างถึง',section:'A. IP Address พื้นฐาน',title:'Classful Addressing (Class A/B/C/D/E)',
+   body:'<p>เดิมทีเดียว IP ถูกแบ่งเป็น Class ตามค่า Octet แรก:</p><ul><li><b>Class A</b> — ช่วง Octet แรกคือ 1 ถึง 126 ใช้ Subnet Mask เริ่มต้น <code>/8</code> <u>โครงสร้าง</u> คือ Octet แรกเป็นส่วน Network ส่วนอีกสาม Octet เป็นส่วน Host <u>ขนาด</u> คือมีได้ 126 เครือข่าย แต่ละเครือข่ายมี Host ได้ราว 16.7 ล้านเครื่อง <u>ใช้กับ</u> องค์กรระดับประเทศ</li><li><b>Class B</b> — ช่วง 128 ถึง 191 ใช้ Mask เริ่มต้น <code>/16</code> <u>โครงสร้าง</u> คือสอง Octet แรกเป็น Network อีกสองเป็น Host <u>ขนาด</u> คือมีได้ราว 16,000 เครือข่าย แต่ละแห่งมี Host ได้ราว 65,000 เครื่อง <u>ใช้กับ</u> องค์กรขนาดใหญ่และมหาวิทยาลัย</li><li><b>Class C</b> — ช่วง 192 ถึง 223 ใช้ Mask เริ่มต้น <code>/24</code> <u>โครงสร้าง</u> คือสาม Octet แรกเป็น Network เหลือ Octet สุดท้ายเป็น Host <u>ขนาด</u> คือมีได้ราว 2 ล้านเครือข่าย แต่ละแห่งมี Host ได้เพียง 254 เครื่อง <u>ใช้กับ</u> องค์กรขนาดเล็กและกลาง จึงเป็นคลาสที่พบบ่อยที่สุด</li><li><b>Class D</b> — ช่วง 224 ถึง 239 <u>ไม่ได้ใช้ตั้งให้เครื่อง</u> แต่สงวนไว้สำหรับ <b>Multicast</b> ซึ่งคือการส่งข้อมูลชุดเดียวไปยังกลุ่มผู้รับที่สมัครรับไว้เท่านั้น ต่างจาก Broadcast ที่ส่งถึงทุกเครื่องในวง <u>ตัวอย่างการใช้</u> คือโพรโทคอล OSPF ที่จะได้เรียนใน Lab 9 ใช้หมายเลข 224.0.0.5 คุยกันระหว่าง Router</li><li><b>Class E</b> — ช่วง 240 ถึง 255 สงวนไว้เพื่อการวิจัยและทดลอง ไม่มีการใช้งานจริงบนอินเทอร์เน็ต</li></ul><p><b>ศัพท์ที่ต้องแยกให้ออก:</b> <b>Unicast</b> คือส่งถึงผู้รับเพียงเครื่องเดียว ซึ่งเป็นแบบที่ใช้กันเกือบทั้งหมด, <b>Broadcast</b> คือส่งถึงทุกเครื่องในวงเดียวกัน และ <b>Multicast</b> คือส่งถึงเฉพาะกลุ่มที่สมัครรับไว้</p><p>ปัจจุบันการออกแบบเครือข่ายจริงใช้ CIDR (Classless) เป็นหลักแล้ว แต่ Class ยังใช้เป็นข้อมูลอ้างอิงพื้นฐานอยู่</p><p>สิ่งที่ใช้ตัดสิน Class จริงๆ ไม่ใช่ตัวเลขที่เราท่องจำ แต่เป็น <b>bit นำหน้าของ Octet แรก</b>:</p><ul><li>ขึ้นต้นด้วย <code>0</code> คือ Class A จึงได้ช่วง 1 ถึง 126</li><li>ขึ้นต้นด้วย <code>10</code> คือ Class B จึงได้ช่วง 128 ถึง 191</li><li>ขึ้นต้นด้วย <code>110</code> คือ Class C จึงได้ช่วง 192 ถึง 223</li><li>ขึ้นต้นด้วย <code>1110</code> คือ Class D สำหรับ Multicast</li></ul><p>ขนาดที่ได้ในแต่ละคลาสต่างกันมหาศาล คือ Class A หนึ่งวงมี Host ได้ถึงราว 16.7 ล้านเครื่อง Class B ราว 65,000 เครื่อง ส่วน Class C มีเพียง 254 เครื่อง</p><p>ความไม่ยืดหยุ่นนี้เองคือจุดตายของระบบ Classful เพราะองค์กรที่ต้องการ 300 เครื่องจะขอ Class C (254) ก็ไม่พอ แต่พอขอ Class B ก็ได้มาเกินหกหมื่นและเหลือทิ้งเปล่าๆ ทั้งหมด โลกจึงเปลี่ยนมาใช้ <b>CIDR</b> ที่กำหนดขนาดได้อิสระแทน ซึ่งจะเรียนในบทถัดไป</p><p>แต่ยังต้องรู้เรื่อง Class อยู่ เพราะข้อสอบยังออก และคำสั่งบนอุปกรณ์ Cisco บางคำสั่งยังอ้างอิงแนวคิดนี้อยู่</p>'},
+  {id:3,type:'quiz',section:'A. IP Address พื้นฐาน',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'IP Address พื้นฐาน',section:'A. IP Address พื้นฐาน',q:'IP Address 172.16.5.10 อยู่ใน Class ใดตามกฎ Classful Addressing?',
+   opts:['Class A','Class B','Class C','Class D'],
+   ans:1,exp:'Octet แรกของ 172 อยู่ในช่วง 128-191 ซึ่งเป็นช่วงของ Class B — สังเกตว่าช่วง 172.16.0.0-172.31.255.255 (ส่วนหนึ่งของ Class B) ถูกกันไว้เป็น Private IP ด้วย ตรงกับที่ Lab 7 และ Lab 10 ใช้ (172.20.x.x, 172.25.x.x)'},
+
+  // ── หมวด B: Subnet Mask และ CIDR ──,
+     {topic:'IP Address พื้นฐาน',q:'เหตุใดแต่ละ Octet ของ IPv4 จึงมีค่าได้ไม่เกิน 255?',
+      opts:['เพราะมาตรฐานกำหนดไว้ว่าห้ามเกิน 255','เพราะแต่ละ Octet มี 8 bit ค่ามากสุดคือ 128+64+32+16+8+4+2+1 = 255','เพราะ 255 คือจำนวนเครื่องสูงสุดที่เครือข่ายหนึ่งรองรับได้','เพราะต้องกันเลข 256 ไว้ให้ Broadcast Address'],
+      ans:1,exp:'แต่ละ Octet คือเลขฐานสอง 8 bit ถ้าเป็น 1 ทั้งหมดจะได้ค่า 128+64+32+16+8+4+2+1 = 255 ซึ่งเป็นค่าสูงสุดตามธรรมชาติของ 8 bit ไม่ใช่การกำหนดขึ้นเอง ดังนั้นถ้าเจอโจทย์เขียนว่า 192.300.1.1 ให้ตอบได้ทันทีว่าใช้ไม่ได้'},
+     {topic:'IP Address พื้นฐาน',q:'Subnet Mask เริ่มต้นของ Class C คือข้อใด?',
+      opts:['255.0.0.0','255.255.0.0','255.255.255.192','255.255.255.0'],
+      ans:3,exp:'Class C ใช้สาม Octet แรกเป็นส่วน Network เหลือ Octet สุดท้ายเป็นส่วน Host จึงได้ Mask เริ่มต้น 255.255.255.0 หรือเขียนเป็น /24 ซึ่งรองรับ Host ใช้งานจริงได้ 254 เครื่อง — ส่วน 255.0.0.0 คือของ Class A และ 255.255.0.0 คือของ Class B'}
+   ]},
+  {id:4,type:'lesson',fig:'<svg viewBox="0 0 600 168"><text x="300" y="18" class="f-ts" text-anchor="middle">Subnet Mask 255.255.255.0 เขียนเป็นเลขฐานสอง</text><rect x="22" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="29" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="39" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="46" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="56" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="63" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="73" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="80" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="90" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="97" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="107" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="114" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="124" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="131" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="141" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="148" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><line x1="157" y1="55" x2="157" y2="83" class="f-ln-d"/><rect x="158" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="165" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="175" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="182" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="192" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="199" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="209" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="216" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="226" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="233" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="243" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="250" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="260" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="267" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="277" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="284" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><line x1="293" y1="55" x2="293" y2="83" class="f-ln-d"/><rect x="294" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="301" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="311" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="318" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="328" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="335" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="345" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="352" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="362" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="369" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="379" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="386" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="396" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="403" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><rect x="413" y="58" width="15" height="22" rx="2" class="f-box-a"/><text x="420" y="74" class="f-tm" text-anchor="middle" font-size="9">1</text><line x1="429" y1="55" x2="429" y2="83" class="f-ln-d"/><rect x="430" y="58" width="15" height="22" rx="2" class="f-box"/><text x="437" y="74" class="f-tm" text-anchor="middle" font-size="9">0</text><rect x="447" y="58" width="15" height="22" rx="2" class="f-box"/><text x="454" y="74" class="f-tm" text-anchor="middle" font-size="9">0</text><rect x="464" y="58" width="15" height="22" rx="2" class="f-box"/><text x="471" y="74" class="f-tm" text-anchor="middle" font-size="9">0</text><rect x="481" y="58" width="15" height="22" rx="2" class="f-box"/><text x="488" y="74" class="f-tm" text-anchor="middle" font-size="9">0</text><rect x="498" y="58" width="15" height="22" rx="2" class="f-box"/><text x="505" y="74" class="f-tm" text-anchor="middle" font-size="9">0</text><rect x="515" y="58" width="15" height="22" rx="2" class="f-box"/><text x="522" y="74" class="f-tm" text-anchor="middle" font-size="9">0</text><rect x="532" y="58" width="15" height="22" rx="2" class="f-box"/><text x="539" y="74" class="f-tm" text-anchor="middle" font-size="9">0</text><rect x="549" y="58" width="15" height="22" rx="2" class="f-box"/><text x="556" y="74" class="f-tm" text-anchor="middle" font-size="9">0</text><text x="226" y="50" class="f-ta" text-anchor="middle">ส่วน Network — 24 bits (เลข 1)</text><text x="498" y="50" class="f-ts" text-anchor="middle">ส่วน Host — 8 bits (เลข 0)</text><text x="300" y="106" class="f-t" text-anchor="middle">bit ที่เป็น 1 = ส่วนที่บอกว่า "อยู่เครือข่ายไหน"</text><text x="300" y="126" class="f-t" text-anchor="middle">bit ที่เป็น 0 = ส่วนที่ใช้แยกว่า "เป็นเครื่องไหนในเครือข่ายนั้น"</text><text x="300" y="152" class="f-ta" text-anchor="middle">เลข 1 ต้องเรียงติดกันจากซ้ายเสมอ สลับไปมาไม่ได้</text></svg>',figCap:'Subnet Mask ทำหน้าที่ขีดเส้นแบ่งว่า bit ไหนของ IP คือส่วนเครือข่าย และ bit ไหนคือส่วนเครื่อง',section:'B. Subnet Mask และ CIDR',title:'Subnet Mask คืออะไร',
+   body:'<p>Subnet Mask บอกว่า IP Address ส่วนไหนคือ <b>Network</b> (ส่วนที่เหมือนกันของทุกเครื่องใน Subnet นั้น) และส่วนไหนคือ <b>Host</b> (ส่วนที่ต่างกันของแต่ละเครื่อง)</p><p>เขียนในรูปแบบเดียวกับ IP เช่น <code>255.255.255.0</code> — บิตที่เป็น <b>1</b> คือส่วน Network บิตที่เป็น <b>0</b> คือส่วน Host — ยิ่งมีบิต 1 มาก (มาสก์ "แคบ" ลง) ยิ่งได้ Subnet ย่อยเยอะขึ้นแต่ Host ต่อ Subnet น้อยลง</p><p>วิธีที่เครื่องใช้หาว่า IP หนึ่งอยู่ในเครือข่ายไหน คือเอา IP มา <b>AND</b> กับ Subnet Mask ทีละ bit โดยกฎคือได้ 1 เมื่อทั้งสองฝั่งเป็น 1 เท่านั้น นอกนั้นได้ 0 ทั้งหมด</p><p>ตัวอย่าง 192.168.1.10 กับ mask 255.255.255.0 — สาม Octet แรกของ mask เป็น 1 ทั้งหมด ผลลัพธ์จึงลอกค่าเดิมมาได้ 192.168.1 ส่วน Octet สุดท้ายของ mask เป็น 0 ทั้งหมด ผลลัพธ์จึงเป็น 0 เสมอไม่ว่าเลขเดิมจะเป็นอะไร ได้ Network Address เป็น <code>192.168.1.0</code></p><p>ความสำคัญของเรื่องนี้คือ <b>เครื่องสองเครื่องจะคุยกันตรงๆ ได้ก็ต่อเมื่อ AND แล้วได้ Network Address เดียวกัน</b> ถ้าคนละวงต้องส่งผ่าน Router เสมอ</p><p>นี่คือสาเหตุอันดับหนึ่งที่ ping ไม่ผ่านในงานจริงและใน Lab คือตั้ง Subnet Mask ไม่ตรงกันสองฝั่ง ทำให้ฝ่ายหนึ่งคิดว่าอยู่วงเดียวกันเลยส่งตรง แต่อีกฝ่ายคิดว่าคนละวงเลยส่งไป Router — ผลคือคุยกันไม่รู้เรื่อง</p>'},
+  {id:5,type:'lesson',fig:'<svg viewBox="0 0 600 220"><text x="40" y="22" class="f-ts" text-anchor="start">CIDR</text><text x="170" y="22" class="f-ts" text-anchor="start">Subnet Mask</text><text x="320" y="22" class="f-ts" text-anchor="start">Network bits</text><text x="430" y="22" class="f-ts" text-anchor="start">Host bits</text><text x="560" y="22" class="f-ts" text-anchor="end">Host ใช้ได้</text><rect x="20" y="30" width="560" height="27" rx="4" class="f-box"/><text x="40" y="48" class="f-tb">/8</text><text x="170" y="48" class="f-tm">255.0.0.0</text><text x="345" y="48" class="f-t" text-anchor="middle">8</text><text x="450" y="48" class="f-t" text-anchor="middle">24</text><text x="560" y="48" class="f-t" text-anchor="end">16,777,214</text><rect x="20" y="62" width="560" height="27" rx="4" class="f-box"/><text x="40" y="80" class="f-tb">/16</text><text x="170" y="80" class="f-tm">255.255.0.0</text><text x="345" y="80" class="f-t" text-anchor="middle">16</text><text x="450" y="80" class="f-t" text-anchor="middle">16</text><text x="560" y="80" class="f-t" text-anchor="end">65,534</text><rect x="20" y="94" width="560" height="27" rx="4" class="f-box-a"/><text x="40" y="112" class="f-tb">/24</text><text x="170" y="112" class="f-tm">255.255.255.0</text><text x="345" y="112" class="f-t" text-anchor="middle">24</text><text x="450" y="112" class="f-t" text-anchor="middle">8</text><text x="560" y="112" class="f-t" text-anchor="end">254</text><rect x="20" y="126" width="560" height="27" rx="4" class="f-box"/><text x="40" y="144" class="f-tb">/26</text><text x="170" y="144" class="f-tm">255.255.255.192</text><text x="345" y="144" class="f-t" text-anchor="middle">26</text><text x="450" y="144" class="f-t" text-anchor="middle">6</text><text x="560" y="144" class="f-t" text-anchor="end">62</text><rect x="20" y="158" width="560" height="27" rx="4" class="f-box"/><text x="40" y="176" class="f-tb">/30</text><text x="170" y="176" class="f-tm">255.255.255.252</text><text x="345" y="176" class="f-t" text-anchor="middle">30</text><text x="450" y="176" class="f-t" text-anchor="middle">2</text><text x="560" y="176" class="f-t" text-anchor="end">2</text><text x="300" y="210" class="f-ts" text-anchor="middle">/24 คือการเขียนย่อของ 255.255.255.0 — ตัวเลขหลัง / คือจำนวน bit ที่เป็น 1 ทั้งหมด</text></svg>',figCap:'ยิ่งเลขหลังเครื่องหมาย / มาก ส่วน Network ยิ่งใหญ่ เหลือ bit ให้ Host ยิ่งน้อย จำนวนเครื่องที่ใส่ได้จึงยิ่งลดลง',section:'B. Subnet Mask และ CIDR',title:'CIDR Notation (เช่น /24)',
+   body:'<p>CIDR (Classless Inter-Domain Routing) คือวิธีเขียน Subnet Mask แบบย่อ โดยนับจำนวนบิต "1" ต่อท้าย IP ด้วยเครื่องหมาย <code>/</code> เช่น:</p><p>ตัวเลขหลังเครื่องหมาย <code>/</code> เรียกว่า <b>Prefix Length</b> ซึ่งหมายถึง <u>จำนวน bit ที่เป็นเลข 1 ใน Subnet Mask นับจากซ้ายมือ</u> หรือพูดอีกอย่างคือจำนวน bit ที่ใช้ระบุส่วน Network ส่วน bit ที่เหลือจาก 32 คือส่วน Host ทั้งหมด</p><ul><li><code>/24</code> = <code>255.255.255.0</code> (24 บิต Network, 8 บิต Host)</li><li><code>/26</code> = <code>255.255.255.192</code> (26 บิต Network, 6 บิต Host)</li><li><code>/30</code> = <code>255.255.255.252</code> (30 บิต Network, 2 บิต Host — ใช้กับลิงก์จุดต่อจุดระหว่าง Router เสมอ ตรงกับที่ทุก Lab WAN link ใช้ /30)</li></ul><p>ค่าที่เป็นไปได้ของ Octet ใน Subnet Mask มีเพียง 9 ค่าเท่านั้น เพราะเลข 1 ต้องเรียงติดกันจากซ้ายเสมอ ควรจำให้ได้ทั้งชุด:</p><p><code>0, 128, 192, 224, 240, 248, 252, 254, 255</code></p><p>ถ้าเห็น Subnet Mask ที่มีเลขนอกเหนือจากนี้ เช่น 255.255.255.100 ให้ตอบได้ทันทีว่าเป็นค่าที่ใช้ไม่ได้</p><div class="lesson-table-wrap"><table class="lesson-table"><caption>ตารางแปลง Prefix เป็น Subnet Mask ที่ต้องจำให้ขึ้นใจ</caption><thead><tr><th>Prefix</th><th>Subnet Mask</th><th>Host bits</th><th>Block Size</th><th>Host ที่ใช้ได้จริง</th></tr></thead><tbody><tr><td><code>/24</code></td><td>255.255.255.0</td><td>8</td><td>256</td><td>254</td></tr><tr><td><code>/25</code></td><td>255.255.255.128</td><td>7</td><td>128</td><td>126</td></tr><tr><td><code>/26</code></td><td>255.255.255.192</td><td>6</td><td>64</td><td>62</td></tr><tr><td><code>/27</code></td><td>255.255.255.224</td><td>5</td><td>32</td><td>30</td></tr><tr><td><code>/28</code></td><td>255.255.255.240</td><td>4</td><td>16</td><td>14</td></tr><tr><td><code>/29</code></td><td>255.255.255.248</td><td>3</td><td>8</td><td>6</td></tr><tr><td><code>/30</code></td><td>255.255.255.252</td><td>2</td><td>4</td><td>2</td></tr></tbody></table></div><p>ตอนตั้งค่าบน Cisco IOS จะต้องพิมพ์ Subnet Mask แบบเต็มเสมอ เช่น <code>ip address 192.168.1.1 255.255.255.0</code> ไม่สามารถพิมพ์เป็น /24 ได้ จึงต้องแปลงกลับเป็นแบบเต็มให้คล่อง</p>'},
+  {id:6,type:'lesson',fig:'<svg viewBox="0 0 600 190"><text x="300" y="20" class="f-ts" text-anchor="middle">Host bits (n) มีเท่าไร จำนวนหมายเลขทั้งบล็อกคือ 2 ยกกำลัง n</text><rect x="10" y="34" width="88" height="96" rx="7" class="f-box-a"/><text x="54" y="58" class="f-ta" text-anchor="middle">/30</text><text x="54" y="80" class="f-tm" text-anchor="middle">2^2</text><text x="54" y="100" class="f-tb" text-anchor="middle">4</text><text x="54" y="120" class="f-ts" text-anchor="middle">ใช้ได้ 2</text><rect x="108" y="34" width="88" height="96" rx="7" class="f-box-a"/><text x="152" y="58" class="f-ta" text-anchor="middle">/29</text><text x="152" y="80" class="f-tm" text-anchor="middle">2^3</text><text x="152" y="100" class="f-tb" text-anchor="middle">8</text><text x="152" y="120" class="f-ts" text-anchor="middle">ใช้ได้ 6</text><rect x="206" y="34" width="88" height="96" rx="7" class="f-box-a"/><text x="250" y="58" class="f-ta" text-anchor="middle">/28</text><text x="250" y="80" class="f-tm" text-anchor="middle">2^4</text><text x="250" y="100" class="f-tb" text-anchor="middle">16</text><text x="250" y="120" class="f-ts" text-anchor="middle">ใช้ได้ 14</text><rect x="304" y="34" width="88" height="96" rx="7" class="f-box-a"/><text x="348" y="58" class="f-ta" text-anchor="middle">/27</text><text x="348" y="80" class="f-tm" text-anchor="middle">2^5</text><text x="348" y="100" class="f-tb" text-anchor="middle">32</text><text x="348" y="120" class="f-ts" text-anchor="middle">ใช้ได้ 30</text><rect x="402" y="34" width="88" height="96" rx="7" class="f-box-a"/><text x="446" y="58" class="f-ta" text-anchor="middle">/26</text><text x="446" y="80" class="f-tm" text-anchor="middle">2^6</text><text x="446" y="100" class="f-tb" text-anchor="middle">64</text><text x="446" y="120" class="f-ts" text-anchor="middle">ใช้ได้ 62</text><rect x="500" y="34" width="88" height="96" rx="7" class="f-box-a"/><text x="544" y="58" class="f-ta" text-anchor="middle">/24</text><text x="544" y="80" class="f-tm" text-anchor="middle">2^8</text><text x="544" y="100" class="f-tb" text-anchor="middle">256</text><text x="544" y="120" class="f-ts" text-anchor="middle">ใช้ได้ 254</text><text x="300" y="152" class="f-t" text-anchor="middle">หมายเลขแรกของบล็อกคือ Network Address และหมายเลขสุดท้ายคือ Broadcast Address</text><text x="300" y="174" class="f-ta" text-anchor="middle">จึงต้องลบออก 2 เสมอ — จำนวน Host ที่ใช้ได้จริง = 2^n - 2</text></svg>',figCap:'Block Size คือจำนวนหมายเลขทั้งหมดในซับเน็ต ส่วนจำนวนเครื่องที่ตั้ง IP ได้จริงต้องหัก Network และ Broadcast ออกเสมอ',section:'B. Subnet Mask และ CIDR',title:'Block Size และสูตร 2ⁿ',
+   body:'<p>จำนวนบิต Host (n) จะกำหนด <b>Block Size</b> ของแต่ละ Subnet ด้วยสูตร <code>2ⁿ</code> และจำนวน Host ที่ใช้งานได้จริงด้วยสูตร <code>2ⁿ - 2</code> (ลบ 2 เพราะกันไว้เป็น Network Address และ Broadcast Address เสมอ)</p><p>ตัวอย่าง /26 มี Host bits = 32-26 = 6 บิต → Block Size = 2⁶ = 64 → Host ใช้งานได้ = 64-2 = <b>62 เครื่อง</b> ต่อ Subnet</p><p>มีทางลัดที่เร็วกว่าการนับ bit คือสูตร <b>256 ลบด้วยค่าใน Octet ที่ถูกตัด</b> จะได้ Block Size ทันที</p><p>เช่น mask ลงท้าย .192 จะได้ 256-192 = 64 หรือ mask ลงท้าย .240 จะได้ 256-240 = 16 — ตรงกับที่คำนวณจาก 2 ยกกำลัง Host bits ทุกประการ แต่เร็วกว่ามากเวลาทำข้อสอบ</p><p>เมื่อรู้ Block Size แล้ว ขอบของทุกซับเน็ตจะเป็นตัวคูณของค่านั้นเสมอ เช่น Block Size 32 จะได้ขอบที่ 0, 32, 64, 96, 128, 160, 192, 224 — ไล่ไปจนถึง 255</p><p>ข้อยกเว้นที่ต้องรู้คือ <b>/31 และ /32</b> ซึ่งไม่เหลือ Host ให้ใช้ตามสูตรปกติ โดย /32 ใช้ระบุเครื่องเดียวเจาะจง (เช่นในการเขียน Route) ส่วน /31 มีใช้ในลิงก์จุดต่อจุดบางกรณีที่ไม่ต้องการ Network และ Broadcast — แต่ในวิชานี้จะใช้ /30 เป็นหลัก</p>'},
+  {id:7,type:'quiz',section:'B. Subnet Mask และ CIDR',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'Subnet Mask และ CIDR',section:'B. Subnet Mask และ CIDR',q:'จับคู่ CIDR Notation กับ Subnet Mask ที่ตรงกัน',
+   dragdrop:true,
+   pairs:[
+     {left:'/24',right:'255.255.255.0'},
+     {left:'/26',right:'255.255.255.192'},
+     {left:'/28',right:'255.255.255.240'},
+     {left:'/30',right:'255.255.255.252'}
+   ]},
+
+  // ── หมวด C: คำนวณ Network / Broadcast / Host Range ──,
+     {topic:'Subnet Mask และ CIDR',q:'Subnet Mask ที่ลงท้ายด้วย .224 มี Block Size เท่าใด?',
+      opts:['16','32','64','8'],
+      ans:1,exp:'ใช้ทางลัด 256 ลบด้วยค่าใน Octet ที่ถูกตัด จะได้ 256 - 224 = 32 ซึ่งตรงกับการคำนวณจาก Host bits คือ /27 เหลือ Host 5 bit ได้ 2 ยกกำลัง 5 = 32 เท่ากัน เมื่อรู้ Block Size แล้วขอบของทุกซับเน็ตจะเป็นตัวคูณของ 32 คือ 0, 32, 64, 96 ไปเรื่อยๆ'},
+     {topic:'Subnet Mask และ CIDR',q:'ข้อใดเป็น Subnet Mask ที่ใช้ไม่ได้?',
+      opts:['255.255.255.248','255.255.255.100','255.255.240.0','255.255.255.192'],
+      ans:1,exp:'เลข 1 ใน Subnet Mask ต้องเรียงติดกันจากซ้ายเสมอ ค่าที่เป็นไปได้ของแต่ละ Octet จึงมีเพียง 0, 128, 192, 224, 240, 248, 252, 254 และ 255 เท่านั้น ค่า 100 ไม่อยู่ในชุดนี้จึงใช้ไม่ได้'}
+   ]},
+  {id:8,type:'lesson',fig:'<svg viewBox="0 0 600 214"><text x="300" y="20" class="f-ts" text-anchor="middle">ตัวอย่าง 203.0.113.150 /26</text><circle cx="36" cy="46" r="11" class="f-box-a"/><text x="36" y="50" class="f-ta" text-anchor="middle">1</text><text x="60" y="50" class="f-tb">หา Block Size</text><text x="230" y="50" class="f-tm">/26 เหลือ Host 6 bits  →  2^6 = 64</text><circle cx="36" cy="80" r="11" class="f-box-a"/><text x="36" y="84" class="f-ta" text-anchor="middle">2</text><text x="60" y="84" class="f-tb">ไล่ช่วงทีละ 64</text><text x="230" y="84" class="f-tm">0-63, 64-127, 128-191, 192-255</text><circle cx="36" cy="114" r="11" class="f-box-a"/><text x="36" y="118" class="f-ta" text-anchor="middle">3</text><text x="60" y="118" class="f-tb">.150 ตกอยู่ช่วงไหน</text><text x="230" y="118" class="f-tm">128-191  →  บล็อกนี้</text><circle cx="36" cy="148" r="11" class="f-box-a"/><text x="36" y="152" class="f-ta" text-anchor="middle">4</text><text x="60" y="152" class="f-tb">อ่านค่าออกมา</text><text x="230" y="152" class="f-tm">Network .128  /  Broadcast .191</text><line x1="60" y1="178" x2="540" y2="178" class="f-ln"/><circle cx="70" cy="178" r="5" class="f-fill-a"/><text x="70" y="166" class="f-tm" text-anchor="middle">.128</text><text x="70" y="198" class="f-ts" text-anchor="middle">Network</text><circle cx="190" cy="178" r="5" class="f-fill-g"/><text x="190" y="166" class="f-tm" text-anchor="middle">.129</text><text x="190" y="198" class="f-ts" text-anchor="middle">Host แรก</text><circle cx="380" cy="178" r="5" class="f-fill-g"/><text x="380" y="166" class="f-tm" text-anchor="middle">.190</text><text x="380" y="198" class="f-ts" text-anchor="middle">Host สุดท้าย</text><circle cx="512" cy="178" r="5" class="f-fill-r"/><text x="512" y="166" class="f-tm" text-anchor="middle">.191</text><text x="512" y="198" class="f-ts" text-anchor="middle">Broadcast</text></svg>',figCap:'ขั้นตอนเดียวกันนี้ใช้ได้กับทุก Prefix — หา Block Size ก่อน แล้วไล่ช่วงทีละ Block Size จนเจอช่วงที่ IP ตกอยู่',section:'C. คำนวณ Network/Broadcast/Host Range',title:'ขั้นตอนคำนวณ Network และ Broadcast Address',
+   body:'<p>วิธีหาว่า IP หนึ่งอยู่ใน Subnet ไหน (ไม่ต้องแปลงเป็นไบนารีทุกครั้ง — ใช้ลัด Block Size แทน):</p><ol><li>หา Host bits และ Block Size จาก CIDR (สูตร 2ⁿ)</li><li>ดูว่า Octet ที่ถูก "ตัด" อยู่ในช่วง Block ไหน (ตัวคูณของ Block Size ที่ใกล้ IP มากที่สุดแต่ไม่เกิน)</li><li><b>Network Address</b> = ขอบล่างของ Block นั้น</li><li><b>Broadcast Address</b> = ขอบบนของ Block นั้น (Network + Block Size - 1)</li><li><b>Host ใช้งานได้</b> = ระหว่าง Network+1 ถึง Broadcast-1</li></ol><p>ตัวอย่าง: IP <code>203.0.113.150 /26</code> (Block Size 64) → ไล่ช่วงทีละ 64 ได้ 0-63, 64-127, <b>128-191</b>, 192-255 → .150 ตกอยู่ช่วง 128-191 → Network = <code>203.0.113.128</code>, Broadcast = <code>203.0.113.191</code>, Host ใช้ได้ <code>.129</code> ถึง <code>.190</code></p><p>วิธีตรวจคำตอบของตัวเองอย่างรวดเร็ว มี 3 ข้อ:</p><ul><li>Network Address ต้องเป็นตัวคูณของ Block Size เสมอ ถ้าไม่ใช่แปลว่าไล่ช่วงผิด</li><li>Broadcast ต้องเท่ากับ Network บวก Block Size ลบ 1 พอดี</li><li>IP ที่โจทย์ให้มาต้องอยู่ระหว่าง Network กับ Broadcast เสมอ ถ้าหลุดออกนอกช่วงแสดงว่าคำนวณผิด</li></ul><p>กรณีที่ยากขึ้นคือเมื่อการตัดไม่ได้อยู่ที่ Octet สุดท้าย เช่น /20 ซึ่งตัดที่ Octet ที่ 3 วิธีคิดยังเหมือนเดิมทุกอย่าง เพียงแต่ไปไล่ช่วงที่ Octet ที่ 3 แทน</p><p>ตัวอย่าง 172.16.140.25 /20 — mask คือ 255.255.240.0 จึงได้ Block Size = 256-240 = 16 ที่ Octet ที่ 3 ไล่ช่วงได้ 0-15, 16-31, ..., 128-143 ซึ่ง 140 ตกอยู่ช่วง 128-143 จึงได้ Network = <code>172.16.128.0</code> และ Broadcast = <code>172.16.143.255</code></p>'},
+  {id:9,type:'calc',section:'C. คำนวณ Network/Broadcast/Host Range',title:'แบบฝึกหัดที่ 1 — /24',
+   scenario:'กำหนด IP Address <b>192.168.10.77</b> พร้อม Subnet Mask <b>255.255.255.0 (/24)</b> — หาค่าต่อไปนี้',
+   fields:[
+     {key:'network',label:'Network Address',placeholder:'เช่น 192.168.10.0'},
+     {key:'broadcast',label:'Broadcast Address',placeholder:'เช่น 192.168.10.255'},
+     {key:'firstHost',label:'Host แรกที่ใช้ได้',placeholder:'...'},
+     {key:'lastHost',label:'Host สุดท้ายที่ใช้ได้',placeholder:'...'},
+     {key:'usableHosts',label:'จำนวน Host ที่ใช้ได้',placeholder:'ตัวเลข'}
+   ],
+   answer:{network:'192.168.10.0',broadcast:'192.168.10.255',firstHost:'192.168.10.1',lastHost:'192.168.10.254',usableHosts:'254'}},
+  {id:10,type:'calc',section:'C. คำนวณ Network/Broadcast/Host Range',title:'แบบฝึกหัดที่ 2 — /26',
+   scenario:'กำหนด IP Address <b>172.16.5.200</b> พร้อม Subnet Mask <b>255.255.255.192 (/26)</b> — หาค่าต่อไปนี้ (Block Size = 64)',
+   fields:[
+     {key:'network',label:'Network Address',placeholder:'เช่น 172.16.5.___'},
+     {key:'broadcast',label:'Broadcast Address',placeholder:'...'},
+     {key:'firstHost',label:'Host แรกที่ใช้ได้',placeholder:'...'},
+     {key:'lastHost',label:'Host สุดท้ายที่ใช้ได้',placeholder:'...'},
+     {key:'usableHosts',label:'จำนวน Host ที่ใช้ได้',placeholder:'ตัวเลข'}
+   ],
+   answer:{network:'172.16.5.192',broadcast:'172.16.5.255',firstHost:'172.16.5.193',lastHost:'172.16.5.254',usableHosts:'62'}},
+  {id:11,type:'calc',section:'C. คำนวณ Network/Broadcast/Host Range',title:'แบบฝึกหัดที่ 3 — /28',
+   scenario:'กำหนด IP Address <b>10.0.4.50</b> พร้อม Subnet Mask <b>255.255.255.240 (/28)</b> — หาค่าต่อไปนี้ (Block Size = 16)',
+   fields:[
+     {key:'network',label:'Network Address',placeholder:'เช่น 10.0.4.___'},
+     {key:'broadcast',label:'Broadcast Address',placeholder:'...'},
+     {key:'firstHost',label:'Host แรกที่ใช้ได้',placeholder:'...'},
+     {key:'lastHost',label:'Host สุดท้ายที่ใช้ได้',placeholder:'...'},
+     {key:'usableHosts',label:'จำนวน Host ที่ใช้ได้',placeholder:'ตัวเลข'}
+   ],
+   answer:{network:'10.0.4.48',broadcast:'10.0.4.63',firstHost:'10.0.4.49',lastHost:'10.0.4.62',usableHosts:'14'}},
+  {id:12,type:'calc',section:'C. คำนวณ Network/Broadcast/Host Range',title:'แบบฝึกหัดที่ 4 — /30 (ลิงก์จุดต่อจุด)',
+   scenario:'กำหนด IP Address <b>192.168.20.10</b> พร้อม Subnet Mask <b>255.255.255.252 (/30)</b> — Subnet ขนาดนี้คือขนาดที่ใช้กับลิงก์ WAN ระหว่าง Router ในทุก Lab (Block Size = 4)',
+   fields:[
+     {key:'network',label:'Network Address',placeholder:'เช่น 192.168.20.___'},
+     {key:'broadcast',label:'Broadcast Address',placeholder:'...'},
+     {key:'firstHost',label:'Host แรกที่ใช้ได้',placeholder:'...'},
+     {key:'lastHost',label:'Host สุดท้ายที่ใช้ได้',placeholder:'...'},
+     {key:'usableHosts',label:'จำนวน Host ที่ใช้ได้',placeholder:'ตัวเลข'}
+   ],
+   answer:{network:'192.168.20.8',broadcast:'192.168.20.11',firstHost:'192.168.20.9',lastHost:'192.168.20.10',usableHosts:'2'}},
+
+  // ── หมวด D: VLSM เบื้องต้น ──
+  {id:13,type:'lesson',fig:'<svg viewBox="0 0 600 212"><text x="150" y="20" class="f-tb" text-anchor="middle">แบ่งเท่ากันหมดด้วย /24</text><text x="450" y="20" class="f-tb" text-anchor="middle">แบ่งตามขนาดจริงด้วย VLSM</text><rect x="20" y="36" width="260" height="34" rx="4" class="f-box"/><rect x="20" y="36" width="102" height="34" rx="4" fill="var(--cyan)" opacity="0.7"/><text x="28" y="57" class="f-ts">ฝ่ายขาย ต้องการ 100</text><text x="272" y="57" class="f-ts" text-anchor="end" fill="var(--red)">เสีย 154</text><rect x="320" y="36" width="260" height="34" rx="4" class="f-box"/><rect x="320" y="36" width="102" height="34" rx="4" fill="var(--green)" opacity="0.7"/><text x="328" y="57" class="f-ts">/25 (128)</text><text x="572" y="57" class="f-ts" text-anchor="end" fill="var(--green)">เสีย 26</text><rect x="20" y="82" width="260" height="34" rx="4" class="f-box"/><rect x="20" y="82" width="20" height="34" rx="4" fill="var(--cyan)" opacity="0.7"/><text x="28" y="103" class="f-ts">ฝ่ายบัญชี ต้องการ 20</text><text x="272" y="103" class="f-ts" text-anchor="end" fill="var(--red)">เสีย 234</text><rect x="320" y="82" width="260" height="34" rx="4" class="f-box"/><rect x="320" y="82" width="20" height="34" rx="4" fill="var(--green)" opacity="0.7"/><text x="328" y="103" class="f-ts">/27 (32)</text><text x="572" y="103" class="f-ts" text-anchor="end" fill="var(--green)">เสีย 10</text><rect x="20" y="128" width="260" height="34" rx="4" class="f-box"/><rect x="20" y="128" width="6" height="34" rx="4" fill="var(--cyan)" opacity="0.7"/><text x="28" y="149" class="f-ts">ลิงก์ Router ต้องการ 2</text><text x="272" y="149" class="f-ts" text-anchor="end" fill="var(--red)">เสีย 252</text><rect x="320" y="128" width="260" height="34" rx="4" class="f-box"/><rect x="320" y="128" width="10" height="34" rx="4" fill="var(--green)" opacity="0.7"/><text x="328" y="149" class="f-ts">/30 (4)</text><text x="572" y="149" class="f-ts" text-anchor="end" fill="var(--green)">เสีย 0</text><text x="150" y="210" class="f-ts" text-anchor="middle" fill="var(--red)">เปลืองหมายเลขไปมหาศาล</text><text x="450" y="210" class="f-ts" text-anchor="middle" fill="var(--green)">ใช้หมายเลขคุ้มค่ากว่ามาก</text></svg>',figCap:'VLSM คือการเลือกขนาดซับเน็ตให้พอดีกับจำนวนเครื่องจริงของแต่ละวง แทนที่จะให้ทุกวงใหญ่เท่ากันหมด',section:'D. VLSM เบื้องต้น',title:'ทำไมต้องมี VLSM',
+   body:'<p><b>VLSM (Variable Length Subnet Mask)</b> คือการแบ่ง Subnet โดยใช้ขนาด (mask) ที่ต่างกันในเครือข่ายเดียวกัน ตามจำนวน Host ที่แต่ละส่วนต้องการจริง แทนที่จะใช้ mask เดียวกันทั้งหมด (Fixed-Length Subnet Mask) ซึ่งจะเปลืองพื้นที่ IP มาก</p><p>ตัวอย่างที่เห็นได้ชัดในทุก Lab ที่ผ่านมา: LAN ฝั่ง PC ใช้ <code>/24</code> (รองรับได้ 254 Host) ในขณะที่ลิงก์ WAN ระหว่าง Router ใช้แค่ <code>/30</code> (รองรับได้ 2 Host พอดีสำหรับ Router 2 ตัว) — นี่คือ VLSM ที่ใช้งานจริง</p><p>ขั้นตอนการแบ่งแบบ VLSM ที่ใช้จริง ต้องทำ <b>เรียงจากวงใหญ่ที่สุดไปเล็กที่สุดเสมอ</b> ถ้าแบ่งสลับลำดับจะเกิดช่องว่างที่ใช้ต่อไม่ได้</p><p>ตัวอย่างจากบล็อก 192.168.1.0/24 ที่ต้องแบ่งให้ ฝ่ายขาย 100 เครื่อง ฝ่ายบัญชี 20 เครื่อง และลิงก์ระหว่าง Router 2 หมายเลข:</p><ul><li><b>ฝ่ายขาย</b> ต้องการ 100 จึงใช้ /25 ที่ให้ 126 ได้ช่วง <code>192.168.1.0 - 192.168.1.127</code></li><li><b>ฝ่ายบัญชี</b> ต้องการ 20 จึงใช้ /27 ที่ให้ 30 ต่อจากของเดิมได้ช่วง <code>192.168.1.128 - 192.168.1.159</code></li><li><b>ลิงก์ Router</b> ต้องการ 2 จึงใช้ /30 ต่อได้ช่วง <code>192.168.1.160 - 192.168.1.163</code></li></ul><p>หลังแบ่งครบแล้วยังเหลือ <code>192.168.1.164</code> ขึ้นไปว่างไว้ให้ขยายในอนาคต ซึ่งถ้าใช้วิธีแบ่งเท่ากันหมดแบบเดิม จะไม่เหลือที่ให้ขยายเลย</p>'},
+  {id:14,type:'lesson',fig:'<svg viewBox="0 0 600 182"><text x="300" y="20" class="f-ts" text-anchor="middle">ต้องการกี่เครื่อง เลือก Prefix ที่เล็กที่สุดที่ยังใส่ได้ครบ</text><rect x="10" y="34" width="88" height="80" rx="7" class="f-box"/><text x="54" y="56" class="f-ts" text-anchor="middle">ต้องการ 2</text><text x="54" y="82" class="f-ta" text-anchor="middle" font-size="16">/30</text><text x="54" y="102" class="f-ts" text-anchor="middle">รองรับ 2</text><rect x="108" y="34" width="88" height="80" rx="7" class="f-box"/><text x="152" y="56" class="f-ts" text-anchor="middle">ต้องการ 5</text><text x="152" y="82" class="f-ta" text-anchor="middle" font-size="16">/29</text><text x="152" y="102" class="f-ts" text-anchor="middle">รองรับ 6</text><rect x="206" y="34" width="88" height="80" rx="7" class="f-box"/><text x="250" y="56" class="f-ts" text-anchor="middle">ต้องการ 12</text><text x="250" y="82" class="f-ta" text-anchor="middle" font-size="16">/28</text><text x="250" y="102" class="f-ts" text-anchor="middle">รองรับ 14</text><rect x="304" y="34" width="88" height="80" rx="7" class="f-box"/><text x="348" y="56" class="f-ts" text-anchor="middle">ต้องการ 25</text><text x="348" y="82" class="f-ta" text-anchor="middle" font-size="16">/27</text><text x="348" y="102" class="f-ts" text-anchor="middle">รองรับ 30</text><rect x="402" y="34" width="88" height="80" rx="7" class="f-box"/><text x="446" y="56" class="f-ts" text-anchor="middle">ต้องการ 50</text><text x="446" y="82" class="f-ta" text-anchor="middle" font-size="16">/26</text><text x="446" y="102" class="f-ts" text-anchor="middle">รองรับ 62</text><rect x="500" y="34" width="88" height="80" rx="7" class="f-box"/><text x="544" y="56" class="f-ts" text-anchor="middle">ต้องการ 100</text><text x="544" y="82" class="f-ta" text-anchor="middle" font-size="16">/25</text><text x="544" y="102" class="f-ts" text-anchor="middle">รองรับ 126</text><text x="300" y="140" class="f-t" text-anchor="middle">ลิงก์ระหว่าง Router สองตัวต้องการแค่ 2 หมายเลข จึงใช้ /30 เสมอ</text><text x="300" y="164" class="f-ta" text-anchor="middle">คือ Subnet แบบเดียวกับที่ใช้ต่อ Router ทุกคู่ใน Lab 4-11</text></svg>',figCap:'เลือกขนาดที่พอดี ไม่เล็กจนใส่ไม่ครบและไม่ใหญ่จนเหลือทิ้ง — ลิงก์จุดต่อจุดระหว่าง Router ใช้ /30 เป็นมาตรฐาน',section:'D. VLSM เบื้องต้น',title:'หลักการเลือกขนาด Subnet ให้พอดี',
+   body:'<p>วิธีเลือก mask ที่เหมาะสม: หาจำนวน Host bits (n) ที่น้อยที่สุดที่ทำให้ <code>2ⁿ - 2 ≥ จำนวน Host ที่ต้องการ</code></p><p>ตัวอย่าง: ต้องการ Subnet ที่รองรับ 25 Host — ลอง n=4: 2⁴-2=14 (ไม่พอ) ลอง n=5: 2⁵-2=30 (พอ) → ใช้ Host bits 5 บิต = mask <code>/27</code> (32-5=27)</p><p>หลักการนี้คือหัวใจของการออกแบบ VLSM ที่จะได้ใช้จริงเมื่อออกแบบ Topology ของตัวเองในอนาคต</p><p>ตารางที่ควรจำสำหรับเลือกขนาดให้พอดี:</p><div class="lesson-table-wrap"><table class="lesson-table"><caption>เลือก Prefix จากจำนวนเครื่องที่ต้องการ</caption><thead><tr><th>ต้องการ Host</th><th>เลือก Prefix</th><th>รองรับได้จริง</th><th>เหลือเผื่อ</th><th>ตัวอย่างการใช้</th></tr></thead><tbody><tr><td>2</td><td><code>/30</code></td><td>2</td><td>0</td><td>ลิงก์จุดต่อจุดระหว่าง Router</td></tr><tr><td>3 ถึง 6</td><td><code>/29</code></td><td>6</td><td>สูงสุด 3</td><td>กลุ่มเซิร์ฟเวอร์ไม่กี่ตัว</td></tr><tr><td>7 ถึง 14</td><td><code>/28</code></td><td>14</td><td>สูงสุด 7</td><td>ห้องเล็ก</td></tr><tr><td>15 ถึง 30</td><td><code>/27</code></td><td>30</td><td>สูงสุด 15</td><td>ห้องเรียนหรือแผนกเล็ก</td></tr><tr><td>31 ถึง 62</td><td><code>/26</code></td><td>62</td><td>สูงสุด 31</td><td>แผนกขนาดกลาง</td></tr><tr><td>63 ถึง 126</td><td><code>/25</code></td><td>126</td><td>สูงสุด 63</td><td>แผนกใหญ่</td></tr><tr><td>127 ถึง 254</td><td><code>/24</code></td><td>254</td><td>สูงสุด 127</td><td>ทั้งชั้นของอาคาร</td></tr></tbody></table></div><p>ข้อควรระวังในการออกแบบจริง คือต้อง <b>เผื่อการเติบโต</b> ด้วย ถ้าตอนนี้มี 28 เครื่องแล้วเลือก /27 ที่รองรับ 30 พอดีเป๊ะ พอเพิ่มอีก 5 เครื่องในปีหน้าจะต้องรื้อออกแบบใหม่ทั้งวง ในทางปฏิบัติจึงมักเผื่อไว้ราว 30 ถึง 50 เปอร์เซ็นต์</p><p>แต่สำหรับลิงก์จุดต่อจุดระหว่าง Router ไม่ต้องเผื่อ เพราะมีได้แค่สองฝั่งเสมอ จึงใช้ /30 ได้อย่างมั่นใจ</p>'},
+  {id:15,type:'calc',section:'D. VLSM เบื้องต้น',title:'แบบฝึกหัดที่ 5 — /27',
+   scenario:'กำหนด IP Address <b>172.20.100.140</b> พร้อม Subnet Mask <b>255.255.255.224 (/27)</b> — หาค่าต่อไปนี้ (Block Size = 32)',
+   fields:[
+     {key:'network',label:'Network Address',placeholder:'เช่น 172.20.100.___'},
+     {key:'broadcast',label:'Broadcast Address',placeholder:'...'},
+     {key:'firstHost',label:'Host แรกที่ใช้ได้',placeholder:'...'},
+     {key:'lastHost',label:'Host สุดท้ายที่ใช้ได้',placeholder:'...'},
+     {key:'usableHosts',label:'จำนวน Host ที่ใช้ได้',placeholder:'ตัวเลข'}
+   ],
+   answer:{network:'172.20.100.128',broadcast:'172.20.100.159',firstHost:'172.20.100.129',lastHost:'172.20.100.158',usableHosts:'30'}},
+  {id:16,type:'quiz',section:'D. VLSM เบื้องต้น',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'VLSM และการเลือกขนาด',section:'D. VLSM เบื้องต้น',q:'ต้องการออกแบบ Subnet ที่รองรับ Host ได้อย่างน้อย 100 เครื่อง ควรเลือก Prefix ใดจึงพอดีและประหยัดหมายเลขที่สุด?',
+   opts:['/24','/25','/26','/23'],
+   ans:1,exp:'ต้องการอย่างน้อย 100 Host — /26 ให้ใช้จริง 62 จึงไม่พอ ส่วน /25 ให้ใช้จริง 126 ซึ่งพอและเหลือทิ้งน้อยที่สุด สำหรับ /24 ให้ 254 และ /23 ให้ 510 ซึ่งพอเหมือนกันแต่เปลืองหมายเลขไปมาก หลักการของ VLSM คือเลือกอันที่เล็กที่สุดที่ยังใส่ได้ครบ'},
+     {topic:'VLSM และการเลือกขนาด',q:'เหตุใดลิงก์ระหว่าง Router สองตัวจึงใช้ /30 ได้อย่างมั่นใจโดยไม่ต้องเผื่อการเติบโต?',
+      opts:['เพราะ /30 เป็นขนาดเล็กที่สุดที่ IPv4 รองรับ','เพราะลิงก์แบบจุดต่อจุดมีปลายทางได้แค่สองฝั่งเสมอ จึงต้องการหมายเลขใช้งานเพียง 2 หมายเลข','เพราะ Cisco IOS ไม่ยอมรับ Prefix อื่นบนลิงก์ WAN','เพราะ /30 ทำให้ Routing Protocol ทำงานเร็วขึ้น'],
+      ans:1,exp:'ลิงก์จุดต่อจุดเชื่อม Router ได้แค่สองตัวตามนิยาม จะไม่มีทางเพิ่มเป็นสามได้ จึงไม่ต้องเผื่อโต ต่างจากวงผู้ใช้ทั่วไปที่ควรเผื่อไว้ราว 30 ถึง 50 เปอร์เซ็นต์ — /30 ให้ Host ใช้ได้พอดี 2 หมายเลข ส่วนอีก 2 เป็น Network กับ Broadcast'},
+     {topic:'VLSM และการเลือกขนาด',q:'เมื่อแบ่ง Subnet ด้วยวิธี VLSM ควรเริ่มจัดสรรจากวงใดก่อน?',
+      opts:['วงที่ต้องการ Host มากที่สุดก่อน แล้วไล่ไปหาวงที่เล็กลง','วงที่ต้องการ Host น้อยที่สุดก่อน แล้วไล่ไปหาวงที่ใหญ่ขึ้น','วงของลิงก์ระหว่าง Router ก่อนเสมอ','ลำดับใดก็ได้เพราะผลลัพธ์ออกมาเหมือนกัน'],
+      ans:0,exp:'ต้องเรียงจากใหญ่ไปเล็กเสมอ เพราะซับเน็ตใหญ่ต้องเริ่มที่ขอบซึ่งเป็นตัวคูณของขนาดตัวเอง ถ้าแบ่งวงเล็กไปก่อนจะเกิดช่องว่างที่วางวงใหญ่ต่อไม่ได้และต้องเสียหมายเลขทิ้ง'}
+   ]},
+  {id:17,type:'lesson',fig:'<svg viewBox="0 0 600 186"><text x="300" y="20" class="f-ts" text-anchor="middle">สิ่งที่คำนวณได้ใน Lab นี้ จะถูกนำไปพิมพ์จริงใน Lab 4-11</text><rect x="20" y="34" width="250" height="96" rx="8" class="f-box-a"/><text x="145" y="58" class="f-ta" text-anchor="middle">ผลจากการคำนวณ</text><text x="145" y="82" class="f-tm" text-anchor="middle">Network 192.168.10.0</text><text x="145" y="102" class="f-tm" text-anchor="middle">Mask 255.255.255.0</text><text x="145" y="122" class="f-tm" text-anchor="middle">Host แรก .1</text><text x="295" y="86" class="f-tb" text-anchor="middle">→</text><rect x="320" y="34" width="260" height="96" rx="8" class="f-box-g"/><text x="450" y="58" class="f-tg" text-anchor="middle">คำสั่งที่พิมพ์บน Router</text><text x="336" y="84" class="f-tm">R1(config-if)# ip address</text><text x="336" y="104" class="f-tm">192.168.10.1 255.255.255.0</text><text x="450" y="124" class="f-ts" text-anchor="middle">ใส่ผิดตัวเดียว ping ไม่ผ่านทันที</text><text x="300" y="160" class="f-t" text-anchor="middle">ทุกครั้งที่ตั้งค่า Interface หรือเขียน Static Route จะต้องใช้ค่าเหล่านี้</text><text x="300" y="178" class="f-ts" text-anchor="middle">คำนวณแม่นตั้งแต่ Lab นี้ จะทำให้ Lab ถัดไปเร็วขึ้นมาก</text></svg>',figCap:'ค่าที่คำนวณได้ในบทนี้คือตัวเลขชุดเดียวกับที่ต้องพิมพ์ลงคำสั่ง ip address และ ip route ในทุก Lab ต่อจากนี้',section:'D. VLSM เบื้องต้น',title:'สรุปเชื่อมโยงกับ Lab ที่จะได้ลงมือทำจริง',
+   body:'<p>ตั้งแต่ Lab 5 (Static Route) เป็นต้นไป ทุก Topology ในวิชานี้ใช้หลักการเดียวกัน: <b>LAN ฝั่ง PC ใช้ /24, WAN ระหว่าง Router ใช้ /30</b> เสมอ — ตอนนี้คุณมีความรู้พอที่จะคำนวณและตรวจสอบค่าเหล่านี้ได้ด้วยตัวเองแล้ว ก่อนจะไปตั้งค่าจริงบน Router ใน Lab ถัดไป</p><p>ตัวอย่างคำสั่งจริงที่จะได้พิมพ์ในบทถัดไป และค่าที่ต้องเอามาจากการคำนวณในบทนี้:</p><ul><li><code>ip address 192.168.1.1 255.255.255.0</code> — ตั้ง IP ให้ Interface โดยต้องใช้ Host แรกของวงและ Subnet Mask แบบเต็ม</li><li><code>ip route 192.168.2.0 255.255.255.0 10.0.0.2</code> — เขียนเส้นทางแบบ Static ซึ่งต้องใช้ <b>Network Address</b> ของปลายทาง ไม่ใช่ IP ของเครื่องใดเครื่องหนึ่ง</li><li><code>network 192.168.1.0 0.0.0.255</code> — ประกาศวงใน OSPF และ EIGRP ซึ่งใช้ Wildcard Mask ที่เป็นค่ากลับด้านของ Subnet Mask</li></ul><p>เรื่อง Wildcard Mask คำนวณง่ายมากคือเอา 255 ลบด้วยแต่ละ Octet ของ Subnet Mask เช่น 255.255.255.0 จะได้ Wildcard เป็น 0.0.0.255 และ 255.255.255.252 จะได้ 0.0.0.3</p><p>ความผิดพลาดที่พบบ่อยที่สุดตอนทำ Lab คือใส่ IP ของเครื่องแทนที่จะใส่ Network Address ในคำสั่ง <code>ip route</code> ซึ่งจะทำให้ ping ไม่ผ่านโดยที่ระบบไม่ฟ้องอะไรเลย — ถ้าคำนวณ Network Address ได้แม่นตั้งแต่บทนี้ จะไม่เจอปัญหานั้น</p>'},
+
+  // ── สรุปท้ายบท: ทบทวนทุกหัวข้อที่เรียนมา ──
+  {id:100,type:'review',final:true,fromQuizzes:true,section:'สรุปท้ายบท',
+   title:'ทบทวนรวมท้ายบท Ch.3',
+   intro:'ตอบให้ครบทุกข้อแล้วกดตรวจคำตอบครั้งเดียว — ข้อที่ยังไม่ถูกจะถูกคืนกลับมาให้แก้ใหม่',
+   pool:[
+  {topic:'IP Address พื้นฐาน',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'IP Address 10.5.20.30 อยู่ใน Class ใด?',
+   opts:['Class A','Class B','Class C','Class D'],
+   ans:0,exp:'Octet แรก 10 อยู่ในช่วง 1-126 ซึ่งเป็นช่วงของ Class A (default mask /8)'},
+  {topic:'Subnet Mask และ CIDR',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'/29 มี Host bits กี่บิต และรองรับ Host ที่ใช้งานได้กี่เครื่องต่อ Subnet?',
+   opts:['4 บิต, รองรับ 14 Host','2 บิต, รองรับ 2 Host','3 บิต, รองรับ 6 Host','5 บิต, รองรับ 30 Host'],
+   ans:2,exp:'/29 มี Network bits 29 บิต เหลือ Host bits = 32-29 = 3 บิต → Block Size = 2³ = 8 → Host ใช้งานได้ = 8-2 = 6 เครื่อง'},
+  {topic:'คำนวณ Network และ Broadcast',type:'calc',final:true,section:'สรุปท้ายบท',title:'ทบทวน — คำนวณจากค่าจริง',
+   scenario:'กำหนด IP Address <b>192.168.50.90</b> พร้อม Subnet Mask <b>255.255.255.224 (/27)</b> — หาค่าต่อไปนี้',
+   fields:[
+     {key:'network',label:'Network Address',placeholder:'เช่น 192.168.50.___'},
+     {key:'broadcast',label:'Broadcast Address',placeholder:'...'},
+     {key:'usableHosts',label:'จำนวน Host ที่ใช้ได้',placeholder:'ตัวเลข'}
+   ],
+   answer:{network:'192.168.50.64',broadcast:'192.168.50.95',usableHosts:'30'}},
+  {topic:'VLSM และการเลือกขนาด',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'เพราะเหตุใดลิงก์ WAN แบบจุดต่อจุดระหว่าง Router 2 ตัว (เช่นในทุก Lab ที่ผ่านมา) จึงเลือกใช้ /30 เสมอ แทนที่จะใช้ /24 เหมือน LAN?',
+   opts:['เพราะลิงก์แบบนี้มี Router อยู่แค่ 2 ตัว จึงต้องการหมายเลขที่ใช้งานได้เพียง 2 หมายเลข','เพราะ /30 ทำให้ Routing Protocol แลกเปลี่ยนข้อมูลกันได้เร็วกว่าขนาดอื่น','เพราะ Subnet ที่เล็กกว่า /30 ใช้กับ IPv4 ไม่ได้','เพราะ /30 ช่วยป้องกัน Broadcast Storm ได้ดีกว่า /24'],
+   ans:0,exp:'ลิงก์จุดต่อจุดมีปลายทางแค่สองฝั่ง /30 ให้ Host ใช้งานได้พอดี 2 หมายเลข (อีก 2 เป็น Network กับ Broadcast) จึงพอดีที่สุดโดยไม่เหลือทิ้ง — ถ้าใช้ /24 กับลิงก์แบบนี้จะเสียหมายเลขไปเปล่าๆ ถึง 252 หมายเลข ส่วนความเร็วของ Routing Protocol และ Broadcast Storm ไม่ได้ขึ้นกับขนาด Subnet ของลิงก์'},
+  {topic:'Subnet Mask และ CIDR',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'จับคู่ CIDR กับจำนวน Host ที่ใช้งานได้ให้ถูกต้อง (ทบทวนรวม)',
+   dragdrop:true,
+   pairs:[
+     {left:'/24',right:'254 Host'},
+     {left:'/26',right:'62 Host'},
+     {left:'/28',right:'14 Host'},
+     {left:'/30',right:'2 Host'}
+   ]}
+   ]}
+];
+
+var APP={step:1,maxStep:1,stepsDone:[],wrong:0,chatHistory:[],wrongSinceSave:0,lastSaveTime:Date.now()};
+var isBusy=false;
+var ddSel=null;
+var ddMap={};
+
+function toggleMobilePanel(which){
+  var panel=document.getElementById(which==='sidebar'?'sidebarPanel':'chatPanel');
+  var other=document.getElementById(which==='sidebar'?'chatPanel':'sidebarPanel');
+  other.classList.remove('mobile-open');
+  panel.classList.toggle('mobile-open');
+  document.getElementById('mobileBackdrop').classList.toggle('show',panel.classList.contains('mobile-open'));
+}
+function closeMobilePanels(){
+  document.getElementById('sidebarPanel').classList.remove('mobile-open');
+  document.getElementById('chatPanel').classList.remove('mobile-open');
+  document.getElementById('mobileBackdrop').classList.remove('show');
+}
+
+window.onload=function(){
+  renderSidebar();renderStep();
+  checkHealth();setInterval(checkHealth,30000);
+  addMsg('ai','สวัสดีครับ! Ch.3 IP Address and Subnetting\n\nLab นี้จะพาคำนวณ Subnet Mask, Network Address, Broadcast Address และ Host Range จริง — อ่านเนื้อหาแต่ละหัวข้อ กด "ถัดไป" เพื่อไปต่อ ตอบคำถาม Checkpoint และทำแบบฝึกหัดคำนวณให้ถูกก่อนถึงจะไปหัวข้อถัดไปได้ครับ รวม 22 steps (มีคำถามทบทวนรวมท้ายบทอีก 5 ข้อ)');
+  loadSavedProgress();
+};
+
+window.addEventListener('pagehide',function(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var elapsedSec=Math.round((Date.now()-APP.lastSaveTime)/1000);
+  if(elapsedSec<1&&APP.wrongSinceSave===0)return;
+  var payload=JSON.stringify({
+    studentId:studentId, labId:3, courseId:'netlab1',
+    stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
+    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:false
+  });
+  if(navigator.sendBeacon){
+    navigator.sendBeacon(API_BASE+'/progress',new Blob([payload],{type:'application/json'}));
+  }
+});
+
+function rvCount(s){
+  if(s.items&&s.items.length)return s.items.length;
+  var seen={},n=0;
+  (typeof rvPoolOf==='function'?rvPoolOf(s):(s.pool||[])).forEach(function(it){
+    var t=it.topic||'อื่นๆ';
+    if(!seen[t]){seen[t]=1;n++;}
+  });
+  return n;
+}
+
+function renderSidebar(){
+  var cont=document.getElementById('sidebarSteps');
+  cont.innerHTML='';
+  var lastSec='';
+  STEPS.forEach(function(s,i){
+    if(s.section!==lastSec){
+      var lbl=document.createElement('div');lbl.className='sb-label';lbl.textContent=s.section;cont.appendChild(lbl);lastSec=s.section;
+    }
+    var done=APP.stepsDone.indexOf(s.id)>=0;
+    var cur=i===APP.step-1;
+    var div=document.createElement('div');
+    div.className='step-item'+(done?' done':'')+(cur?' active':'');
+    var rawTitle=(s.type==='lesson'||s.type==='calc'||s.type==='review'||s.type==='quiz')?s.title:(s.q||s.title||'');
+    var title=rawTitle.length>44?rawTitle.slice(0,44)+'…':rawTitle;
+    var subLabel=s.type==='lesson'?'เนื้อหา':(s.type==='review'?(rvCount(s)+' ข้อ รวมทุกหัวข้อ'):s.type==='quiz'?(rvCount(s)+' ข้อ ทดสอบความรู้'):(s.type==='calc'?'คำนวณ':(s.final?'ทบทวนท้ายบท':'Checkpoint')));
+    div.innerHTML='<div class="step-num '+(done?'sn-done':cur?'sn-active':'sn-next')+'">'+(done?'✓':(i+1))+'</div>'
+      +'<div class="step-info"><div class="step-title">'+title+'</div><div class="step-sub">'+subLabel+'</div></div>';
+    if(i+1<=APP.maxStep&&!isLockedInTest()){
+      div.classList.add('clickable');
+      div.onclick=(function(idx){return function(){goToStep(idx+1);};})(i);
+    }
+    cont.appendChild(div);
+  });
+  var pct=Math.round(APP.stepsDone.length/STEPS.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progText').textContent=pct+'%';
+}
+
+function updateStepChip(){
+  document.getElementById('stepChip').textContent='Step '+APP.step+'/'+STEPS.length;
+}
+
+
+/* ── ทบทวนรวมท้ายบท: ทุกข้ออยู่หน้าเดียว ตรวจพร้อมกันครั้งเดียว ── */
+var rvSel={},rvDD={},rvDDsel={},rvWire={},rvWireSel={};
+
+function rvIsMcq(it){return !!(it.opts&&it.opts.length);}
+
+function rvShuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+/* ดึงคำถามจากคลัง โดยสุ่มมาหัวข้อละ 1 ข้อ แล้วสลับลำดับการถาม */
+function rvPoolOf(s){
+  var pool=(s.pool||[]).slice();
+  if(s.fromQuizzes){
+    STEPS.forEach(function(st){
+      if(st.type==='quiz'&&st.items)pool=pool.concat(st.items);
+    });
+  }
+  return pool;
+}
+
+function rvDraw(s){
+  var all=rvPoolOf(s);
+  if(!all.length)return s.items||[];
+  var byTopic={},order=[];
+  all.forEach(function(it){
+    var t=it.topic||'อื่นๆ';
+    if(!byTopic[t]){byTopic[t]=[];order.push(t);}
+    byTopic[t].push(it);
+  });
+  var picked=order.map(function(t){
+    var bucket=byTopic[t];
+    return bucket[Math.floor(Math.random()*bucket.length)];
+  });
+  return rvShuffle(picked);
+}
+
+function renderReview(s){
+  var wrap=document.getElementById('lessonWrap');
+  rvSel={};rvDD={};rvDDsel={};rvWire={};rvWireSel={};
+  if((s.pool||s.fromQuizzes)&&!(s.items&&s.items.length&&s.drawn))
+    { s.items=rvDraw(s); s.drawn=true; }
+  var html='<div class="lesson-section-label">'+s.section+'</div>'
+    +'<div class="lesson-card"><div class="lesson-title">'+s.title+'</div>'
+    +'<div class="review-intro">'+s.intro+'</div>';
+  s.items.forEach(function(it,k){html+=rvItemHtml(it,k);});
+  if(s.pool||s.fromQuizzes)html+='<div class="review-note"><b>ชุดคำถามสุ่ม</b> — สุ่มมาหัวข้อละ 1 ข้อจากทุกเรื่องที่เรียนในบทนี้ ถ้าทำ Lab ซ้ำจะได้คำถามชุดใหม่</div>';
+  html+='<div class="checkpoint-fb" id="cpFb"></div>'
+    +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitReview()">ตรวจคำตอบทั้งหมด</button></div>'
+    +'</div>';
+  wrap.innerHTML=html;
+}
+
+function rvItemHtml(it,k){
+  var h='<div class="rv-item" id="rvitem_'+k+'"><div class="rv-head">'
+    +'<div class="rv-num">ข้อ '+(k+1)+'</div><div class="rv-mark" id="rvmark_'+k+'"></div></div>'
+    +'<div class="rv-q">'+(it.q||it.title||'')+'</div>';
+  if(rvIsMcq(it)){
+    h+='<div class="q-opts">'+it.opts.map(function(o,oi){
+      return '<div class="q-opt" id="rvopt_'+k+'_'+oi+'" onclick="rvPick('+k+','+oi+')"><div class="q-dot"></div><span>'+o+'</span></div>';
+    }).join('')+'</div>'
+     +'<div class="q-explain" id="rvexp_'+k+'">'+(it.exp||'')+'</div>';
+  }else if(it.dragdrop){
+    var sh=it.pairs.slice().sort(function(){return Math.random()-.5;});
+    h+='<div class="dd-hint">ลากข้อความจากซ้ายไปวางบนคู่ที่ถูกต้องทางขวา (หรือคลิกเลือกแล้วคลิกช่องปลายทาง)</div>'
+     +'<div class="dd-grid"><div><div class="dd-col-label">คลิกเลือก</div><div class="dd-items">'
+     +sh.map(function(p,pi){
+        var lv=p.left.replace(/'/g,"\\'");
+        return '<div class="dd-item" id="rvddi_'+k+'_'+pi+'" draggable="true"'
+          +' ondragstart="rvDragStart(event,'+k+','+pi+',\''+lv+'\')" ondragend="dragEndDD(event)"'
+          +' onclick="rvDdPick('+k+','+pi+',\''+lv+'\')">'+p.left+'</div>';
+      }).join('')
+     +'</div></div><div><div class="dd-col-label">จับคู่กับ</div><div class="dd-items">'
+     +it.pairs.map(function(p,ti){
+        return '<div class="dd-target" id="rvddt_'+k+'_'+ti+'" data-answer="'+p.right+'"'
+          +' ondragover="rvDragOver(event,'+k+','+ti+')" ondragleave="rvDragLeave('+k+','+ti+')"'
+          +' ondrop="rvDrop(event,'+k+','+ti+')" onclick="rvDdDrop('+k+','+ti+')">'+p.right+'</div>';
+      }).join('')
+     +'</div></div></div>';
+  }else if(it.type==='wireorder'){
+    var shuffled=Object.keys(WIRE_COLORS).sort(function(){return Math.random()-.5;});
+    h+='<div class="wire-scenario">'+(it.scenario||'')+'</div>'
+     +'<div class="wire-pins">'+it.order.map(function(_,i){
+        return '<div class="wire-pin"><div class="wire-pin-num">Pin '+(i+1)+'</div>'
+          +'<div class="wire-pin-slot" id="rvpin_'+k+'_'+i+'" onclick="rvWirePlace('+k+','+i+')"></div></div>';
+      }).join('')+'</div>'
+     +'<div class="wire-pool-label">คลิกเลือกสี</div>'
+     +'<div class="wire-pool">'+shuffled.map(function(key){
+        return '<div style="position:relative"><div class="wire-chip '+WIRE_COLORS[key].cls+'" id="rvchip_'+k+'_'+key+'" onclick="rvWirePick('+k+',\''+key+'\')"></div>'
+          +'<div class="wire-chip-label">'+WIRE_COLORS[key].label+'</div></div>';
+      }).join('')+'</div>';
+  }else if(it.type==='calc'){
+    h+='<div class="calc-scenario">'+(it.scenario||'')+'</div>'
+     +'<div class="calc-fields">'+it.fields.map(function(f){
+        return '<div class="calc-field"><label class="calc-field-label">'+f.label+'</label>'
+          +'<input class="calc-field-input" id="rvcalc_'+k+'_'+f.key+'" autocomplete="off" spellcheck="false" placeholder="'+f.placeholder+'"/>'
+          +'<div class="calc-field-ans" id="rvcalcans_'+k+'_'+f.key+'"></div></div>';
+      }).join('')+'</div>';
+  }
+  return h+'</div>';
+}
+
+function rvPick(k,oi){
+  var card=document.getElementById('rvitem_'+k);
+  if(card.dataset.locked)return;
+  for(var i=0;i<20;i++){var el=document.getElementById('rvopt_'+k+'_'+i);if(el)el.classList.remove('selected');}
+  document.getElementById('rvopt_'+k+'_'+oi).classList.add('selected');
+  rvSel[k]=oi;
+}
+
+function rvDdPick(k,pi,value){
+  var item=document.getElementById('rvddi_'+k+'_'+pi);
+  if(item.classList.contains('matched'))return;
+  var cur=rvDDsel[k];
+  if(cur&&cur.pi===pi){item.classList.remove('sel');rvDDsel[k]=null;return;}
+  if(cur){var old=document.getElementById('rvddi_'+k+'_'+cur.pi);if(old)old.classList.remove('sel');}
+  item.classList.add('sel');
+  rvDDsel[k]={pi:pi,value:value};
+}
+
+function rvDdDrop(k,ti){
+  var sel=rvDDsel[k];
+  if(!sel)return;
+  rvDD[k]=rvDD[k]||{};
+  Object.keys(rvDD[k]).forEach(function(t){
+    if(rvDD[k][t].pi===sel.pi){
+      var old=document.getElementById('rvddt_'+k+'_'+t);
+      if(old&&!old.classList.contains('filled')){old.classList.remove('pending');old.textContent=old.dataset.answer;}
+      delete rvDD[k][t];
+    }
+  });
+  var target=document.getElementById('rvddt_'+k+'_'+ti);
+  if(target.classList.contains('filled'))return;
+  rvDD[k][ti]={pi:sel.pi,lv:sel.value};
+  var item=document.getElementById('rvddi_'+k+'_'+sel.pi);
+  if(item){item.classList.remove('sel');item.classList.add('pending');}
+  target.classList.add('pending');target.textContent='→ '+sel.value;
+  rvDDsel[k]=null;
+}
+
+function rvDragStart(ev,k,pi,value){
+  var item=document.getElementById('rvddi_'+k+'_'+pi);
+  if(item.classList.contains('matched')){ev.preventDefault();return;}
+  rvDDsel[k]={pi:pi,value:value};
+  item.classList.add('dragging');
+  try{ev.dataTransfer.setData('text/plain',String(pi));ev.dataTransfer.effectAllowed='move';}catch(e){}
+}
+function rvDragOver(ev,k,ti){
+  if(!rvDDsel[k])return;
+  ev.preventDefault();
+  var t=document.getElementById('rvddt_'+k+'_'+ti);
+  if(t&&!t.classList.contains('filled'))t.classList.add('drag-over');
+}
+function rvDragLeave(k,ti){var t=document.getElementById('rvddt_'+k+'_'+ti);if(t)t.classList.remove('drag-over');}
+function rvDrop(ev,k,ti){ev.preventDefault();rvDragLeave(k,ti);rvDdDrop(k,ti);}
+
+function rvWirePick(k,key){
+  var chip=document.getElementById('rvchip_'+k+'_'+key);
+  if(chip.classList.contains('placed'))return;
+  if(rvWireSel[k]){var old=document.getElementById('rvchip_'+k+'_'+rvWireSel[k]);if(old)old.classList.remove('sel');}
+  chip.classList.add('sel');
+  rvWireSel[k]=key;
+}
+
+function rvWirePlace(k,i){
+  var slot=document.getElementById('rvpin_'+k+'_'+i);
+  rvWire[k]=rvWire[k]||{};
+  if(rvWire[k][i]!=null&&!rvWireSel[k]){
+    var oldChip=document.getElementById('rvchip_'+k+'_'+rvWire[k][i]);
+    if(oldChip)oldChip.classList.remove('placed');
+    delete rvWire[k][i];
+    slot.className='wire-pin-slot';slot.innerHTML='';
+    return;
+  }
+  if(!rvWireSel[k])return;
+  if(rvWire[k][i]!=null){
+    var prev=document.getElementById('rvchip_'+k+'_'+rvWire[k][i]);
+    if(prev)prev.classList.remove('placed');
+  }
+  var key=rvWireSel[k];
+  rvWire[k][i]=key;
+  var chip=document.getElementById('rvchip_'+k+'_'+key);
+  chip.classList.remove('sel');chip.classList.add('placed');
+  slot.className='wire-pin-slot filled';
+  slot.innerHTML='<div class="wire-chip '+WIRE_COLORS[key].cls+'" style="width:90%;height:80%;cursor:default"></div>';
+  rvWireSel[k]=null;
+}
+
+function rvGradeItem(it,k){
+  var card=document.getElementById('rvitem_'+k);
+  var mark=document.getElementById('rvmark_'+k);
+  var ok=false;
+  if(rvIsMcq(it)){
+    ok=rvSel[k]===it.ans;
+    for(var i=0;i<it.opts.length;i++){
+      var el=document.getElementById('rvopt_'+k+'_'+i);
+      el.classList.add('answered');
+      if(i===it.ans&&ok)el.classList.add('correct');
+      else if(i===rvSel[k]&&!ok)el.classList.add('wrong');
+    }
+    if(ok){var ex=document.getElementById('rvexp_'+k);if(ex)ex.classList.add('show');}
+  }else if(it.dragdrop){
+    ok=true;
+    it.pairs.forEach(function(pair,ti){
+      var t=document.getElementById('rvddt_'+k+'_'+ti);
+      var mp=(rvDD[k]||{})[ti];
+      if(t.classList.contains('filled'))return;
+      if(mp&&mp.lv.trim()===pair.left.trim()){
+        t.classList.remove('pending');t.classList.add('filled');t.textContent='✓ '+mp.lv;
+        var li=document.getElementById('rvddi_'+k+'_'+mp.pi);
+        if(li){li.classList.remove('pending','sel','dragging');li.classList.add('matched');li.setAttribute('draggable','false');}
+      }else{
+        ok=false;
+        if(mp){t.classList.add('wrong-m');t.textContent='✗ '+mp.lv;}
+      }
+    });
+  }else if(it.type==='wireorder'){
+    ok=true;
+    it.order.forEach(function(key,i){
+      var slot=document.getElementById('rvpin_'+k+'_'+i);
+      slot.classList.remove('correct','wrong');
+      if((rvWire[k]||{})[i]===key)slot.classList.add('correct');
+      else{slot.classList.add('wrong');ok=false;}
+    });
+  }else if(it.type==='calc'){
+    ok=true;
+    it.fields.forEach(function(f){
+      var inp=document.getElementById('rvcalc_'+k+'_'+f.key);
+      var good=inp.value.trim()===it.answer[f.key];
+      inp.classList.remove('correct','wrong');
+      inp.classList.add(good?'correct':'wrong');
+      if(!good)ok=false;
+    });
+  }
+  card.classList.remove('ok','bad');
+  card.classList.add(ok?'ok':'bad');
+  if(ok){card.dataset.locked='1';mark.className='rv-mark ok';mark.textContent='✓ ถูกต้อง';}
+  else{mark.className='rv-mark bad';mark.textContent='✗ ยังไม่ถูก';}
+  return ok;
+}
+
+function rvResetWrong(s){
+  s.items.forEach(function(it,k){
+    var card=document.getElementById('rvitem_'+k);
+    if(!card||card.dataset.locked)return;
+    if(rvIsMcq(it)){
+      for(var i=0;i<it.opts.length;i++){
+        var el=document.getElementById('rvopt_'+k+'_'+i);
+        el.classList.remove('answered','correct','wrong','selected');
+      }
+      delete rvSel[k];
+    }else if(it.dragdrop){
+      it.pairs.forEach(function(pair,ti){
+        var t=document.getElementById('rvddt_'+k+'_'+ti);
+        if(t.classList.contains('filled'))return;
+        var mp=(rvDD[k]||{})[ti];
+        if(mp){var li=document.getElementById('rvddi_'+k+'_'+mp.pi);if(li)li.classList.remove('pending','sel');delete rvDD[k][ti];}
+        t.classList.remove('wrong-m','pending','drag-over');
+        t.textContent=t.dataset.answer;
+      });
+    }
+  });
+}
+
+function submitReview(){
+  var s=STEPS[APP.step-1];
+  var fb=document.getElementById('cpFb');
+  var okCount=0;
+  s.items.forEach(function(it,k){if(rvGradeItem(it,k))okCount++;});
+  var total=s.items.length;
+  if(okCount===total){
+    APP.wrong=0;
+    fb.textContent='✓ ถูกต้องครบทั้ง '+total+' ข้อ — จบบทเรียนแล้วครับ';
+    fb.className='checkpoint-fb ok';
+    showNextBtn();
+  }else{
+    APP.wrong++;APP.wrongSinceSave++;
+    fb.textContent='ถูก '+okCount+' จาก '+total+' ข้อ — ข้อที่ยังไม่ถูกถูกคืนกลับมาให้แก้ใหม่แล้วครับ';
+    fb.className='checkpoint-fb bad';
+    setTimeout(function(){rvResetWrong(s);},900);
+  }
+}
+
+function rvRevealAll(s){
+  s.items.forEach(function(it,k){
+    var card=document.getElementById('rvitem_'+k);
+    var mark=document.getElementById('rvmark_'+k);
+    if(card){card.classList.add('ok');card.dataset.locked='1';}
+    if(mark){mark.className='rv-mark ok';mark.textContent='✓ เฉลย';}
+    if(rvIsMcq(it)){
+      for(var i=0;i<it.opts.length;i++){
+        var el=document.getElementById('rvopt_'+k+'_'+i);
+        if(!el)continue;
+        el.classList.add('answered');
+        if(i===it.ans)el.classList.add('correct');
+      }
+      var ex=document.getElementById('rvexp_'+k);if(ex)ex.classList.add('show');
+    }else if(it.dragdrop){
+      it.pairs.forEach(function(p,ti){
+        var t=document.getElementById('rvddt_'+k+'_'+ti);
+        if(t){t.classList.add('filled');t.textContent='✓ '+p.left;}
+      });
+    }else if(it.type==='wireorder'){
+      it.order.forEach(function(key,i){
+        var slot=document.getElementById('rvpin_'+k+'_'+i);
+        if(!slot)return;
+        slot.className='wire-pin-slot filled correct';
+        slot.innerHTML='<div class="wire-chip '+WIRE_COLORS[key].cls+'" style="width:90%;height:80%;cursor:default"></div>';
+      });
+    }else if(it.type==='calc'){
+      it.fields.forEach(function(f){
+        var inp=document.getElementById('rvcalc_'+k+'_'+f.key);
+        if(!inp)return;
+        inp.value=it.answer[f.key];inp.classList.add('correct');inp.readOnly=true;
+      });
+    }
+  });
+}
+
+function renderStep(){
+  renderStepBase();
+  var s=STEPS[APP.step-1];
+  if(s&&isStepDone(s))applyReviewMode(s);
+}
+
+function renderStepBase(){
+  updateStepChip();
+  var s=STEPS[APP.step-1];
+  var wrap=document.getElementById('lessonWrap');
+  if(!s){wrap.innerHTML='';return;}
+  if(s.type==='review'||s.type==='quiz'){renderReview(s);return;}
+  if(s.type==='lesson'){
+    wrap.innerHTML='<div class="lesson-section-label">'+s.section+'</div>'
+      +'<div class="lesson-card"><div class="lesson-title">'+s.title+'</div>'
+      +'<div class="lesson-body">'+s.body+'</div>'
+      +(s.fig?'<div class="lesson-fig">'+s.fig+(s.figCap?'<div class="fig-cap">'+s.figCap+'</div>':'')+'</div>':'')
+      +'<div class="lesson-actions"><button class="btn-check" onclick="advanceStep()">เข้าใจแล้ว ถัดไป →</button></div></div>';
+  }else if(s.type==='calc'){
+    renderCalc(s);
+  }else{
+    renderCheckpoint(s);
+  }
+}
+
+function renderCalc(s){
+  var wrap=document.getElementById('lessonWrap');
+  wrap.innerHTML='<div class="lesson-section-label">'+s.section+(s.final?' — ทบทวนท้ายบท':'')+'</div>'
+    +'<div class="lesson-card"><div class="lesson-title">'+s.title+'</div>'
+    +'<div class="calc-scenario">'+s.scenario+'</div>'
+    +'<div class="calc-fields">'+s.fields.map(function(f){
+      return '<div class="calc-field"><label class="calc-field-label">'+f.label+'</label>'
+        +'<input class="calc-field-input" id="calcIn_'+f.key+'" autocomplete="off" spellcheck="false" placeholder="'+f.placeholder+'"/>'
+        +'<div class="calc-field-ans" id="calcAns_'+f.key+'"></div></div>';
+    }).join('')+'</div>'
+    +'<div class="checkpoint-fb" id="cpFb" style="margin-top:12px"></div>'
+    +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitCalc()">ตรวจคำตอบ</button></div>'
+    +'</div>';
+  setTimeout(function(){
+    var first=wrap.querySelector('.calc-field-input');
+    if(first)first.focus();
+  },50);
+}
+
+function submitCalc(){
+  var s=STEPS[APP.step-1];
+  var fb=document.getElementById('cpFb');
+  var allCorrect=true;
+  s.fields.forEach(function(f){
+    var inp=document.getElementById('calcIn_'+f.key);
+    var ansEl=document.getElementById('calcAns_'+f.key);
+    var val=inp.value.trim();
+    var correct=val===s.answer[f.key];
+    inp.classList.remove('correct','wrong');
+    inp.classList.add(correct?'correct':'wrong');
+    if(!correct){
+      allCorrect=false;
+      if(APP.wrong>=2){ansEl.textContent='เฉลย: '+s.answer[f.key];ansEl.classList.add('show');}
+    }else{
+      ansEl.classList.remove('show');
+    }
+  });
+  if(allCorrect){
+    fb.textContent='✓ ถูกต้องทั้งหมดครับ!';fb.className='checkpoint-fb ok';
+    APP.wrong=0;
+    showNextBtn();
+  }else{
+    APP.wrong++;APP.wrongSinceSave++;
+    fb.textContent='ยังไม่ถูกทั้งหมดครับ ลองคำนวณใหม่อีกครั้ง'+(APP.wrong>=2?' (ดูเฉลยช่องที่ผิดได้ด้านล่างช่องนั้นๆ)':'');fb.className='checkpoint-fb bad';
+  }
+}
+
+function renderCheckpoint(s){
+  var wrap=document.getElementById('lessonWrap');
+  ddSel=null;ddMap={};
+  var html='<div class="lesson-section-label">'+s.section+(s.final?' — คำถามทบทวนรวม':'')+'</div>';
+  if(s.dragdrop){
+    var sh=s.pairs.slice().sort(function(){return Math.random()-.5;});
+    html+='<div class="q-card" id="qcard_cp"><div class="q-num">'+(s.final?'ทบทวนท้ายบท — Drag &amp; Drop':'Checkpoint — Drag &amp; Drop')+'</div>'
+      +'<div class="q-text">'+s.q+'</div>'
+      +'<div class="dd-hint">ลากข้อความจากคอลัมน์ซ้ายไปวางบนคู่ที่ถูกต้องทางขวา (หรือจะคลิกเลือกแล้วคลิกช่องปลายทางก็ได้)</div>'
+      +'<div class="dd-grid"><div><div class="dd-col-label">คลิกเลือก</div>'
+      +'<div class="dd-items" id="ddL_cp">'+sh.map(function(p,pi){
+        var lv=p.left.replace(/'/g,"\\'");
+        return '<div class="dd-item" id="ddi_cp_'+pi+'" draggable="true"'
+          +' ondragstart="dragStartDD(event,'+pi+',\''+lv+'\')" ondragend="dragEndDD(event)"'
+          +' onclick="selDD('+pi+',\''+lv+'\')">'+p.left+'</div>';
+      }).join('')+'</div></div>'
+      +'<div><div class="dd-col-label">จับคู่กับ</div>'
+      +'<div class="dd-items" id="ddR_cp">'+s.pairs.map(function(p,pi){
+        return '<div class="dd-target" id="ddt_cp_'+pi+'" data-answer="'+p.right+'"'
+          +' ondragover="dragOverDD(event,'+pi+')" ondragleave="dragLeaveDD('+pi+')"'
+          +' ondrop="dropOnDD(event,'+pi+')" onclick="dropDD('+pi+')">'+p.right+'</div>';
+      }).join('')+'</div></div></div>'
+      +'<div class="checkpoint-fb" id="cpFb"></div>'
+      +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitCheckpoint()">ตรวจคำตอบ</button></div>'
+      +'<div class="hint-box" id="hintBox"><div class="hint-title">เฉลย</div><div class="hint-text" id="hintText"></div></div>'
+      +'</div>';
+  }else{
+    html+='<div class="q-card" id="qcard_cp" data-ans="'+s.ans+'"><div class="q-num">'+(s.final?'ทบทวนท้ายบท':'Checkpoint')+'</div>'
+      +'<div class="q-text">'+s.q+'</div>'
+      +'<div class="q-opts">'+s.opts.map(function(o,oi){
+        return '<div class="q-opt" id="qopt_cp_'+oi+'" onclick="selOptCp('+oi+')"><div class="q-dot"></div><span>'+o+'</span></div>';
+      }).join('')+'</div>'
+      +'<div class="q-explain" id="qexpCp">'+s.exp+'</div>'
+      +'<div class="checkpoint-fb" id="cpFb"></div>'
+      +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitCheckpoint()">ตรวจคำตอบ</button></div>'
+      +'</div>';
+  }
+  wrap.innerHTML=html;
+}
+
+function selOptCp(oi){
+  var card=document.getElementById('qcard_cp');if(card.dataset.answered)return;
+  var opts=card.querySelectorAll('.q-opt');
+  opts.forEach(function(el){el.classList.remove('selected');});
+  document.getElementById('qopt_cp_'+oi).classList.add('selected');
+  card.dataset.selected=oi;
+}
+
+function dragStartDD(ev,pi,value){
+  var item=document.getElementById('ddi_cp_'+pi);
+  if(item.classList.contains('matched')){ev.preventDefault();return;}
+  if(ddSel)ddSel.el.classList.remove('sel');
+  ddSel={el:item,value:value,pi:pi};
+  item.classList.add('dragging');
+  try{ev.dataTransfer.setData('text/plain',String(pi));ev.dataTransfer.effectAllowed='move';}catch(e){}
+}
+
+function dragEndDD(ev){
+  var items=document.querySelectorAll('.dd-item.dragging');
+  for(var i=0;i<items.length;i++)items[i].classList.remove('dragging');
+}
+
+function dragOverDD(ev,ti){
+  if(!ddSel)return;
+  ev.preventDefault();
+  try{ev.dataTransfer.dropEffect='move';}catch(e){}
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t&&!t.classList.contains('filled'))t.classList.add('drag-over');
+}
+
+function dragLeaveDD(ti){
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t)t.classList.remove('drag-over');
+}
+
+function dropOnDD(ev,ti){
+  ev.preventDefault();
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t)t.classList.remove('drag-over');
+  dropDD(ti);
+}
+
+function clearWrongDD(s){
+  s.pairs.forEach(function(pair,ti){
+    var target=document.getElementById('ddt_cp_'+ti);
+    if(!target||target.classList.contains('filled'))return;
+    var mp=ddMap[ti];
+    if(mp){
+      var item=document.getElementById('ddi_cp_'+mp.lpi);
+      if(item)item.classList.remove('pending','sel','dragging');
+      delete ddMap[ti];
+    }
+    target.classList.remove('wrong-m','pending','drag-over');
+    target.textContent=target.dataset.answer;
+  });
+}
+
+function selDD(pi,value){
+  var item=document.getElementById('ddi_cp_'+pi);
+  if(item.classList.contains('checked'))return;
+  if(ddSel&&ddSel.el===item){item.classList.remove('sel');ddSel=null;return;}
+  if(ddSel)ddSel.el.classList.remove('sel');
+  item.classList.add('sel');
+  ddSel={el:item,value:value,pi:pi};
+}
+
+function dropDD(ti){
+  if(!ddSel)return;
+  var target=document.getElementById('ddt_cp_'+ti);
+  Object.keys(ddMap).forEach(function(k){
+    if(ddMap[k].lpi===ddSel.pi){
+      var old=document.getElementById('ddt_cp_'+k);
+      if(old){old.classList.remove('pending');old.textContent=old.dataset.answer;}
+      delete ddMap[k];
+    }
+  });
+  ddMap[ti]={lpi:ddSel.pi,lv:ddSel.value};
+  ddSel.el.classList.remove('sel');ddSel.el.classList.add('pending');
+  target.classList.add('pending');target.textContent='→ '+ddSel.value;
+  ddSel=null;
+}
+
+function maybeShowHint(s){
+  if(APP.wrong<3)return;
+  if(s.dragdrop){
+    var hb=document.getElementById('hintBox');
+    if(hb){
+      hb.classList.add('show');
+      document.getElementById('hintText').textContent=s.pairs.map(function(p){return p.left+' → '+p.right;}).join('\n');
+    }
+  }else{
+    var exp=document.getElementById('qexpCp');
+    if(exp)exp.classList.add('show');
+  }
+}
+
+function submitCheckpoint(){
+  var s=STEPS[APP.step-1];
+  var card=document.getElementById('qcard_cp');
+  var fb=document.getElementById('cpFb');
+  if(s.dragdrop){
+    var allCorrect=true;
+    s.pairs.forEach(function(pair,ti){
+      var target=document.getElementById('ddt_cp_'+ti);
+      var mp=ddMap[ti];
+      target.classList.remove('pending','wrong-m','filled');
+      if(mp&&mp.lv.trim()===pair.left.trim()){
+        target.classList.add('filled');target.textContent='✓ '+mp.lv;
+        var lel=document.getElementById('ddi_cp_'+mp.lpi);
+        if(lel){lel.classList.remove('pending','dragging');lel.classList.add('matched');lel.setAttribute('draggable','false');}
+      }else{
+        allCorrect=false;
+        target.textContent=mp?('✗ '+mp.lv):pair.right;
+        if(mp)target.classList.add('wrong-m');
+      }
+    });
+    if(allCorrect){
+      fb.textContent='✓ ถูกต้องทั้งหมดครับ!';fb.className='checkpoint-fb ok';
+      APP.wrong=0;
+      showNextBtn();
+    }else{
+      APP.wrong++;APP.wrongSinceSave++;
+      var okCount=0;
+      s.pairs.forEach(function(p,ti){
+        var t=document.getElementById('ddt_cp_'+ti);
+        if(t&&t.classList.contains('filled'))okCount++;
+      });
+      fb.textContent='ถูก '+okCount+' จาก '+s.pairs.length+' คู่ — คู่ที่ยังไม่ถูกถูกคืนกลับไปให้ลากใหม่แล้วครับ';
+      fb.className='checkpoint-fb bad';
+      maybeShowHint(s);
+      setTimeout(function(){clearWrongDD(s);},900);
+    }
+  }else{
+    var sel=card.dataset.selected!=null&&card.dataset.selected!==''?parseInt(card.dataset.selected):-1;
+    var opts=card.querySelectorAll('.q-opt');
+    opts.forEach(function(el,i){
+      el.classList.add('answered');
+      if(i===s.ans)el.classList.add('correct');
+      else if(i===sel)el.classList.add('wrong');
+    });
+    if(sel===s.ans){
+      document.getElementById('qexpCp').classList.add('show');
+      fb.textContent='✓ ถูกต้องครับ! — อ่านคำอธิบายด้านบน แล้วกด "ถัดไป"';fb.className='checkpoint-fb ok';
+      APP.wrong=0;
+      showNextBtn();
+    }else{
+      APP.wrong++;APP.wrongSinceSave++;
+      fb.textContent='ยังไม่ถูกครับ ลองใหม่อีกครั้ง';fb.className='checkpoint-fb bad';
+      maybeShowHint(s);
+      setTimeout(function(){
+        opts.forEach(function(el){el.classList.remove('answered','correct','wrong','selected');});
+        card.dataset.answered='';
+        card.dataset.selected='';
+      },900);
+    }
+  }
+}
+
+function showNextBtn(){
+  var act=document.querySelector('.checkpoint-actions');
+  if(!act)return;
+  var last=APP.step>=STEPS.length;
+  act.innerHTML='<button class="btn-check" onclick="advanceStep()">'+(last?'จบ Lab — ดูสรุปผล →':'ถัดไป →')+'</button>';
+}
+
+function REVIEW_EXTRA(s){
+  if(s.type!=='calc')return;
+  s.fields.forEach(function(f){
+    var inp=document.getElementById('calcIn_'+f.key);
+    if(!inp)return;
+    inp.value=s.answer[f.key];
+    inp.classList.add('correct');
+    inp.readOnly=true;
+  });
+}
+
+function isStepDone(s){return s&&APP.stepsDone.indexOf(s.id)>=0;}
+
+function isLockedInTest(){
+  var s=STEPS[APP.step-1];
+  if(!s||s.type==='lesson')return false;
+  return APP.stepsDone.indexOf(s.id)<0;
+}
+
+function flashTestLock(){
+  var fb=document.getElementById('cpFb');
+  if(!fb)return;
+  fb.textContent='ตอบคำถามข้อนี้ให้ถูกก่อนครับ ระหว่างทำแบบทดสอบจะย้อนกลับไปดูเนื้อหาไม่ได้';
+  fb.className='checkpoint-fb bad';
+}
+
+function goToStep(n){
+  if(n<1||n>STEPS.length)return;
+  if(n>APP.maxStep)return;
+  if(isLockedInTest()&&n!==APP.step){
+    flashTestLock();
+    return;
+  }
+  APP.step=n;APP.wrong=0;
+  renderStep();renderSidebar();
+  var view=document.querySelector('.lesson-view');
+  if(view)view.scrollTop=0;
+}
+
+function reviewNavHtml(){
+  var h='<div class="checkpoint-actions">';
+  if(APP.step>1)h+='<button class="btn-skip2" onclick="goToStep('+(APP.step-1)+')">← ย้อนกลับ</button>';
+  if(APP.step<STEPS.length)h+='<button class="btn-check" onclick="goToStep('+(APP.step+1)+')">ถัดไป →</button>';
+  else h+='<button class="btn-check" onclick="openLabComplete()">ดูสรุปผล Lab →</button>';
+  h+='</div><div class="review-note"><b>โหมดทบทวน</b> — ข้อนี้ทำผ่านไปแล้ว เฉลยจึงแสดงไว้ให้ ย้อนดูข้อก่อนหน้าได้จากรายการด้านซ้าย</div>';
+  return h;
+}
+
+function applyReviewMode(s){
+  var act=document.querySelector('.checkpoint-actions');
+  if(s.type==='lesson'){
+    var la=document.querySelector('.lesson-actions');
+    if(la)la.outerHTML=reviewNavHtml();
+    return;
+  }
+  if(s.type==='checkpoint'&&s.dragdrop){
+    s.pairs.forEach(function(p,ti){
+      var t=document.getElementById('ddt_cp_'+ti);
+      if(t){t.classList.add('filled');t.textContent='✓ '+p.left;}
+    });
+    var left=document.querySelectorAll('#ddL_cp .dd-item');
+    for(var i=0;i<left.length;i++)left[i].classList.add('matched');
+  }else if(s.type==='checkpoint'){
+    var card=document.getElementById('qcard_cp');
+    if(card){
+      card.dataset.answered='1';
+      var opts=card.querySelectorAll('.q-opt');
+      for(var j=0;j<opts.length;j++){
+        opts[j].classList.add('answered');
+        if(j===s.ans)opts[j].classList.add('correct');
+      }
+    }
+    var exp=document.getElementById('qexpCp');
+    if(exp)exp.classList.add('show');
+  }
+  if(s.type==='review'||s.type==='quiz'){rvRevealAll(s);}
+  REVIEW_EXTRA(s);
+  if(act)act.outerHTML=reviewNavHtml();
+}
+
+function advanceStep(){
+  var cur=STEPS[APP.step-1];
+  var already=APP.stepsDone.indexOf(cur.id)>=0;
+  if(!already)APP.stepsDone.push(cur.id);
+  if(APP.step<STEPS.length){
+    APP.step++;
+    if(APP.step>APP.maxStep)APP.maxStep=APP.step;
+    renderStep();renderSidebar();
+    if(!already)saveProgress(false);
+  }else if(already){
+    openLabComplete();
+  }else{
+    completeLab();
+  }
+}
+
+function completeLab(){
+  renderSidebar();
+  document.getElementById('labComplete').classList.add('show');
+  document.getElementById('completeChip').classList.add('show');
+  document.getElementById('nextLabChip').classList.add('show');
+  addMsg('ai','ยินดีด้วยครับ! Lab Ch.3 เสร็จสมบูรณ์!\n\nสรุป:\n• Classful Addressing (Class A/B/C) และ CIDR Notation\n• Subnet Mask, Block Size และสูตร 2ⁿ / 2ⁿ-2\n• คำนวณ Network Address, Broadcast Address และ Host Range จริงทั้ง /24, /26, /28, /30\n• VLSM เบื้องต้น — เลือกขนาด Subnet ให้พอดีกับจำนวน Host ที่ต้องการ\n\nพร้อมนำความรู้นี้ไปใช้ตั้งค่า IP จริงบน Router ใน Lab 4 เป็นต้นไปแล้วครับ');
+  saveProgress(true);
+}
+
+function closeLabComplete(){
+  document.getElementById('labComplete').classList.remove('show');
+}
+function openLabComplete(){
+  document.getElementById('labComplete').classList.add('show');
+}
+function goNextLab(){
+  location.href='../lab04-basic-configuration/lab4.html';
+}
+
+function resetLab(){
+  document.getElementById('labComplete').classList.remove('show');
+  document.getElementById('completeChip').classList.remove('show');
+  document.getElementById('nextLabChip').classList.remove('show');
+  APP.step=1;APP.maxStep=1;APP.stepsDone=[];APP.wrong=0;
+  STEPS.forEach(function(st){if(st.pool)st.drawn=false;});
+  APP.wrongSinceSave=0;APP.lastSaveTime=Date.now();
+  renderStep();renderSidebar();
+}
+
+function saveProgress(completed){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var now=Date.now();
+  var elapsedSec=Math.round((now-APP.lastSaveTime)/1000);
+  var payload={
+    studentId:studentId, labId:3, courseId:'netlab1',
+    stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
+    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:!!completed
+  };
+  APP.lastSaveTime=now;APP.wrongSinceSave=0;
+  fetch(API_BASE+'/progress',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)}).catch(function(){});
+}
+
+async function loadSavedProgress(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var row;
+  try{
+    var res=await fetch(API_BASE+'/progress/'+encodeURIComponent(studentId));
+    var data=await res.json();
+    row=(data.labs||[]).filter(function(r){return r.lab_id===3&&(r.course_id==null||r.course_id==='netlab1');})[0];
+  }catch(e){return;}
+  if(!row||!row.steps_done)return;
+  var n=Math.min(row.steps_done,STEPS.length);
+  APP.stepsDone=STEPS.slice(0,n).map(function(s){return s.id;});
+  if(n>=STEPS.length){
+    APP.step=STEPS.length;
+    APP.maxStep=STEPS.length;
+    renderStep();renderSidebar();
+    document.getElementById('labComplete').classList.add('show');
+    document.getElementById('completeChip').classList.add('show');
+    document.getElementById('nextLabChip').classList.add('show');
+  }else{
+    APP.step=n+1;
+    APP.maxStep=APP.step;
+    renderStep();renderSidebar();
+  }
+}
+
+function buildSys(){
+  var s=STEPS[APP.step-1];
+  var topic=s?(s.title||s.q):'';
+  return 'Role: Networking Fundamentals Tutor (Subnetting)\nLanguage: Thai, ใช้ครับ\nSubject: Ch.3 IP Address and Subnetting — Classful Addressing, CIDR, Subnet Mask, Block Size, คำนวณ Network/Broadcast/Host Range, VLSM\nRules: ตอบสั้นไม่เกิน 4 ประโยค เข้าใจง่าย ถ้าเป็นแบบฝึกหัดคำนวณห้ามบอกคำตอบเป๊ะๆ ให้อธิบายวิธีคิดแทน\nUI ที่ผู้เรียนเห็นบนหน้าจอ (อ้างอิงได้เฉพาะสิ่งเหล่านี้เท่านั้น): เนื้อหาบทเรียนพร้อมภาพประกอบและตารางในหน้าปัจจุบัน | รายการหัวข้อด้านซ้าย. Lab นี้เป็นเนื้อหาทฤษฎี ไม่มีเทอร์มินัล Cisco ไม่มีแผนภาพ Topology และไม่มีตาราง IP. ห้ามอ้างถึงเอกสาร ใบงาน ไฟล์ PDF หรือหน้าจออื่นที่ไม่มีอยู่จริง\nCurrent: Step '+APP.step+'/'+STEPS.length+' — '+topic+' | Wrong: '+APP.wrong;
+}
+
+function askAboutTopic(){
+  var s=STEPS[APP.step-1];
+  var topic=s?(s.title||s.q):'';
+  quickAsk('ช่วยอธิบายเรื่อง "'+topic+'" เพิ่มเติมแบบเข้าใจง่ายหน่อยครับ');
+}
+
+function showProgressSummary(){
+  quickAsk('สรุปสิ่งที่เรียนมาแล้วในหัวข้อที่ทำเสร็จให้หน่อยครับ');
+}
+
+function addMsg(role,text){
+  var msgs=document.getElementById('messages');
+  var wrap=document.createElement('div');wrap.className='msg'+(role==='user'?' user':'');
+  var av=document.createElement('div');av.className='av '+(role==='ai'?'ai-av':'user-av');av.textContent=role==='ai'?'AI':'U';
+  var bub=document.createElement('div');bub.className='bub '+(role==='ai'?'ai-b':'user-b');bub.textContent=text;
+  wrap.appendChild(av);wrap.appendChild(bub);msgs.appendChild(wrap);msgs.scrollTop=99999;
+  APP.chatHistory=APP.chatHistory.concat([{role:role==='ai'?'assistant':'user',content:text}]).slice(-16);
+}
+
+function showTyping(){
+  var msgs=document.getElementById('messages');
+  var w=document.createElement('div');w.className='msg';w.id='typing';
+  var av=document.createElement('div');av.className='av ai-av';av.textContent='AI';
+  var d=document.createElement('div');d.className='typing-dots';
+  d.innerHTML='<span></span><span></span><span></span>';
+  w.appendChild(av);w.appendChild(d);msgs.appendChild(w);msgs.scrollTop=99999;
+}
+function hideTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+
+async function callAI(msg,sys){
+  var res=await fetch(API_BASE+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages:APP.chatHistory.slice(-8).concat([{role:'user',content:msg}]),
+    system:sys||buildSys(),max_tokens:150})});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return (await res.json()).content||'ขออภัยครับ';
+}
+
+async function sendChat(){
+  if(isBusy)return;
+  var inp=document.getElementById('chatIn');
+  var msg=inp.value.trim();if(!msg)return;
+  inp.value='';isBusy=true;document.getElementById('sendBtn').disabled=true;
+  addMsg('user',msg);showTyping();
+  try{var r=await callAI(msg);hideTyping();addMsg('ai',r);}
+  catch(e){hideTyping();addMsg('ai',e.message);}
+  finally{isBusy=false;document.getElementById('sendBtn').disabled=false;}
+}
+
+function quickAsk(msg){document.getElementById('chatIn').value=msg;sendChat();}
+
+async function checkHealth(){
+  var pill=document.getElementById('aiStatus'),dot=document.getElementById('aiDot');
+  try{
+    var res=await fetch(API_BASE+'/health',{signal:AbortSignal.timeout(5000)});
+    var d=await res.json();
+    if(d.model_ready){
+      pill.className='ai-pill ai-on';dot.classList.add('pulse');
+      document.getElementById('aiStatusText').textContent='AI พร้อม';
+      document.getElementById('chatDot').style.background='var(--green)';
+      var m=d.model||(d.models&&d.models.default)||'';
+      if(m)document.getElementById('modelTag').textContent=m.split('/').pop();
+    }else{throw new Error();}
+  }catch(e){
+    pill.className='ai-pill ai-off';dot.classList.remove('pulse');
+    document.getElementById('aiStatusText').textContent='AI ออฟไลน์';
+    document.getElementById('chatDot').style.background='var(--red)';
+  }
+}
+</script>
+</body>
+</html>
+

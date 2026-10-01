@@ -109,7 +109,7 @@ function enableSecretPat(secret){
 function usernameSecretPat(user, secret){
   return new RegExp('^' + abbr('username', 2) + '\\s+' + user + '\\s+' + abbr('secret', 1) + '\\s+' + secret + '$', 'i');
 }
-var CRYPTO_KEY_PAT = new RegExp('^' + abbr('crypto', 3) + '\\s+' + abbr('key', 1) + '\\s+' + abbr('generate', 1) + '\\s+rsa$', 'i');
+var CRYPTO_KEY_PAT = new RegExp('^' + abbr('crypto', 3) + '\\s+' + abbr('key', 1) + '\\s+' + abbr('generate', 1) + '\\s+rsa\\s+' + abbr('general-keys', 3) + '\\s+' + abbr('modulus', 3) + '\\s+1024$', 'i');
 function lineVtyPat(a, b){
   return new RegExp('^' + abbr('line', 2) + '\\s+vty\\s+' + a + '\\s+' + b + '$', 'i');
 }
@@ -138,8 +138,8 @@ var BASE_MODE_KEYWORDS = {
                  'ping', 'traceroute', 'show', 'ip', 'route', 'bgp', 'summary'],
   'config':     ['interface', 'ip', 'route', 'end', 'exit', 'do', 'router', 'hostname', 'show',
                  'protocols', 'rip', 'eigrp', 'ospf', 'bgp', 'neighbor', 'neighbors', 'summary',
-                 'enable', 'secret', 'username', 'crypto', 'key', 'generate', 'rsa', 'line', 'vty',
-                 'domain-name', 'brief'],
+                 'enable', 'secret', 'username', 'crypto', 'key', 'generate', 'rsa', 'general-keys',
+                 'modulus', 'line', 'vty', 'domain-name', 'brief'],
   'config-if':  ['ip', 'address', 'no', 'shutdown', 'exit'],
   'config-line':['login', 'local', 'transport', 'input', 'ssh', 'exit']
 };

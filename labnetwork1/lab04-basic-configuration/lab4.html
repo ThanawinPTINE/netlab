@@ -409,7 +409,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 </div>
 
 <script src="../../scripts/theme.js?v=1"></script>
-<script src="../../scripts/cisco-patterns.js?v=3"></script>
+<script src="../../scripts/cisco-patterns.js?v=4"></script>
 <script>renderAuthNav();</script>
 <script>
 'use strict';
@@ -491,14 +491,14 @@ var STEPS=[
       msg:'✓ ตั้งรหัสผ่าน Privileged EXEC แบบเข้ารหัส (encrypted) เรียบร้อยครับ'}
    ]},
   {id:18,router:'R1',name:'R1 — สร้าง Username และ RSA Key สำหรับ SSH',short:'user+crypto',mode:'config',prompt:'R1(config)#',
-   hint:'username admin secret cisco123\ncrypto key generate rsa\nline vty 0 4',
+   hint:'username admin secret cisco123\ncrypto key generate rsa general-keys modulus 1024\nline vty 0 4',
    cmdHint:{cmd:'R1(config)# username admin secret cisco123',desc:'สร้าง user สำหรับ login ผ่าน SSH — username: admin, password: cisco123'},
    hints:[
      {cmd:'R1(config)# username admin secret cisco123',desc:'สร้าง user สำหรับ login ผ่าน SSH — username: admin, password: cisco123'},
-     {cmd:'R1(config)# crypto key generate rsa',desc:'สร้างกุญแจเข้ารหัส RSA สำหรับ SSH (ต้องตั้ง domain-name ไว้ก่อนแล้ว)'},
+     {cmd:'R1(config)# crypto key generate rsa general-keys modulus 1024',desc:'สร้างกุญแจเข้ารหัส RSA สำหรับ SSH (ต้องตั้ง domain-name ไว้ก่อนแล้ว) — general-keys คือ key ใช้งานทั่วไปชุดเดียว (ตรงข้ามกับ usage-keys ที่แยก key เข้ารหัส/เซ็นชื่อคนละชุด) และระบุ modulus ไว้ตรงคำสั่งเลย ถ้าไม่ระบุ Router จะถามย้อนแบบ interactive แทน (จำลองในหน้านี้ไม่รองรับ)'},
      {cmd:'R1(config)# line vty 0 4',desc:'เข้าสู่โหมดตั้งค่า virtual terminal (VTY) ทั้ง 5 line — Router รุ่นนี้นับ line เริ่มจาก 0 ถึง 4 (รวม 5 line) จึงพิมพ์ line vty 0 4 (ไม่ใช่ 0 5)'}
    ],
-   answer:'username admin secret cisco123\ncrypto key generate rsa\nline vty 0 4',
+   answer:'username admin secret cisco123\ncrypto key generate rsa general-keys modulus 1024\nline vty 0 4',
    commands:[
      {mode:'config',pat:usernameSecretPat('admin','cisco123'),next:'config',pr:'R1(config)#',adv:false,msg:''},
      {mode:'config',pat:CRYPTO_KEY_PAT,next:'config',pr:'R1(config)#',adv:false,
@@ -1720,8 +1720,8 @@ var SYNTAX_TEMPLATES=[
     desc:'ตั้งรหัสผ่านเข้า Privileged EXEC แบบเข้ารหัส'},
   {re:/^ip domain-name\s/i,  tpl:'ip domain-name [domain]',
     desc:'ตั้งชื่อ domain ของอุปกรณ์ — จำเป็นก่อนสร้าง RSA key สำหรับ SSH'},
-  {re:/^crypto key generate rsa$/i,tpl:'crypto key generate rsa',
-    desc:'สร้างกุญแจเข้ารหัส RSA สำหรับใช้งาน SSH'},
+  {re:/^crypto key generate rsa general-keys modulus\s+\d+$/i,tpl:'crypto key generate rsa general-keys modulus [bits]',
+    desc:'สร้างกุญแจเข้ารหัส RSA สำหรับใช้งาน SSH — ระบุ modulus ตรงคำสั่งเลย ไม่งั้น Router จะถามย้อนแบบ interactive'},
   {re:/^username\s/i,        tpl:'username [name] secret [password]',
     desc:'สร้าง user/password สำหรับ login เข้าอุปกรณ์'},
   {re:/^line vty\s/i,        tpl:'line vty [first-line] [last-line]',

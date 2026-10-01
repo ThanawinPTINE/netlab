@@ -377,7 +377,7 @@ footer{margin-top:var(--space-8);padding-top:var(--space-4);border-top:1px solid
   body{padding:var(--space-5) var(--space-4) var(--space-7)}
   .cons,.col-type{white-space:normal}
 }
-</style>\n</head>\n<body>\n<div class="wrap">''')
+</style>\n</head>\n<body>\n<a class="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>\n<main id="main" tabindex="-1" class="wrap">''')
 
 A('<div class="topline">'
   '<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" '
@@ -485,7 +485,7 @@ for what, why, impact in PENDING:
 A('</tbody></table>')
 
 A('<footer>NETLab · เอกสารประกอบปริญญานิพนธ์ · สร้างจากสคีมาของ netlab.db เมื่อ %s</footer>' % stamp)
-A('</div>\n</body>\n</html>')
+A('</main>\n</body>\n</html>')
 
 html_out = '\n'.join(parts)
 

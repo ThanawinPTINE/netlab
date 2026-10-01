@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ch.11 BGP — NETLab</title>
 <link rel="stylesheet" href="../../styles/tokens.css?v=2">
-<link rel="stylesheet" href="../../styles/shared.css?v=3">
+<link rel="stylesheet" href="../../styles/shared.css?v=4">
 <script src="../../scripts/auth.js?v=3"></script>
 <style>
 body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -245,10 +245,11 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
 <h1 class="sr-only">Ch.11 BGP</h1>
 <script>requireAuth();</script>
 
-<div class="topbar">
+<header class="topbar">
   <button class="mobile-toggle" id="sidebarToggle" onclick="toggleMobilePanel('sidebar')" title="Steps">☰</button>
   <a class="brand" href="../../index.html">NET<span>Lab</span></a>
   <span class="crumb-sep">›</span>
@@ -267,7 +268,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
     <button class="mobile-toggle" id="chatToggle" onclick="toggleMobilePanel('chat')" title="AI Tutor">💬</button>
   </div>
-</div>
+</header>
 
 <div class="tab-bar">
   <div class="tab active" id="tabPretest" onclick="switchTab('pretest')">Pre-test</div>
@@ -277,7 +278,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 
 <div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobilePanels()"></div>
 
-<div class="main">
+<main class="main" id="main" tabindex="-1">
   <div class="sidebar" id="sidebarPanel">
     <div class="sb-section"><div id="sidebarSteps"></div></div>
     <div class="progress-wrap">
@@ -374,7 +375,7 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
       <button class="send-btn" id="sendBtn" onclick="sendChat()" aria-label="ส่งคำถาม">↑</button>
     </div>
   </div>
-</div>
+</main>
 
 <div class="pc-modal-backdrop" id="pcModalBackdrop" onclick="if(event.target===this)closePcConfig()">
   <div class="pc-modal" role="dialog" aria-labelledby="pcModalTitle">

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign In — NETLab</title>
 <link rel="stylesheet" href="styles/tokens.css?v=2">
-<link rel="stylesheet" href="styles/shared.css?v=3">
+<link rel="stylesheet" href="styles/shared.css?v=4">
 <script src="scripts/auth.js?v=3"></script>
 <style>
 body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:var(--space-6)}
@@ -29,12 +29,13 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
 
-<div class="login-topbar">
+<header class="login-topbar">
   <a class="brand" href="index.html">NET<span>Lab</span></a>
-</div>
+</header>
 
-<div class="login-card">
+<main class="login-card" id="main" tabindex="-1">
   <div class="login-logo">NET<span>Lab</span></div>
   <h1 class="login-title">Sign In</h1>
   <div class="login-sub">Sign in with your student email to start your Lab</div>
@@ -59,7 +60,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
     </div>
   </div>
   <div id="authStatus" class="auth-status"></div>
-</div>
+</main>
 
 <div class="login-footer">Educational simulation — not affiliated with Cisco Networking Academy (NetAcad)</div>
 

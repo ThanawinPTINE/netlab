@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Network Engineering Laboratory I — NETLab</title>
 <link rel="stylesheet" href="styles/tokens.css?v=2">
-<link rel="stylesheet" href="styles/shared.css?v=3">
+<link rel="stylesheet" href="styles/shared.css?v=4">
 <script src="scripts/auth.js?v=3"></script>
 <style>
 body{min-height:100vh}
@@ -62,9 +62,10 @@ body{min-height:100vh}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
 <script>requireAuth();</script>
 
-<div class="topbar">
+<header class="topbar">
   <a class="brand" href="index.html">NET<span>Lab</span></a>
   <span class="crumb-sep">›</span>
   <a class="crumb" href="labs.html">Lab</a>
@@ -74,8 +75,9 @@ body{min-height:100vh}
     <div id="authSlot"></div>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
   </div>
-</div>
+</header>
 
+<main id="main" tabindex="-1">
 <div class="hero">
   <div class="hero-bg"><img src="assets/topic-images/hero-network-dashboard.png" alt=""></div>
   <div class="overview">
@@ -98,6 +100,8 @@ body{min-height:100vh}
   <div class="lab-section-sub">เรียงตามลำดับ — ต้องเรียนจบ Lab ก่อนหน้าให้ครบก่อนถึงจะปลดล็อก Lab ถัดไป</div>
   <div class="roadmap" id="labList"></div>
 </div>
+
+</main>
 
 <div class="footer-note">ระบบจำลองเพื่อการศึกษา — ไม่มีความเกี่ยวข้องกับ Cisco Networking Academy (NetAcad)<br><span style="opacity:.75">Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span></div>
 

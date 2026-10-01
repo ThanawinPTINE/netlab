@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>โครงสร้างฐานข้อมูล — NETLab</title>
 <link rel="stylesheet" href="styles/tokens.css?v=2">
-<link rel="stylesheet" href="styles/shared.css?v=3">
-<script src="scripts/theme.js?v=2"></script>
+<link rel="stylesheet" href="styles/shared.css?v=1">
+<script src="scripts/theme.js?v=1"></script>
 <style>
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:var(--step-base);
   line-height:1.7;margin:0;padding:var(--space-6) var(--space-5) var(--space-8)}
@@ -95,7 +95,8 @@ footer{margin-top:var(--space-8);padding-top:var(--space-4);border-top:1px solid
 </style>
 </head>
 <body>
-<div class="wrap">
+<a class="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
+<main id="main" tabindex="-1" class="wrap">
 <div class="topline"><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="สลับโหมดสว่าง/มืด">🌙</button></div>
 <h1>โครงสร้างฐานข้อมูล</h1>
 <p class="sub">NETLab — ระบบเรียนรู้เนื้อหาปฏิบัติการวิศวกรรมสารสนเทศและเครือข่ายแบบโต้ตอบด้วยปัญญาประดิษฐ์</p>
@@ -106,7 +107,7 @@ footer{margin-top:var(--space-8);padding-top:var(--space-4);border-top:1px solid
 <span class="chip"><b>41</b> คอลัมน์</span>
 <span class="chip">โมดูลที่จัดการ <b>db.py</b></span>
 </div>
-<div class="note">เอกสารนี้สร้างจากสคีมาจริงของไฟล์ <code>netlab.db</code> โดยอ่านผ่านคำสั่ง <code>PRAGMA</code> ไม่ได้พิมพ์ด้วยมือ — ชื่อตาราง คอลัมน์ ชนิดข้อมูล และเงื่อนไขทั้งหมด จึงตรงกับฐานข้อมูลที่ใช้งานอยู่เสมอ <span class="m">(สร้างเมื่อ 01/10/2026 15:07)</span></div>
+<div class="note">เอกสารนี้สร้างจากสคีมาจริงของไฟล์ <code>netlab.db</code> โดยอ่านผ่านคำสั่ง <code>PRAGMA</code> ไม่ได้พิมพ์ด้วยมือ — ชื่อตาราง คอลัมน์ ชนิดข้อมูล และเงื่อนไขทั้งหมด จึงตรงกับฐานข้อมูลที่ใช้งานอยู่เสมอ <span class="m">(สร้างเมื่อ 01/10/2026 19:59)</span></div>
 <h2>1. ความสอดคล้องกับข้อเสนอโครงงาน</h2>
 <p class="sub">หัวข้อ §2.4.9 ของข้อเสนอโครงงาน (ทก.01) ระบุว่า SQLite ถูกนำมาใช้จัดเก็บข้อมูลสี่ประเภท แต่ละประเภทมีตารางรองรับตรงกัน</p>
 <table><caption>ตารางที่ 1 — ข้อมูลที่ข้อเสนอโครงงานระบุ เทียบกับตารางที่พัฒนาขึ้น</caption><thead><tr><th>ข้อมูลที่ §2.4.9 ระบุ</th><th>ตารางที่รองรับ</th><th>สิ่งที่เก็บ</th></tr></thead><tbody>
@@ -352,7 +353,7 @@ footer{margin-top:var(--space-8);padding-top:var(--space-4);border-top:1px solid
 <tr><td class="col-name">คำสั่งอ่านข้อมูลนักศึกษาหลายคนพร้อมกัน</td><td>ขอบเขตภาคเรียน 2 ข้อ 2.3 — อาจารย์ดูความคืบหน้าทั้งห้อง</td><td>ข้อมูลที่ต้องใช้มีอยู่ครบในตาราง progress แล้ว ขาดเพียงคำสั่งอ่าน</td></tr>
 <tr><td class="col-name">difficulty ในตาราง quiz_attempts</td><td>ถ้าต้องการแยกคะแนนแบบทดสอบตามระดับความยากด้วย</td><td>ยังไม่จำเป็น เพราะชุดคำถามไม่ได้เปลี่ยนตามระดับ</td></tr>
 </tbody></table>
-<footer>NETLab · เอกสารประกอบปริญญานิพนธ์ · สร้างจากสคีมาของ netlab.db เมื่อ 01/10/2026 15:07</footer>
-</div>
+<footer>NETLab · เอกสารประกอบปริญญานิพนธ์ · สร้างจากสคีมาของ netlab.db เมื่อ 01/10/2026 19:59</footer>
+</main>
 </body>
 </html>

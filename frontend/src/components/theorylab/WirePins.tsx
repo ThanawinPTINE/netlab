@@ -1,6 +1,7 @@
 /* Click-to-place UTP wire ordering (Lab 2). Cable colors are fixed hex by
    nature (see the w-* rules in theorylab.css), so they don't follow the theme. */
 
+import { clickable } from '../../lib/clickable';
 export const WIRE_COLORS: Record<string, { label: string; cls: string }> = {
   'white-orange': { label: 'ขาว/ส้ม', cls: 'w-white-orange' },
   orange: { label: 'ส้ม', cls: 'w-orange' },
@@ -91,7 +92,7 @@ export default function WirePins({ order, poolOrder, state, onChange, locked, ch
           return (
             <div className="wire-pin" key={i}>
               <div className="wire-pin-num">Pin {i + 1}</div>
-              <div className={cls.join(' ')} onClick={() => placeAt(i)}>
+              <div className={cls.join(' ')} {...clickable(() => placeAt(i))}>
                 {key && <div className={'wire-chip ' + WIRE_COLORS[key].cls} style={{ width: '90%', height: '80%', cursor: 'default' }} />}
               </div>
             </div>
@@ -106,7 +107,7 @@ export default function WirePins({ order, poolOrder, state, onChange, locked, ch
           else if (state.sel === key) cls.push('sel');
           return (
             <div key={key} className={chipWrapClass} style={chipWrapClass ? undefined : { position: 'relative' }}>
-              <div className={cls.join(' ')} onClick={() => pickChip(key)} />
+              <div className={cls.join(' ')} {...clickable(() => pickChip(key))} />
               <div className="wire-chip-label">{WIRE_COLORS[key].label}</div>
             </div>
           );

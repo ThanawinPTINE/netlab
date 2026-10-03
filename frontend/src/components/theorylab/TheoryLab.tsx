@@ -14,6 +14,7 @@ import ChatPanel, { type ChatMsg } from '../configlab/ChatPanel';
 import LabCompleteModal from '../configlab/LabCompleteModal';
 import { CalcView, CheckpointView, LessonView, ReviewView, WireOrderView, type StepCtx } from './StepViews';
 import './theorylab.css';
+import { clickable as kbd } from '../../lib/clickable';
 
 export interface TheoryLabProps {
   labId: number;
@@ -398,7 +399,7 @@ function TheoryLabInner(props: TheoryLabProps) {
                   {showLabel && <div className="sb-label">{s.section}</div>}
                   <div
                     className={'step-item' + (done ? ' done' : '') + (isCur ? ' active' : '') + (clickable ? ' clickable' : '')}
-                    onClick={clickable ? () => goToStep(i + 1) : undefined}
+                    {...kbd(clickable && (() => goToStep(i + 1)))}
                   >
                     <div className={'step-num ' + (done ? 'sn-done' : isCur ? 'sn-active' : 'sn-next')}>{done ? '✓' : i + 1}</div>
                     <div className="step-info">
@@ -429,12 +430,12 @@ function TheoryLabInner(props: TheoryLabProps) {
                   Step {app.step}/{steps.length}
                 </div>
                 {showCompleteChips && (
-                  <div className="complete-reopen-chip show" onClick={() => setLabCompleteOpen(true)}>
+                  <div className="complete-reopen-chip show" {...kbd(() => setLabCompleteOpen(true))}>
                     {'✓ Lab สำเร็จ — ดูสรุปผล'}
                   </div>
                 )}
                 {showCompleteChips && (
-                  <div className="next-lab-chip show" onClick={() => (window.location.href = nextLabHref)}>
+                  <div className="next-lab-chip show" {...kbd(() => (window.location.href = nextLabHref))}>
                     ไป Lab ถัดไป →
                   </div>
                 )}

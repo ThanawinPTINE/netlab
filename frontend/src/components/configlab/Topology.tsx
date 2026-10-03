@@ -26,6 +26,7 @@ export function findPcPingStep(steps: Step[], pcId: string): PcPingStep | null {
  * classes bound to var(--*) tokens (see configlab.css), so a theme toggle just
  * repaints — no getComputedStyle()-and-rebuild-the-string step like the vanilla
  * version needed. */
+import { clickable as kbd } from '../../lib/clickable';
 export default function Topology({ viewBox, nodes, links, steps, stepsDone, currentStep, nodeIpLabels, onNodeClick }: TopologyProps) {
   const curRouter = steps[currentStep - 1]?.router ?? '';
   const allDone = stepsDone.length >= steps.length;
@@ -107,7 +108,7 @@ export default function Topology({ viewBox, nodes, links, steps, stepsDone, curr
                 strokeWidth="1.5"
                 className={shapeClass}
                 style={clickable ? { cursor: 'pointer' } : undefined}
-                onClick={handleClick}
+                {...kbd(clickable && handleClick)}
               />
             )}
             <text
@@ -119,7 +120,7 @@ export default function Topology({ viewBox, nodes, links, steps, stepsDone, curr
               fontFamily="Segoe UI,sans-serif"
               className={labelClass}
               style={clickable ? { cursor: 'pointer' } : undefined}
-              onClick={handleClick}
+              {...kbd(clickable && handleClick)}
             >
               {n.id}
               {isConfigured ? ' ✓' : ''}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { clickable } from '../../lib/clickable';
 
 export interface ChatMsg {
   role: 'ai' | 'user';
@@ -64,7 +65,7 @@ export default function ChatPanel({ messages, isTyping, isBusy, aiOnline, modelT
       </div>
       <div className="chat-chips">
         {chips.map((c) => (
-          <div className="chip" key={c.label} onClick={c.onClick}>
+          <div className="chip" key={c.label} {...clickable(c.onClick)}>
             {c.label}
           </div>
         ))}

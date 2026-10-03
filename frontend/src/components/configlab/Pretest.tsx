@@ -1,4 +1,5 @@
 import type { DragDropQuestion, PretestQuestion } from '../../types/configLab';
+import { clickable } from '../../lib/clickable';
 
 export interface DdSelection {
   qi: number;
@@ -56,7 +57,7 @@ export default function Pretest({
                       cls.push('selected');
                     }
                     return (
-                      <div key={oi} className={cls.join(' ')} onClick={() => onSelectOption(qi, oi)}>
+                      <div key={oi} className={cls.join(' ')} {...clickable(() => onSelectOption(qi, oi))}>
                         <div className="q-dot" />
                         <span>{o}</span>
                       </div>
@@ -102,7 +103,7 @@ export default function Pretest({
                       else if (isPending) cls.push('pending');
                       else if (isSel) cls.push('sel');
                       return (
-                        <div key={pi} className={cls.join(' ')} onClick={() => !checked && onSelectDdItem(qi, pi, p.left)}>
+                        <div key={pi} className={cls.join(' ')} {...clickable(!checked && (() => onSelectDdItem(qi, pi, p.left)))}>
                           {p.left}
                         </div>
                       );
@@ -131,7 +132,7 @@ export default function Pretest({
                         text = '→ ' + mp.lv;
                       }
                       return (
-                        <div key={ti} className={cls.join(' ')} onClick={() => !checked && onDropDdTarget(qi, ti)}>
+                        <div key={ti} className={cls.join(' ')} {...clickable(!checked && (() => onDropDdTarget(qi, ti)))}>
                           {text}
                         </div>
                       );

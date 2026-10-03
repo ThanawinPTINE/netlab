@@ -14,6 +14,13 @@ export interface LabTopbarProps {
  * and the two mobile panel toggles. Styling comes from the page's own CSS. */
 export default function LabTopbar({ labNumberBadge, breadcrumbChapter, aiOnline, aiStatusText, onToggleSidebar, onToggleChat }: LabTopbarProps) {
   return (
+    <>
+      {/* A lab swaps between pre-test, lesson and summary views, so no visible
+          element serves as the heading for the whole session. This one is read
+          but never seen, and gives the page an outline to navigate. */}
+      <h1 className="sr-only">
+        {labNumberBadge} {breadcrumbChapter}
+      </h1>
     <header className="topbar">
       <button className="mobile-toggle" onClick={onToggleSidebar} title="Steps">
         {'☰'}
@@ -44,5 +51,6 @@ export default function LabTopbar({ labNumberBadge, breadcrumbChapter, aiOnline,
         </button>
       </div>
     </header>
+    </>
   );
 }

@@ -33,6 +33,7 @@ import PcConfigModal from './PcConfigModal';
 import PcCmdModal from './PcCmdModal';
 import LabCompleteModal from './LabCompleteModal';
 import './configlab.css';
+import { clickable } from '../../lib/clickable';
 
 export interface ConfigLabProps {
   labId: number;
@@ -930,13 +931,13 @@ function ConfigLabInner(props: ConfigLabProps) {
       />
 
       <div className="tab-bar">
-        <div className={'tab' + (activeTab === 'pretest' ? ' active' : '')} onClick={() => switchTab('pretest')}>
+        <div className={'tab' + (activeTab === 'pretest' ? ' active' : '')} {...clickable(() => switchTab('pretest'))}>
           Pre-test
         </div>
-        <div className={'tab' + (activeTab === 'lab' ? ' active' : '')} onClick={() => switchTab('lab')}>
+        <div className={'tab' + (activeTab === 'lab' ? ' active' : '')} {...clickable(() => switchTab('lab'))}>
           Config Terminal
         </div>
-        <div className={'tab' + (activeTab === 'iptab' ? ' active' : '')} onClick={() => switchTab('iptab')}>
+        <div className={'tab' + (activeTab === 'iptab' ? ' active' : '')} {...clickable(() => switchTab('iptab'))}>
           ตาราง IP
         </div>
       </div>
@@ -1006,12 +1007,12 @@ function ConfigLabInner(props: ConfigLabProps) {
                       Step {appRef.current.step}/{steps.length}
                     </div>
                     {showCompleteChips && (
-                      <div className="complete-reopen-chip show" onClick={() => setLabCompleteOpen(true)}>
+                      <div className="complete-reopen-chip show" {...clickable(() => setLabCompleteOpen(true))}>
                         {'\u2713 Lab สำเร็จ — ดูสรุปผล'}
                       </div>
                     )}
                     {showCompleteChips && nextLabHref && (
-                      <div className="next-lab-chip show" onClick={goNextLab}>
+                      <div className="next-lab-chip show" {...clickable(goNextLab)}>
                         {nextLabLabel}
                       </div>
                     )}

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { TheoryItem, TheoryStep } from '../../types/theoryLab';
 import DragMatch, { clearWrongMatch, emptyMatch, gradeMatch, revealMatch, shuffledIndices, type MatchState } from './DragMatch';
 import WirePins, { WIRE_COLORS, emptyWire, gradeWire, revealWire, shuffledWireKeys, type WireState } from './WirePins';
+import { clickable } from '../../lib/clickable';
 
 /* Lesson bodies, figures, explanations and calc scenarios are trusted, static
    course content written as HTML — rendered as-is, exactly like the vanilla pages. */
@@ -204,7 +205,7 @@ export function CheckpointView({ step, ctx }: { step: TheoryStep; ctx: StepCtx }
               else if (oi === sel) cls.push('wrong');
             }
             return (
-              <div key={oi} className={cls.join(' ')} onClick={() => !graded && setSel(oi)}>
+              <div key={oi} className={cls.join(' ')} {...clickable(!graded && (() => setSel(oi)))}>
                 <div className="q-dot" />
                 <span>{o}</span>
               </div>
@@ -516,7 +517,7 @@ export function ReviewView({
                         else if (oi === sel[k] && st === 'bad') cls.push('wrong');
                       }
                       return (
-                        <div key={oi} className={cls.join(' ')} onClick={() => !isLocked && !graded && setSel((s) => ({ ...s, [k]: oi }))}>
+                        <div key={oi} className={cls.join(' ')} {...clickable(!isLocked && !graded && (() => setSel((s) => ({ ...s, [k]: oi }))))}>
                           <div className="q-dot" />
                           <span>{o}</span>
                         </div>

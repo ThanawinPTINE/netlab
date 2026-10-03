@@ -22,7 +22,9 @@ function ProfileInner() {
         <div className="topbar-right">
           <ThemeToggle />
         </div>
+      <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
       </header>
+      <main id="main" tabIndex={-1}>
 
       <div className="wrap">
         <div className="profile-card">
@@ -53,6 +55,7 @@ function ProfileInner() {
           ออกจากระบบ
         </button>
       </div>
+      </main>
     </>
   );
 }

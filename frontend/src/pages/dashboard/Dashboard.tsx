@@ -164,7 +164,7 @@ function DashboardInner() {
 
   return (
     <>
-      <div className="topbar">
+      <header className="topbar">
         <a className="brand" href="/index.html">
           NET<span>Lab</span>
         </a>
@@ -184,7 +184,9 @@ function DashboardInner() {
           </div>
           <ThemeToggle />
         </div>
-      </div>
+      <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
+      </header>
+      <main id="main" tabIndex={-1}>
 
       <div className="hero">
         <div className="hero-bg">
@@ -235,6 +237,7 @@ function DashboardInner() {
         <br />
         <span style={{ opacity: 0.75 }}>Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span>
       </div>
+      </main>
     </>
   );
 }

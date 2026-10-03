@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { REF_GROUPS, REF_TOPICS } from '../../data/referenceTopics';
 import TopNav from '../../components/TopNav';
 import './home.css';
+import HeroConsole from './HeroConsole';
 
 const DEFAULT_TOPIC = 'cmd';
 
@@ -51,26 +52,24 @@ export default function Home() {
 
   return (
     <>
+      <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
       <TopNav active="Home" />
+      <main id="main" tabIndex={-1}>
 
       <div className="hero">
-        <div className="hero-bg">
-          <img src="/assets/topic-images/hero-network-dashboard.png" alt="" />
-        </div>
         <div className="hero-inner">
           <div className="hero-content">
-            <h1 className="hero-title">
-              NET<span style={{ color: 'var(--cyan)' }}>Lab</span> for INE
-            </h1>
-            <div className="hero-sub">
-              ระบบนี้ช่วยลดช่องว่างความรู้พื้นฐาน ให้ผู้เรียนฝึกปฏิบัติได้ทุกที่ทุกเวลาผ่านเว็บเบราว์เซอร์
-              ยกระดับการเรียนการสอนวิชา Network Engineering Lab ให้มีประสิทธิภาพมากขึ้น
-            </div>
+            <h1 className="hero-title">ฝึกคำสั่ง Cisco IOS จนขึ้นใจ</h1>
+            <p className="hero-sub">
+              เราเตอร์จำลองในเบราว์เซอร์ สำหรับวิชาปฏิบัติการวิศวกรรมสารสนเทศและเครือข่าย 1{' '}
+              <b>พิมพ์ผิดกี่ครั้งก็ได้ ไม่มีอุปกรณ์เสียหาย</b> และ AI Tutor จะใบ้ทีละขั้น
+              แต่ยังไม่เฉลยจนกว่าคุณจะลองด้วยตัวเองแล้วจริงๆ
+            </p>
 
             {profile ? (
               <div className="hero-actions">
                 <a className="btn-primary" href="/labs.html">
-                  เริ่มทำ Lab →
+                  เริ่มทำ Lab
                 </a>
                 <a className="btn-secondary" href="/dashboard.html">
                   ดูความคืบหน้า
@@ -79,11 +78,13 @@ export default function Home() {
             ) : (
               <div className="hero-actions">
                 <a className="btn-primary" href="/login.html">
-                  เข้าสู่ระบบ →
+                  เข้าสู่ระบบ
                 </a>
               </div>
             )}
           </div>
+
+          <HeroConsole />
         </div>
       </div>
 
@@ -157,6 +158,7 @@ export default function Home() {
         <br />
         <span style={{ opacity: 0.75 }}>Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span>
       </div>
+      </main>
     </>
   );
 }

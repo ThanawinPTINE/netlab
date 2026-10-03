@@ -72,7 +72,9 @@ export default function Login() {
         <a className="brand" href="/index.html">
           NET<span>Lab</span>
         </a>
+      <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
       </header>
+      <main id="main" tabIndex={-1}>
 
       <div className="login-card">
         <div className="login-logo">
@@ -111,6 +113,7 @@ export default function Login() {
       </div>
 
       <div className="login-footer">Educational simulation — not affiliated with Cisco Networking Academy (NetAcad)</div>
+      </main>
     </>
   );
 }

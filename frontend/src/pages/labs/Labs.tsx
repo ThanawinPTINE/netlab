@@ -63,7 +63,9 @@ function LabsInner() {
 
   return (
     <>
+      <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
       <TopNav active="Lab" />
+      <main id="main" tabIndex={-1}>
 
       <div className="hero">
         <div className="hero-bg">
@@ -133,6 +135,7 @@ function LabsInner() {
         <br />
         <span style={{ opacity: 0.75 }}>Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span>
       </div>
+      </main>
     </>
   );
 }

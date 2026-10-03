@@ -57,7 +57,9 @@ function CourseInner() {
           </div>
           <ThemeToggle />
         </div>
+      <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
       </header>
+      <main id="main" tabIndex={-1}>
 
       <div className="hero">
         <div className="hero-bg">
@@ -148,6 +150,7 @@ function CourseInner() {
         <br />
         <span style={{ opacity: 0.75 }}>Developed by 4th-year students, Information Technology and Networking Program, Academic Year 2026</span>
       </div>
+      </main>
     </>
   );
 }

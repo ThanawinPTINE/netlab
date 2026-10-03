@@ -3,16 +3,18 @@ body{min-height:100vh}
 .brand{font-size:20px}
 
 /* ── Hero ── */
-.hero{background:linear-gradient(180deg,var(--panel2),var(--bg));border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6);overflow:hidden;position:relative}
+.hero{background:var(--panel2);border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6)}
 .hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .hero-bg img{width:100%;height:100%;object-fit:cover;display:block;filter:blur(1px) saturate(.85);
   -webkit-mask-image:linear-gradient(to left, black 10%, transparent 55%);
   mask-image:linear-gradient(to left, black 10%, transparent 55%);opacity:.28}
-.hero-inner{position:relative;z-index:1;max-width:none;margin:0}
-.hero-content{max-width:640px;text-align:left}
+.hero-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:var(--space-8);
+  align-items:center;max-width:1240px;margin:0 auto}
+.hero-content{max-width:52ch}
 .hero-eyebrow{font-size:var(--step-xs);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
-.hero-title{font-size:42px;font-weight:800;letter-spacing:-0.02em;margin:0 0 var(--space-3);line-height:1.2;text-wrap:balance}
-.hero-sub{font-size:var(--step-lg);color:var(--text2);max-width:560px;line-height:1.75}
+.hero-title{font-size:34px;font-weight:800;letter-spacing:-0.02em;margin:0 0 var(--space-3);line-height:1.2;text-wrap:balance}
+.hero-sub{font-size:var(--step-md);color:var(--text2);line-height:1.8}
+.hero-sub b{color:var(--text);font-weight:600}
 .hero-actions{margin-top:var(--space-6);display:flex;gap:var(--space-3);flex-wrap:wrap}
 .hero-actions .btn-primary,.hero-actions .btn-secondary{padding:14px 26px;font-size:var(--step-base)}
 
@@ -92,4 +94,34 @@ body{min-height:100vh}
   .hero-title{font-size:23px}
   .cmd-row{flex-direction:column;gap:2px}
   .cmd-row code{min-width:0}
+}
+
+/* Console: the same chrome and colour roles as the labs' own terminal
+   (.t-prompt / .t-ok), so the hero shows the real component rather than a
+   mockup of one. Flat at rest per DESIGN.md's Overlay-Only Rule — no shadow. */
+.hero-term{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  font-family:var(--mono);min-width:0}
+.ht-bar{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);
+  padding:9px var(--space-4);background:var(--panel2);border-bottom:1px solid var(--border)}
+.ht-name{font-family:var(--font);font-size:var(--step-xs);color:var(--text2)}
+.ht-name b{color:var(--text2);font-weight:600;font-family:var(--mono)}
+.ht-body{padding:var(--space-4);min-height:232px;font-size:var(--step-sm);line-height:1.85}
+.ht-line{white-space:pre-wrap;word-break:break-word}
+.ht-prompt{color:var(--prompt-c);font-weight:600}
+.ht-ok{color:var(--green)}
+.ht-caret{display:inline-block;width:7px;height:1.05em;background:var(--cyan);vertical-align:-2px;
+  animation:htblink 1.1s steps(1) infinite}
+@keyframes htblink{50%{opacity:0}}
+
+@media (max-width:980px){
+  /* stack before the prose column narrows past a comfortable measure */
+  .hero-inner{grid-template-columns:1fr;gap:var(--space-6)}
+  .hero{padding:var(--space-7) var(--space-5)}
+  .ht-body{min-height:0}
+}
+@media (max-width:640px){
+  .hero-title{font-size:25px}
+  .hero-sub{font-size:var(--step-base)}
+  .ht-body{font-size:var(--step-xs);padding:var(--space-3)}
+  .hero-actions .btn-primary,.hero-actions .btn-secondary{width:100%;text-align:center}
 }

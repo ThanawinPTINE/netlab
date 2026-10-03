@@ -1,0 +1,193 @@
+/* NETLab — typed API client for the FastAPI backend (main.py).
+   Every shape here mirrors a Pydantic model or response dict in main.py exactly —
+   keep this file in sync if the backend contract changes. */
+
+// API_BASE mirrors every labN.html's existing convention: talk to the backend
+// directly on localhost during dev, go through the "/api" reverse-proxy path in
+// any other deployment (CLAUDE.md "Frontend pages call the backend via API_BASE").
+// The page's own protocol is kept so an https deployment doesn't call http://…/api
+// and get blocked as mixed content.
+export const API_BASE =
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8000'
+    : `${window.location.protocol}//${window.location.hostname}/api`;
+
+// ─── /auth/google ────────────────────────────────────────────────
+export interface AuthProfile {
+  name: string;
+  email: string;
+  studentId: string;
+  picture: string | null;
+}
+
+export interface AuthResponse {
+  ok: boolean;
+  token: string;
+  profile: AuthProfile;
+}
+
+export async function authGoogle(credential: string): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/auth/google`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential }),
+  });
+  if (!res.ok) {
+    const detail = await res.json().catch(() => ({}));
+    throw new Error(detail.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+// A 401 from a student-data endpoint means the server no longer accepts this
+// session token (expired, SECRET_KEY rotated, or the users row is gone). Left
+// alone, every save would fail silently while the student keeps working, so drop
+// the stored session and send them to sign in again. The key is AuthContext's
+// AUTH_KEY, inlined because AuthContext imports this module.
+function endSessionIfRejected(res: Response | null) {
+  if (res?.status !== 401) return;
+  try {
+    localStorage.removeItem('netlab-profile');
+  } catch {
+    /* ignore */
+  }
+  window.location.href = '/login.html?login=required';
+}
+
+// ─── /progress ───────────────────────────────────────────────────
+export interface ProgressUpdatePayload {
+  token: string;
+  studentId: string;
+  labId: number;
+  stepsDone: number;
+  totalSteps: number;
+  wrongDelta?: number;
+  elapsedSec?: number;
+  completed?: boolean;
+  courseId?: string;
+}
+
+export async function saveProgress(payload: ProgressUpdatePayload): Promise<{ ok: boolean }> {
+  const res = await fetch(`${API_BASE}/progress`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ courseId: 'netlab1', wrongDelta: 0, elapsedSec: 0, completed: false, ...payload }),
+  });
+  endSessionIfRejected(res);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+// sendBeacon can't set custom headers, so the token travels in the body — same
+// convention as every labN.html's pagehide handler.
+export function saveProgressBeacon(payload: ProgressUpdatePayload): boolean {
+  const body = new Blob(
+    [JSON.stringify({ courseId: 'netlab1', wrongDelta: 0, elapsedSec: 0, completed: false, ...payload })],
+    { type: 'application/json' },
+  );
+  return navigator.sendBeacon(`${API_BASE}/progress`, body);
+}
+
+export interface ProgressRow {
+  course_id: string;
+  lab_id: number;
+  steps_done: number;
+  total_steps: number;
+  wrong_count: number;
+  time_spent_sec: number;
+  completed: number; // 0 | 1, as returned by SQLite
+  updated_at: string;
+}
+
+export interface WeeklyActivityRow {
+  day: string; // YYYY-MM-DD
+  seconds: number;
+}
+
+export interface ProgressResponse {
+  labs: ProgressRow[];
+  weeklyActivity: WeeklyActivityRow[];
+}
+
+export async function getProgress(
+  studentId: string,
+  token: string,
+  courseId?: string,
+): Promise<ProgressResponse> {
+  const qs = new URLSearchParams({ token });
+  if (courseId) qs.set('course_id', courseId);
+  const res = await fetch(`${API_BASE}/progress/${encodeURIComponent(studentId)}?${qs}`);
+  endSessionIfRejected(res);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+// ─── /quiz-score ─────────────────────────────────────────────────
+export interface QuizScorePayload {
+  token: string;
+  labId: number;
+  score: number;
+  maxScore: number;
+  courseId?: string;
+  quizKey?: string;
+}
+
+export async function saveQuizScore(payload: QuizScorePayload): Promise<{ ok: boolean }> {
+  const res = await fetch(`${API_BASE}/quiz-score`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ courseId: 'netlab1', quizKey: 'pretest', ...payload }),
+  }).catch(() => null);
+  endSessionIfRejected(res);
+  if (!res || !res.ok) throw new Error('quiz-score save failed');
+  return res.json();
+}
+
+// ─── /chat ───────────────────────────────────────────────────────
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+export interface ChatRequestPayload {
+  messages: ChatMessage[];
+  system?: string;
+  max_tokens?: number;
+  task_type?: 'hint' | 'explain' | 'chat';
+  token?: string | null; // session token — omit/null for guest chat (still works, just unattributed)
+  labId?: number;
+  courseId?: string;
+}
+
+export interface ChatResponse {
+  content: string;
+  model: string;
+  task: string;
+  done: boolean;
+}
+
+export async function sendChatMessage(payload: ChatRequestPayload): Promise<ChatResponse> {
+  const res = await fetch(`${API_BASE}/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ courseId: 'netlab1', max_tokens: 150, ...payload }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+// ─── /health ─────────────────────────────────────────────────────
+export interface HealthResponse {
+  status: string;
+  backend: string;
+  model_ready: boolean;
+  model: string;
+  models: { default: string; fast: string; fallback: string };
+  timestamp: string;
+}
+
+export async function getHealth(signal?: AbortSignal): Promise<HealthResponse> {
+  const res = await fetch(`${API_BASE}/health`, { signal });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}

@@ -1,0 +1,64 @@
+/* NETLab — shared design tokens. See DESIGN.md for the documented visual system.
+   Visual identity: cool dark "Black & Blue" theme, pure-white light theme. */
+:root{
+  /* ── Surface ── */
+  --bg:#0A0B0D;--panel:#131518;--panel2:#1B1E23;--border:#2B2F37;
+
+  /* ── Primary (blue — the one interactive/brand hue) ── */
+  --cyan:#3D8BFF;--cyan-d:#2563C9;--cyan-wash:rgba(61,139,255,.15);
+
+  /* ── Success ── */
+  --green:#46B87C;--green-l:#16261D;--green-wash:rgba(70,184,124,.15);--green-border:#234230;
+
+  /* ── Warning ── */
+  --amber:#E5B93F;--amber-l:#2E2408;--amber-wash:rgba(229,185,63,.15);
+
+  /* ── Danger ── */
+  --red:#F55B5B;--red-l:#2E1414;--red-border:#3D1F1F;
+
+  /* ── Reserved / quaternary ── */
+  --purple:#7B8CDE;--purple-wash:rgba(123,140,222,.15);
+
+  /* ── Text ── */
+  --text:#ECEEF1;--text2:#9BA3AF;--text3:#6B7280;
+
+  /* ── Special-purpose ── */
+  --overlay:rgba(10,11,13,.96);
+  --prompt-c:#4FC3D9;
+  --explain-text:#8FE0B0;
+  --btn-text:#FFFFFF;
+
+  /* ── Type ── */
+  --font:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code','Consolas','Courier New',monospace;
+
+  /* Type scale — 1.15 ratio, tightened for product-UI density (display/hero stays per-page via clamp) */
+  --step-xs:12.5px;--step-sm:14px;--step-base:16px;--step-md:18px;
+  --step-lg:20.5px;--step-xl:23px;--step-2xl:27px;--step-3xl:31px;
+
+  /* Spacing scale — shared rhythm across pages */
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;
+  --space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;
+}
+[data-theme="light"]{
+  /* Soft daylight: canvas carries a faint cool tint so long reading sessions
+     are easier on the eyes, and panels stay white so cards lift off it. */
+  --bg:#F2F5F9;--panel:#FFFFFF;--panel2:#E7ECF3;--border:#C2CBD9;
+
+  --cyan:#2563C9;--cyan-d:#1D4FA3;--cyan-wash:rgba(37,99,201,.12);
+
+  --green:#157A47;--green-l:#DFF3E8;--green-wash:rgba(21,122,71,.12);--green-border:#B3DEC7;
+
+  --amber:#8A6908;--amber-l:#F8EFD6;--amber-wash:rgba(138,105,8,.12);
+
+  --red:#BC2E26;--red-l:#F9E2E0;--red-border:#F0BFBB;
+
+  --purple:#4E5CA8;--purple-wash:rgba(78,92,168,.12);
+
+  --text:#1A1F27;--text2:#4A5360;--text3:#5E6775;
+
+  --overlay:rgba(242,245,249,.96);
+  --prompt-c:#0B6B79;
+  --explain-text:#146C3E;
+  --btn-text:#FFFFFF;
+}

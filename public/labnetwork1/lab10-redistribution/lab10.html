@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch.10 Redistribution — NETLab</title>
+<link rel="stylesheet" href="../../styles/tokens.css?v=3">
+<link rel="stylesheet" href="../../styles/shared.css?v=2">
+<script src="../../scripts/auth.js?v=3"></script>
+<style>
+body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;padding:0 var(--space-4);gap:var(--space-3);flex-shrink:0}
+.chapter-badge{background:var(--cyan-d);color:#fff;font-size:var(--step-xs);font-weight:700;padding:4px 11px;border-radius:10px}
+.ai-pill{display:flex;align-items:center;gap:6px;font-size:var(--step-xs);padding:4px 11px;border-radius:10px;font-weight:600;margin-left:auto;flex-shrink:0}
+.lab-topbar-right{display:flex;align-items:center;gap:var(--space-3);flex-shrink:0}
+.ai-on{background:var(--green-l);color:var(--green);border:1px solid var(--green-border)}
+.ai-off{background:var(--red-l);color:var(--red);border:1px solid var(--red-border)}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.ai-dot.pulse{animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.tab-bar{height:42px;background:var(--panel2);border-bottom:1px solid var(--border);display:flex;flex-shrink:0}
+.tab{padding:0 20px;height:42px;display:flex;align-items:center;gap:7px;font-size:var(--step-sm);color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:var(--cyan-wash);font-weight:600}
+.main{flex:1;display:grid;grid-template-columns:290px 1fr 440px;overflow:hidden}
+.sidebar{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.sb-section{padding:8px 0}
+.sb-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:9px var(--space-4) 5px}
+.step-item{display:flex;align-items:flex-start;gap:var(--space-2);padding:8px var(--space-4);border-left:2px solid transparent}
+.step-item.active{background:var(--cyan-wash);border-left-color:var(--cyan)}
+.step-item.done{opacity:.7}
+.step-num{width:23px;height:23px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:var(--step-xs);font-weight:700;margin-top:2px}
+.sn-done{background:var(--green-l);color:var(--green)}
+.sn-active{background:var(--cyan-wash);color:var(--cyan)}
+.sn-next{background:var(--panel2);color:var(--text3)}
+.step-info{flex:1;min-width:0}
+.step-title{font-size:var(--step-sm);line-height:1.4}
+.step-sub{font-size:var(--step-xs);color:var(--text3);margin-top:2px}
+.progress-wrap{padding:var(--space-3) var(--space-4);border-top:1px solid var(--border);margin-top:auto}
+.prog-label{font-size:var(--step-xs);color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:3px;transition:width .5s}
+.center{display:flex;flex-direction:column;overflow:hidden}
+.content-area{flex:1;position:relative;overflow:hidden}
+.iptab-view{padding:var(--space-5);overflow-y:auto}
+.iptab-head{margin-bottom:var(--space-4)}
+.iptab-title{font-size:var(--step-xl);font-weight:700;color:var(--text)}
+.iptab-sub{font-size:var(--step-sm);color:var(--text2);margin-top:6px;line-height:1.6}
+.iptab-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin-bottom:var(--space-5)}
+.iptab{width:100%;border-collapse:collapse;font-size:var(--step-sm);min-width:560px}
+.iptab caption{caption-side:top;text-align:left;padding:10px 13px;font-size:var(--step-xs);font-weight:700;color:var(--text2);background:var(--panel2);border-bottom:1px solid var(--border)}
+.iptab th{text-align:left;padding:9px 13px;background:var(--panel2);color:var(--text2);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
+.iptab td{padding:9px 13px;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap}
+.iptab tbody tr:last-child td{border-bottom:none}
+.iptab td.ipt-mono{font-family:var(--mono)}
+.iptab td.ipt-dev{font-weight:700}
+.iptab tbody tr:hover{background:var(--panel2)}
+.ipt-note{font-size:var(--step-sm);color:var(--text2);line-height:1.7}
+.ipt-note b{color:var(--text)}
+.view{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto}
+.view.active{display:flex}
+.pretest-wrap{padding:var(--space-5);max-width:720px;margin:0 auto;width:100%}
+.pretest-head{margin-bottom:var(--space-4);display:flex;align-items:flex-start;gap:var(--space-3)}
+.pretest-title{font-size:var(--step-lg);font-weight:700;letter-spacing:-0.01em}
+.pretest-sub{font-size:var(--step-sm);color:var(--text2)}
+.skip-btn{flex-shrink:0;font-size:var(--step-xs);padding:5px 13px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer}
+.skip-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.skip-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.q-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-3)}
+.q-num{font-size:var(--step-xs);color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.q-text{font-size:var(--step-md);font-weight:600;margin-bottom:var(--space-3);line-height:1.55}
+.q-opts{display:flex;flex-direction:column;gap:6px}
+.q-opt{display:flex;align-items:center;gap:var(--space-2);padding:9px 13px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:var(--step-sm);color:var(--text2);transition:all .1s}
+.q-opt:hover:not(.answered){border-color:var(--cyan-d);color:var(--text)}
+.q-opt.selected{background:var(--cyan-wash);border-color:var(--cyan);color:var(--cyan)}
+.q-opt.correct{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.q-opt.wrong{background:var(--red-l);border-color:var(--red);color:var(--red)}
+.q-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+.q-opt.selected .q-dot{border-color:var(--cyan);background:var(--cyan)}
+.q-opt.correct .q-dot{border-color:var(--green);background:var(--green)}
+.q-opt.wrong .q-dot{border-color:var(--red);background:var(--red)}
+.q-explain{margin-top:9px;font-size:var(--step-xs);padding:9px 11px;border-radius:8px;border:1px solid var(--green);background:var(--green-l);color:var(--explain-text);line-height:1.55;display:none}
+.q-explain.show{display:block}
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:10px}
+.dd-col-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.dd-items{display:flex;flex-direction:column;gap:5px}
+.dd-item{padding:7px 11px;border-radius:7px;border:1px solid var(--border);font-size:var(--step-xs);color:var(--text2);cursor:pointer;background:var(--panel2);transition:all .1s}
+.dd-item:hover:not(.checked){border-color:var(--cyan-d);color:var(--text)}
+.dd-item.sel{border-color:var(--cyan);background:var(--cyan-wash);color:var(--cyan)}
+.dd-item.matched{border-color:var(--green);background:var(--green-l);color:var(--green);cursor:default}
+.dd-item.pending{border-color:var(--cyan-d);background:rgba(61,139,255,.06)}
+.dd-item.checked{cursor:default}
+.dd-target{padding:7px 11px;border-radius:7px;border:2px dashed var(--border);font-size:var(--step-xs);color:var(--text2);min-height:36px;display:flex;align-items:center;cursor:pointer;transition:all .1s}
+.dd-target.pending{border-style:solid;border-color:var(--cyan-d);background:rgba(61,139,255,.06);color:var(--cyan)}
+.dd-target.filled{border-style:solid;border-color:var(--green);background:var(--green-l);color:var(--green)}
+.dd-target.wrong-m{border-color:var(--red);background:var(--red-l)}
+.pretest-actions{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-4);padding-bottom:var(--space-5)}
+.btn-check{padding:8px 20px;border-radius:8px;background:var(--cyan);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-base);font-weight:700}
+.btn-check:focus-visible,.btn-skip2:focus-visible,.btn-go-lab:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.btn-skip2{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:var(--step-sm)}
+.score-badge{font-size:var(--step-sm);padding:4px 10px;border-radius:8px;font-weight:600}
+.score-good{background:var(--green-l);color:var(--green)}
+.score-ok{background:var(--amber-l);color:var(--amber)}
+.btn-go-lab{padding:8px 18px;border-radius:8px;background:var(--green);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-sm);font-weight:700;margin-left:auto;display:none}
+.lab-view{display:grid;grid-template-rows:200px minmax(150px,1fr) auto;height:100%;overflow:hidden}
+.topology{background:var(--panel2);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.topology svg{width:100%;height:100%}
+.topo-status{position:absolute;top:8px;right:10px;display:flex;gap:6px;z-index:2}
+.topo-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--cyan-wash);color:var(--cyan);border:1px solid var(--cyan-d)}
+.terminal-wrap{display:flex;flex-direction:column;overflow:hidden;position:relative}
+.terminal{background:var(--bg);flex:1;padding:10px 14px;overflow-y:auto;font-family:var(--mono);font-size:var(--step-base);line-height:1.7;display:flex;flex-direction:column;width:100%;max-width:820px;margin:0 auto;align-self:center}
+.t-line{white-space:pre-wrap;word-break:break-all}
+.t-ok{color:var(--green)}.t-err{color:var(--red)}.t-info{color:var(--cyan)}.t-hint{color:var(--purple)}.t-dim{color:var(--text3)}
+.t-input-row{display:flex;align-items:center;gap:9px;padding:12px 16px;background:var(--bg);border-top:1px solid var(--border);flex-shrink:0;width:100%;max-width:820px;margin:0 auto;align-self:center}
+.t-prompt{color:var(--prompt-c);font-family:var(--mono);font-size:var(--step-base);font-weight:600;white-space:nowrap}
+.t-input{background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:var(--step-base);flex:1;caret-color:var(--cyan)}
+.checklist{background:var(--panel);border-top:1px solid var(--border);padding:10px var(--space-4);max-height:34vh;overflow-y:auto}
+.steps-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px;align-items:center}
+.step-pill{font-size:var(--step-xs);padding:3px 8px;border-radius:8px;font-weight:600;cursor:default}
+.pill-done{background:var(--green-l);color:var(--green)}
+.pill-cur{background:var(--cyan-wash);color:var(--cyan);border:1px solid var(--cyan-d)}
+.pill-next{background:var(--panel2);color:var(--text3)}
+.sep{color:var(--text3);font-size:var(--step-xs)}
+.cmd-hint-box{border:1px solid var(--cyan-d);border-left:4px solid var(--cyan);background:var(--cyan-wash);border-radius:10px;padding:var(--space-4)}
+.cmd-hint-cmd{font-size:var(--step-xs);font-family:var(--font);color:var(--cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.cmd-hint-desc{font-size:var(--step-md);color:var(--text);margin-top:7px;line-height:1.6;font-weight:600}
+.hint-box{position:absolute;right:10px;bottom:130px;width:240px;background:var(--panel);border:1px solid var(--amber);border-radius:9px;padding:var(--space-3);font-size:var(--step-xs);color:var(--amber);line-height:1.55;display:none;box-shadow:0 4px 16px rgba(0,0,0,.5);z-index:5}
+.hint-box.show{display:block}
+.hint-title{font-weight:700;margin-bottom:5px;font-size:var(--step-sm)}
+.hint-text{color:var(--text2);white-space:pre-wrap}
+.hint-answer-btn{margin-top:8px;padding:5px 9px;border-radius:5px;background:var(--red-l);color:var(--red);border:1px solid var(--red);cursor:pointer;font-size:var(--step-xs);width:100%;display:none}
+.hint-answer-btn:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.hint-answer-btn.show{display:block}
+.lab-complete{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;z-index:80}
+.lab-complete.show{display:flex}
+.lab-complete-box{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:var(--space-6);width:440px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;gap:var(--space-3);text-align:center}
+.lab-complete-close{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:6px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;line-height:1}
+.lab-complete-close:hover{background:var(--panel2);color:var(--text)}
+.lab-complete-close:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.complete-icon{font-size:52px}
+.complete-title{font-size:var(--step-2xl);font-weight:700;color:var(--green);letter-spacing:-0.01em}
+.complete-sub{font-size:var(--step-base);color:var(--text2);max-width:400px;line-height:1.6}
+.lab-complete-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--space-2);margin-top:var(--space-2)}
+.btn-next-lab{padding:8px 20px;border-radius:8px;background:var(--green);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-base);font-weight:700}
+.btn-next-lab:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.complete-reopen-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--green-l);color:var(--green);border:1px solid var(--green-border);cursor:pointer;display:none}
+.complete-reopen-chip.show{display:inline-block}
+.next-lab-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--green);color:var(--btn-text);border:1px solid var(--green);cursor:pointer;display:none}
+.next-lab-chip.show{display:inline-block}
+.pc-modal-backdrop{display:none;position:fixed;inset:0;background:var(--overlay);z-index:50;align-items:center;justify-content:center}
+.pc-modal-backdrop.show{display:flex}
+.pc-modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:var(--space-6);width:340px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.pc-modal-title{font-size:var(--step-lg);font-weight:700;letter-spacing:-0.01em;margin-bottom:4px}
+.pc-modal-sub{font-size:var(--step-xs);color:var(--text3);margin-bottom:var(--space-4)}
+.pc-field-label{display:block;font-size:var(--step-xs);color:var(--text2);font-weight:600;margin:var(--space-3) 0 5px}
+.pc-field-input{width:100%;font-family:var(--mono);font-size:var(--step-base);padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel2);color:var(--text);outline:none}
+.pc-field-input:focus{border-color:var(--cyan-d)}
+.pc-field-input.err{border-color:var(--red)}
+.pc-modal-err{min-height:18px;font-size:var(--step-xs);color:var(--red);margin-top:var(--space-3)}
+.pc-modal-actions{display:flex;justify-content:flex-end;gap:var(--space-2);margin-top:var(--space-2)}
+.pc-cmd-modal{width:520px}
+.pc-cmd-screen{background:#0c0c0c;color:#e8e8e8;font-family:var(--mono);font-size:14.5px;line-height:1.5;border-radius:6px 6px 0 0;padding:10px 12px;height:220px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;margin-top:var(--space-2)}
+.pc-cmd-screen .pc-cmd-err{color:#ff6b6b}
+.pc-cmd-screen .pc-cmd-ok{color:#6fd88a}
+.pc-cmd-inputrow{display:flex;align-items:center;gap:6px;background:#0c0c0c;border-radius:0 0 6px 6px;padding:6px 12px 10px}
+.pc-cmd-prompt{color:#e8e8e8;font-family:var(--mono);font-size:14.5px;white-space:nowrap}
+.pc-cmd-input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:#e8e8e8;font-family:var(--mono);font-size:14.5px}
+.chat-panel{border-left:1px solid var(--border);display:grid;grid-template-rows:42px 1fr auto 50px;overflow:hidden;background:var(--panel)}
+.chat-header{display:flex;align-items:center;gap:7px;padding:0 var(--space-3);border-bottom:1px solid var(--border);background:var(--panel2)}
+.chat-title{font-size:var(--step-md);font-weight:700}
+.model-tag{margin-left:auto;font-size:var(--step-xs);padding:4px 8px;border-radius:6px;background:var(--cyan-wash);color:var(--cyan);border:1px solid var(--cyan-d)}
+.messages{padding:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2);overflow-y:auto}
+.msg{display:flex;gap:7px;align-items:flex-start}
+.msg.user{flex-direction:row-reverse}
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--step-xs);font-weight:700;flex-shrink:0;margin-top:1px}
+.ai-av{background:var(--cyan-wash);color:var(--cyan);border:1px solid var(--cyan-d)}
+.user-av{background:var(--green-wash);color:var(--green);border:1px solid var(--green-border)}
+.bub{padding:9px 13px;border-radius:8px;font-size:var(--step-base);line-height:1.65;max-width:360px;white-space:pre-wrap}
+.ai-b{background:var(--panel2);border:1px solid var(--border);color:var(--text)}
+.user-b{background:rgba(61,139,255,.12);border:1px solid var(--cyan-d);color:var(--text)}
+.typing-dots{display:flex;gap:3px;padding:8px 11px;background:var(--panel2);border-radius:8px;border:1px solid var(--border)}
+.typing-dots span{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:dot .9s infinite}
+.typing-dots span:nth-child(2){animation-delay:.15s}.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+.chat-chips{display:flex;gap:6px;flex-wrap:wrap;padding:var(--space-2) var(--space-3);border-top:1px solid var(--border)}
+.chip{font-size:var(--step-xs);padding:5px 10px;border-radius:7px;border:1px solid var(--border);color:var(--text2);cursor:pointer;background:transparent;white-space:nowrap}
+.chip:hover{border-color:var(--cyan);color:var(--cyan)}
+.chat-input-row{display:flex;gap:6px;padding:var(--space-2) var(--space-3);border-top:1px solid var(--border)}
+.chat-in{flex:1;font-size:var(--step-base);border:1px solid var(--border);border-radius:7px;padding:8px 13px;background:var(--panel2);color:var(--text);outline:none}
+.chat-in:focus{border-color:var(--cyan-d)}
+.send-btn{width:32px;height:32px;border-radius:7px;background:var(--cyan-wash);border:1px solid var(--cyan-d);color:var(--cyan);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+.send-btn:hover{background:var(--cyan);color:var(--btn-text)}
+.send-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.send-btn:disabled{opacity:.35;cursor:not-allowed}
+
+.mobile-toggle{display:none;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:15px;flex-shrink:0}
+.mobile-toggle:hover{border-color:var(--cyan);color:var(--cyan)}
+.mobile-toggle:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.mobile-backdrop{display:none;position:fixed;top:94px;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:25}
+.mobile-backdrop.show{display:block}
+
+/* ── Tablet: 901px–1180px ── ลดความกว้าง sidebar/chat ── */
+@media (max-width:1180px){
+  .main{grid-template-columns:230px 1fr 340px}
+  .bub{max-width:260px}
+}
+
+/* ── Mobile: ≤900px ── สลับเป็น layout ซ้อนทับ (overlay) ── */
+@media (max-width:900px){
+  .topbar .crumb:not(.current),.topbar .crumb-sep{display:none}
+  .topbar .crumb.current{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar .ai-pill span{display:none}
+  .topbar{overflow:hidden}
+  .topbar{padding:0 10px;gap:8px}
+  .topbar .crumb{display:none}
+  .topbar .crumb-sep{display:none}
+  .mobile-toggle{display:flex;width:44px;height:44px}
+  .ai-pill span{display:none}
+  .main{grid-template-columns:1fr;position:relative}
+  .sidebar{position:fixed;top:94px;left:0;bottom:0;width:82%;max-width:300px;z-index:30;
+    transform:translateX(-100%);transition:transform .25s ease;box-shadow:6px 0 24px rgba(0,0,0,.4)}
+  .sidebar.mobile-open{transform:translateX(0)}
+  .chat-panel{position:fixed;top:94px;right:0;bottom:0;width:88%;max-width:380px;z-index:30;
+    transform:translateX(100%);transition:transform .25s ease;box-shadow:-6px 0 24px rgba(0,0,0,.4)}
+  .chat-panel.mobile-open{transform:translateX(0)}
+  .pretest-wrap{padding:16px}
+  .pretest-head{flex-direction:column;align-items:flex-start;gap:8px}
+  .skip-btn{align-self:flex-start}
+  .dd-grid{gap:8px}
+  .lab-view{grid-template-rows:150px 1fr auto}
+  .terminal{font-size:14.5px;max-width:100%;padding:8px 10px}
+  .t-input-row{max-width:100%;font-size:14.5px}
+  .t-prompt,.t-input{font-size:14.5px}
+  .cmd-hint-box{padding:8px 10px}
+  .steps-row{display:none}
+  .bub{max-width:78vw}
+  .hint-box{width:80vw;right:8px}
+}
+@media (max-width:480px){
+  .chapter-badge{display:none}
+  .topbar>span:first-child{font-size:14px}
+  .q-card{padding:12px}
+  .pretest-title{font-size:15px}
+}
+</style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="topbar">
+  <button class="mobile-toggle" id="sidebarToggle" onclick="toggleMobilePanel('sidebar')" title="Steps">☰</button>
+  <a class="brand" href="../../index.html">NET<span>Lab</span></a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="../../labs.html">Lab</a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="../../course.html">Network Eng. Lab I</a>
+  <span class="crumb-sep">›</span>
+  <span class="chapter-badge">Lab 10</span>
+  <span class="crumb current">Redistribution</span>
+  <div class="ai-pill ai-off" id="aiStatus">
+    <div class="ai-dot" id="aiDot"></div>
+    <span id="aiStatusText">กำลังเชื่อมต่อ...</span>
+  </div>
+  <div class="lab-topbar-right">
+    <div id="authSlot"></div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
+    <button class="mobile-toggle" id="chatToggle" onclick="toggleMobilePanel('chat')" title="AI Tutor">💬</button>
+  </div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" id="tabPretest" onclick="switchTab('pretest')">Pre-test</div>
+  <div class="tab" id="tabLab" onclick="switchTab('lab')">Config Terminal</div>
+  <div class="tab" id="tabIptab" onclick="switchTab('iptab')">ตาราง IP</div>
+</div>
+
+<div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobilePanels()"></div>
+
+<div class="main">
+  <div class="sidebar" id="sidebarPanel">
+    <div class="sb-section"><div id="sidebarSteps"></div></div>
+    <div class="progress-wrap">
+      <div class="prog-label"><span>ความคืบหน้า</span><span id="progText">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="content-area">
+      <div class="view active" id="viewPretest">
+        <div class="pretest-wrap">
+          <div class="pretest-head">
+            <div>
+              <div class="pretest-title">Pre-test — Ch.10 Redistribution</div>
+              <div class="pretest-sub">ทดสอบความรู้ก่อน Lab — ทำหรือข้ามก็ได้ครับ</div>
+            </div>
+            <button class="skip-btn" onclick="switchTab('lab')">ข้ามไป Lab →</button>
+          </div>
+          <div id="pretestContent"></div>
+          <div class="pretest-actions">
+            <button class="btn-check" onclick="checkPretest()">ตรวจคำตอบ</button>
+            <button class="btn-skip2" onclick="switchTab('lab')">ข้ามไป Lab</button>
+            <div id="scoreResult"></div>
+            <button class="btn-go-lab" id="goLabBtn" onclick="switchTab('lab')">เริ่ม Lab →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="view iptab-view" id="viewIptab"></div>
+
+      <div class="view" id="viewLab">
+        <div class="lab-view">
+          <div class="topology">
+            <svg id="topoSvg" viewBox="0 0 920 230" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div class="topo-status">
+              <div class="topo-chip" id="stepChip">Step 1/29</div>
+              <div class="complete-reopen-chip" id="completeChip" onclick="openLabComplete()">✓ Lab สำเร็จ — ดูสรุปผล</div>
+              <div class="next-lab-chip" id="nextLabChip" onclick="goNextLab()">ไป Lab ถัดไป →</div>
+            </div>
+          </div>
+          <div class="terminal-wrap">
+            <div class="terminal" id="terminal"></div>
+            <div class="t-input-row">
+              <span class="t-prompt" id="tPrompt">R1&gt;</span>
+              <input class="t-input" id="termInput" autocomplete="off" spellcheck="false"
+                placeholder="พิมพ์ Cisco IOS command..." disabled onkeydown="handleTermKey(event)"/>
+            </div>
+            <div class="hint-box" id="hintBox">
+              <div class="hint-title" id="hintTitle">Hint</div>
+              <div class="hint-text" id="hintText"></div>
+              <button class="hint-answer-btn" id="answerBtn" onclick="showAnswer()">แสดงเฉลย (ผิด 4 ครั้ง)</button>
+            </div>
+          </div>
+          <div class="checklist">
+            <div class="steps-row" id="stepsRow"></div>
+            <div class="cmd-hint-box">
+              <div class="cmd-hint-cmd" id="cmdHintCmd">—</div>
+              <div class="cmd-hint-desc" id="cmdHintDesc"></div>
+            </div>
+          </div>
+        </div>
+        <div class="lab-complete" id="labComplete" onclick="if(event.target===this)closeLabComplete()">
+          <div class="lab-complete-box" role="dialog" aria-labelledby="completeTitle">
+            <button class="lab-complete-close" onclick="closeLabComplete()" title="ปิด (ดู Terminal ที่ทำไปได้)">✕</button>
+            <div class="complete-title" id="completeTitle">Lab Ch.10 สำเร็จ!</div>
+            <div class="complete-sub">ตั้งค่า OSPF (R1-R2) และ EIGRP (R2-R3) แยกกัน แล้ว Redistribute ทั้งสองทางบน R2<br>PC-A สามารถ ping PC-C ผ่าน route ที่ redistribute ข้าม Protocol ได้แล้วครับ</div>
+            <div class="lab-complete-actions">
+              <button class="btn-skip2" onclick="closeLabComplete()">ปิด — ดู Terminal</button>
+              <button class="btn-check" onclick="resetLab()">ทำ Lab นี้อีกครั้ง →</button>
+              <button class="btn-next-lab" onclick="goNextLab()">ไป Lab ถัดไป →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <div id="chatDot" style="width:7px;height:7px;border-radius:50%;background:var(--text3)"></div>
+      <div class="chat-title">AI — Network Tutor</div>
+      <div class="model-tag" id="modelTag">Gemini 2.5 Flash</div>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="chat-chips">
+      <div class="chip" onclick="askSyntaxOnly('explain')">อธิบาย cmd</div>
+      <div class="chip" onclick="showModeCommands()">คำสั่งในโหมดนี้</div>
+      <div class="chip" onclick="showProgressSummary()">สรุปที่ทำมาแล้ว</div>
+      <div class="chip" onclick="location.href='../../index.html#ospf'">ทบทวน OSPF</div>
+      <div class="chip" onclick="location.href='../../index.html#eigrp'">ทบทวน EIGRP</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-in" id="chatIn" placeholder="ถาม AI Tutor..." onkeydown="if(event.key==='Enter'&&!isBusy)sendChat()"/>
+      <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+</div>
+
+<div class="pc-modal-backdrop" id="pcModalBackdrop" onclick="if(event.target===this)closePcConfig()">
+  <div class="pc-modal" role="dialog" aria-labelledby="pcModalTitle">
+    <div class="pc-modal-title" id="pcModalTitle">IP Configuration</div>
+    <div class="pc-modal-sub" id="pcModalSub"></div>
+    <label class="pc-field-label" for="pcIpInput">IP Address</label>
+    <input class="pc-field-input" id="pcIpInput" autocomplete="off" spellcheck="false" placeholder="เช่น 172.25.1.10"/>
+    <label class="pc-field-label" for="pcMaskInput">Subnet Mask</label>
+    <input class="pc-field-input" id="pcMaskInput" autocomplete="off" spellcheck="false" placeholder="เช่น 255.255.255.0"/>
+    <label class="pc-field-label" for="pcGwInput">Default Gateway</label>
+    <input class="pc-field-input" id="pcGwInput" autocomplete="off" spellcheck="false" placeholder="เช่น 172.25.1.1"/>
+    <div class="pc-modal-err" id="pcModalErr"></div>
+    <div class="pc-modal-actions">
+      <button class="btn-skip2" onclick="closePcConfig()">ยกเลิก</button>
+      <button class="btn-check" onclick="submitPcConfig()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="pc-modal-backdrop" id="pcCmdBackdrop" onclick="if(event.target===this)closePcCmd()">
+  <div class="pc-modal pc-cmd-modal" role="dialog" aria-labelledby="pcCmdTitle">
+    <div class="pc-modal-title" id="pcCmdTitle">Command Prompt</div>
+    <div class="pc-modal-sub" id="pcCmdSub"></div>
+    <div class="pc-cmd-screen" id="pcCmdScreen"></div>
+    <div class="pc-cmd-inputrow">
+      <span class="pc-cmd-prompt">C:\Users\Student&gt;</span>
+      <input class="pc-cmd-input" id="pcCmdInput" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')runPcPing()"/>
+    </div>
+    <div class="pc-modal-actions">
+      <button class="btn-skip2" onclick="closePcCmd()">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../scripts/theme.js?v=2"></script>
+<script src="../../scripts/cisco-patterns.js?v=6"></script>
+<script>renderAuthNav();</script>
+<script>
+'use strict';
+var API_BASE=(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
+  ?'http://localhost:8000':'http://'+window.location.hostname+'/api';
+
+function cv(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+
+function onThemeChange(){
+  if(typeof renderTopology==='function')renderTopology();
+}
+
+function toggleMobilePanel(which){
+  var panel=document.getElementById(which==='sidebar'?'sidebarPanel':'chatPanel');
+  var other=document.getElementById(which==='sidebar'?'chatPanel':'sidebarPanel');
+  other.classList.remove('mobile-open');
+  panel.classList.toggle('mobile-open');
+  document.getElementById('mobileBackdrop').classList.toggle('show',panel.classList.contains('mobile-open'));
+}
+function closeMobilePanels(){
+  document.getElementById('sidebarPanel').classList.remove('mobile-open');
+  document.getElementById('chatPanel').classList.remove('mobile-open');
+  document.getElementById('mobileBackdrop').classList.remove('show');
+}
+
+var NODES=[
+  {id:'PC-A',x:60,  role:'host'},
+  {id:'R1',  x:260, role:'router'},
+  {id:'R2',  x:460, role:'router'},
+  {id:'R3',  x:660, role:'router'},
+  {id:'PC-C',x:860, role:'host'}
+];
+
+// activateOnSteps: step id ของ "ทั้งสองฝั่ง" ที่ต้อง config เสร็จครบ เส้นถึงจะเขียว
+// (ฝั่งที่เป็น PC ไม่มี step ของตัวเอง จึงมีแค่ 1 id — ฝั่ง Router-Router ต้องมีครบ 2 id)
+// หมายเหตุ: Lab นี้จงใจแบ่ง 2 โซน Routing Protocol คนละฝั่งของ R2 — R1-R2 ใช้ OSPF, R2-R3 ใช้ EIGRP
+// R2 เป็น ASBR (Autonomous System Boundary Router) ที่ต้อง Redistribute ข้าม Protocol ทั้งสองทาง
+var LINKS=[
+  {from:'PC-A',to:'R1',  subnet:'172.25.1.0/24',if1:'',    if2:'g0/0',activateOnSteps:[2,200]},
+  {from:'R1',  to:'R2',  subnet:'172.25.2.0/30', if1:'g0/1',if2:'g0/0',activateOnSteps:[3,5]},
+  {from:'R2',  to:'R3',  subnet:'172.25.2.4/30', if1:'g0/1',if2:'g0/0',activateOnSteps:[6,8]},
+  {from:'R3',  to:'PC-C',subnet:'172.25.3.0/24', if1:'g0/1',if2:'',    activateOnSteps:[9,201]}
+];
+
+// รองรับคำสั่งย่อแบบ Cisco IOS จริง (enable, configure terminal, ip address, router ospf/eigrp, network...area, no auto-summary, redistribute...subnets/metric ล้วนย่อได้) — ดู scripts/cisco-patterns.js
+
+var STEPS=[
+  // ── เฟส 1: ตั้งชื่อ hostname และ IP ให้ทุกอุปกรณ์ก่อน (รวม PC) ตามหลักการปฏิบัติจริง — ใช้ VLSM (LAN /24, WAN /30) ต่อ Topology ให้ครบก่อน ค่อยเปิด OSPF ทีหลัง ──
+  {id:1,router:'R1',name:'R1 — enable & configure terminal',short:'R1 enable',mode:'exec',prompt:'Router>',
+   hint:'enable\nconfigure terminal',
+   cmdHint:{cmd:'Router> enable',desc:'เข้า Privileged EXEC ก่อน แล้วพิมพ์ configure terminal'},
+   hints:[
+     {cmd:'Router> enable',desc:'เข้าสู่ Privileged EXEC mode ก่อน'},
+     {cmd:'Router# configure terminal',desc:'เข้าสู่ Global Configuration mode'}
+   ],
+   answer:'enable\nconfigure terminal',
+   commands:[
+     {mode:'exec',     pat:ENABLE_PAT,                             next:'exec-priv',pr:'Router#',        adv:false,msg:''},
+     {mode:'exec-priv',pat:CONFT_PAT,        next:'config',   pr:'Router(config)#',adv:true,
+      msg:'Enter configuration commands, one per line.\nRouter(config)#'}
+   ]},
+  {id:21,router:'R1',name:'R1 — ตั้งชื่อ hostname',short:'hostname R1',mode:'config',prompt:'Router(config)#',
+   hint:'hostname R1',
+   cmdHint:{cmd:'Router(config)# hostname R1',desc:'ตั้งชื่ออุปกรณ์เป็น R1 — ควรทำเป็นอย่างแรกก่อนตั้งค่าอื่น'},
+   hints:[{cmd:'Router(config)# hostname R1',desc:'ตั้งชื่ออุปกรณ์เป็น R1'}],
+   answer:'hostname R1',
+   commands:[
+     {mode:'config',pat:hostnamePat('R1'),next:'config',pr:'R1(config)#',adv:true,
+      msg:'✓ Hostname เปลี่ยนเป็น R1 แล้วครับ (สังเกต prompt ที่เปลี่ยนไป)'}
+   ]},
+  {id:2,router:'R1',name:'R1 — g0/0 LAN 172.25.1.1/24',short:'g0/0 LAN',mode:'config',prompt:'R1(config)#',
+   hint:'interface g0/0\nip address 172.25.1.1 255.255.255.0\nno shutdown\nexit',
+   cmdHint:{cmd:'R1(config)# interface g0/0',desc:'LAN ฝั่ง PC-A: 172.25.1.1/24 — เส้น PC-A—R1 จะเขียว'},
+   hints:[
+     {cmd:'R1(config)# interface g0/0',desc:'LAN ฝั่ง PC-A: 172.25.1.1/24 — เส้น PC-A—R1 จะเขียว'},
+     {cmd:'R1(config-if)# ip address 172.25.1.1 255.255.255.0',desc:'กำหนด IP address ให้ interface นี้'},
+     {cmd:'R1(config-if)# no shutdown',desc:'เปิดใช้งาน interface (ไม่งั้นจะ down ตลอด)'},
+     {cmd:'R1(config-if)# exit',desc:'ออกจาก interface mode กลับสู่ config mode'}
+   ],
+   answer:'interface g0/0\nip address 172.25.1.1 255.255.255.0\nno shutdown\nexit',
+   commands:[
+     {mode:'config',   pat:ifpat('0'),next:'config-if',pr:'R1(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:ipAddrPat('172.25.1.1','255.255.255.0'),next:'config-if',pr:'R1(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:NOSHUT_PAT,next:'config-if',pr:'R1(config-if)#',adv:false,
+      msg:'%LINK-5-CHANGED: Interface GigabitEthernet0/0, changed state to up'},
+     {mode:'config-if',pat:EXIT_PAT,next:'config',pr:'R1(config)#',adv:true,
+      msg:'✓ g0/0 → 172.25.1.1/24 UP\n  เส้น PC-A—R1 เขียวครึ่งเดียว รอ PC-A ตั้ง IP ด้วยครับ'}
+   ]},
+  {id:3,router:'R1',name:'R1 — g0/1 WAN 172.25.2.1/30 (ฝั่ง OSPF)',short:'g0/1 WAN',mode:'config',prompt:'R1(config)#',
+   hint:'interface g0/1\nip address 172.25.2.1 255.255.255.252\nno shutdown\nexit',
+   cmdHint:{cmd:'R1(config)# interface g0/1',desc:'WAN ฝั่ง R2 (โซนที่จะใช้ OSPF): 172.25.2.1/30 — เส้น R1—R2 จะเขียว'},
+   hints:[
+     {cmd:'R1(config)# interface g0/1',desc:'WAN ฝั่ง R2: 172.25.2.1/30 — เส้น R1—R2 จะเขียว'},
+     {cmd:'R1(config-if)# ip address 172.25.2.1 255.255.255.252',desc:'กำหนด IP address ให้ interface นี้ (VLSM /30 สำหรับลิงก์จุดต่อจุด)'},
+     {cmd:'R1(config-if)# no shutdown',desc:'เปิดใช้งาน interface'},
+     {cmd:'R1(config-if)# exit',desc:'ออกจาก interface mode กลับสู่ config mode'}
+   ],
+   answer:'interface g0/1\nip address 172.25.2.1 255.255.255.252\nno shutdown\nexit',
+   commands:[
+     {mode:'config',   pat:ifpat('1'),next:'config-if',pr:'R1(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:ipAddrPat('172.25.2.1','255.255.255.252'),next:'config-if',pr:'R1(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:NOSHUT_PAT,next:'config-if',pr:'R1(config-if)#',adv:false,
+      msg:'%LINK-5-CHANGED: Interface GigabitEthernet0/1, changed state to up'},
+     {mode:'config-if',pat:EXIT_PAT,next:'config',pr:'R1(config)#',adv:true,
+      msg:'✓ g0/1 → 172.25.2.1/30 UP\n  เส้น R1—R2 เขียวแล้วครับ — ต่อไปตั้งค่า PC-A ก่อน แล้วค่อยไปตั้ง IP ของ R2'}
+   ]},
+  {id:200,router:'PC-A',type:'pcconfig',name:'PC-A — ตั้งค่า IP / Subnet / Gateway',short:'PC-A config',mode:'pcconfig',prompt:'(คลิก PC-A)',
+   expected:{ip:'172.25.1.10',mask:'255.255.255.0',gateway:'172.25.1.1'},
+   cmdHint:{cmd:'(คลิกที่ไอคอน PC-A บนแผนภาพด้านบน)',desc:'กำหนด IP/Subnet/Gateway ให้ PC-A ผ่านหน้าต่างตั้งค่า'}},
+  {id:4,router:'R2',name:'R2 — enable & configure terminal',short:'R2 enable',mode:'exec',prompt:'Router>',
+   hint:'enable\nconfigure terminal',
+   cmdHint:{cmd:'Router> enable',desc:'สลับไปทำ R2 — enable แล้ว configure terminal'},
+   hints:[
+     {cmd:'Router> enable',desc:'สลับไปทำ R2 — เข้าสู่ Privileged EXEC'},
+     {cmd:'Router# configure terminal',desc:'เข้าสู่ Global Configuration mode'}
+   ],
+   answer:'enable\nconfigure terminal',
+   commands:[
+     {mode:'exec',     pat:ENABLE_PAT,                       next:'exec-priv',pr:'Router#',        adv:false,msg:''},
+     {mode:'exec-priv',pat:CONFT_PAT,  next:'config',   pr:'Router(config)#',adv:true,
+      msg:'Enter configuration commands, one per line.\nRouter(config)#'}
+   ]},
+  {id:22,router:'R2',name:'R2 — ตั้งชื่อ hostname',short:'hostname R2',mode:'config',prompt:'Router(config)#',
+   hint:'hostname R2',
+   cmdHint:{cmd:'Router(config)# hostname R2',desc:'ตั้งชื่ออุปกรณ์เป็น R2 — Router ตัวนี้จะเป็น ASBR ที่ต้องคุยทั้ง OSPF และ EIGRP'},
+   hints:[{cmd:'Router(config)# hostname R2',desc:'ตั้งชื่ออุปกรณ์เป็น R2'}],
+   answer:'hostname R2',
+   commands:[
+     {mode:'config',pat:hostnamePat('R2'),next:'config',pr:'R2(config)#',adv:true,
+      msg:'✓ Hostname เปลี่ยนเป็น R2 แล้วครับ'}
+   ]},
+  {id:5,router:'R2',name:'R2 — g0/0 (←R1) 172.25.2.2/30 (ฝั่ง OSPF)',short:'g0/0 ←R1',mode:'config',prompt:'R2(config)#',
+   hint:'interface g0/0\nip address 172.25.2.2 255.255.255.252\nno shutdown\nexit',
+   cmdHint:{cmd:'R2(config)# interface g0/0',desc:'ฝั่ง R1 (โซน OSPF): 172.25.2.2/30'},
+   hints:[
+     {cmd:'R2(config)# interface g0/0',desc:'ฝั่ง R1: 172.25.2.2/30'},
+     {cmd:'R2(config-if)# ip address 172.25.2.2 255.255.255.252',desc:'กำหนด IP address ให้ interface นี้'},
+     {cmd:'R2(config-if)# no shutdown',desc:'เปิดใช้งาน interface'},
+     {cmd:'R2(config-if)# exit',desc:'ออกจาก interface mode'}
+   ],
+   answer:'interface g0/0\nip address 172.25.2.2 255.255.255.252\nno shutdown\nexit',
+   commands:[
+     {mode:'config',   pat:ifpat('0'),next:'config-if',pr:'R2(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:ipAddrPat('172.25.2.2','255.255.255.252'),next:'config-if',pr:'R2(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:NOSHUT_PAT,next:'config-if',pr:'R2(config-if)#',adv:false,
+      msg:'%LINK-5-CHANGED: Interface GigabitEthernet0/0, changed state to up'},
+     {mode:'config-if',pat:EXIT_PAT,next:'config',pr:'R2(config)#',adv:true,
+      msg:'✓ g0/0 → 172.25.2.2/30 UP'}
+   ]},
+  {id:6,router:'R2',name:'R2 — g0/1 (→R3) 172.25.2.5/30 (ฝั่ง EIGRP)',short:'g0/1 →R3',mode:'config',prompt:'R2(config)#',
+   hint:'interface g0/1\nip address 172.25.2.5 255.255.255.252\nno shutdown\nexit',
+   cmdHint:{cmd:'R2(config)# interface g0/1',desc:'ฝั่ง R3 (โซนที่จะใช้ EIGRP): 172.25.2.5/30 — เส้น R2—R3 จะเขียว'},
+   hints:[
+     {cmd:'R2(config)# interface g0/1',desc:'ฝั่ง R3: 172.25.2.5/30 — เส้น R2—R3 จะเขียว'},
+     {cmd:'R2(config-if)# ip address 172.25.2.5 255.255.255.252',desc:'กำหนด IP address ให้ interface นี้'},
+     {cmd:'R2(config-if)# no shutdown',desc:'เปิดใช้งาน interface'},
+     {cmd:'R2(config-if)# exit',desc:'ออกจาก interface mode'}
+   ],
+   answer:'interface g0/1\nip address 172.25.2.5 255.255.255.252\nno shutdown\nexit',
+   commands:[
+     {mode:'config',   pat:ifpat('1'),next:'config-if',pr:'R2(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:ipAddrPat('172.25.2.5','255.255.255.252'),next:'config-if',pr:'R2(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:NOSHUT_PAT,next:'config-if',pr:'R2(config-if)#',adv:false,
+      msg:'%LINK-5-CHANGED: Interface GigabitEthernet0/1, changed state to up'},
+     {mode:'config-if',pat:EXIT_PAT,next:'config',pr:'R2(config)#',adv:true,
+      msg:'✓ g0/1 → 172.25.2.5/30 UP\n  เส้น R2—R3 เขียวแล้วครับ — สลับไปตั้ง IP ของ R3 ต่อได้เลยครับ'}
+   ]},
+  {id:7,router:'R3',name:'R3 — enable & configure terminal',short:'R3 enable',mode:'exec',prompt:'Router>',
+   hint:'enable\nconfigure terminal',
+   cmdHint:{cmd:'Router> enable',desc:'สลับไปทำ R3 — enable แล้ว configure terminal'},
+   hints:[
+     {cmd:'Router> enable',desc:'สลับไปทำ R3 — เข้าสู่ Privileged EXEC'},
+     {cmd:'Router# configure terminal',desc:'เข้าสู่ Global Configuration mode'}
+   ],
+   answer:'enable\nconfigure terminal',
+   commands:[
+     {mode:'exec',     pat:ENABLE_PAT,                       next:'exec-priv',pr:'Router#',        adv:false,msg:''},
+     {mode:'exec-priv',pat:CONFT_PAT,  next:'config',   pr:'Router(config)#',adv:true,
+      msg:'Enter configuration commands, one per line.\nRouter(config)#'}
+   ]},
+  {id:23,router:'R3',name:'R3 — ตั้งชื่อ hostname',short:'hostname R3',mode:'config',prompt:'Router(config)#',
+   hint:'hostname R3',
+   cmdHint:{cmd:'Router(config)# hostname R3',desc:'ตั้งชื่ออุปกรณ์เป็น R3'},
+   hints:[{cmd:'Router(config)# hostname R3',desc:'ตั้งชื่ออุปกรณ์เป็น R3'}],
+   answer:'hostname R3',
+   commands:[
+     {mode:'config',pat:hostnamePat('R3'),next:'config',pr:'R3(config)#',adv:true,
+      msg:'✓ Hostname เปลี่ยนเป็น R3 แล้วครับ'}
+   ]},
+  {id:8,router:'R3',name:'R3 — g0/0 (←R2) 172.25.2.6/30 (ฝั่ง EIGRP)',short:'g0/0 ←R2',mode:'config',prompt:'R3(config)#',
+   hint:'interface g0/0\nip address 172.25.2.6 255.255.255.252\nno shutdown\nexit',
+   cmdHint:{cmd:'R3(config)# interface g0/0',desc:'ฝั่ง R2 (โซน EIGRP): 172.25.2.6/30'},
+   hints:[
+     {cmd:'R3(config)# interface g0/0',desc:'ฝั่ง R2: 172.25.2.6/30'},
+     {cmd:'R3(config-if)# ip address 172.25.2.6 255.255.255.252',desc:'กำหนด IP address ให้ interface นี้'},
+     {cmd:'R3(config-if)# no shutdown',desc:'เปิดใช้งาน interface'},
+     {cmd:'R3(config-if)# exit',desc:'ออกจาก interface mode'}
+   ],
+   answer:'interface g0/0\nip address 172.25.2.6 255.255.255.252\nno shutdown\nexit',
+   commands:[
+     {mode:'config',   pat:ifpat('0'),next:'config-if',pr:'R3(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:ipAddrPat('172.25.2.6','255.255.255.252'),next:'config-if',pr:'R3(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:NOSHUT_PAT,next:'config-if',pr:'R3(config-if)#',adv:false,
+      msg:'%LINK-5-CHANGED: Interface GigabitEthernet0/0, changed state to up'},
+     {mode:'config-if',pat:EXIT_PAT,next:'config',pr:'R3(config)#',adv:true,
+      msg:'✓ g0/0 → 172.25.2.6/30 UP'}
+   ]},
+  {id:9,router:'R3',name:'R3 — g0/1 LAN 172.25.3.1/24',short:'g0/1 LAN',mode:'config',prompt:'R3(config)#',
+   hint:'interface g0/1\nip address 172.25.3.1 255.255.255.0\nno shutdown\nexit',
+   cmdHint:{cmd:'R3(config)# interface g0/1',desc:'LAN ฝั่ง PC-C: 172.25.3.1/24 — เส้น R3—PC-C จะเขียว'},
+   hints:[
+     {cmd:'R3(config)# interface g0/1',desc:'LAN ฝั่ง PC-C: 172.25.3.1/24 — เส้น R3—PC-C จะเขียว'},
+     {cmd:'R3(config-if)# ip address 172.25.3.1 255.255.255.0',desc:'กำหนด IP address ให้ interface นี้'},
+     {cmd:'R3(config-if)# no shutdown',desc:'เปิดใช้งาน interface'},
+     {cmd:'R3(config-if)# exit',desc:'ออกจาก interface mode'}
+   ],
+   answer:'interface g0/1\nip address 172.25.3.1 255.255.255.0\nno shutdown\nexit',
+   commands:[
+     {mode:'config',   pat:ifpat('1'),next:'config-if',pr:'R3(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:ipAddrPat('172.25.3.1','255.255.255.0'),next:'config-if',pr:'R3(config-if)#',adv:false,msg:''},
+     {mode:'config-if',pat:NOSHUT_PAT,next:'config-if',pr:'R3(config-if)#',adv:false,
+      msg:'%LINK-5-CHANGED: Interface GigabitEthernet0/1, changed state to up'},
+     {mode:'config-if',pat:EXIT_PAT,next:'config',pr:'R3(config)#',adv:true,
+      msg:'✓ g0/1 → 172.25.3.1/24 UP\n  ต่อไปตั้งค่า PC-C ให้ครบตามหลักการก่อนครับ'}
+   ]},
+  {id:201,router:'PC-C',type:'pcconfig',name:'PC-C — ตั้งค่า IP / Subnet / Gateway',short:'PC-C config',mode:'pcconfig',prompt:'(คลิก PC-C)',
+   expected:{ip:'172.25.3.10',mask:'255.255.255.0',gateway:'172.25.3.1'},
+   cmdHint:{cmd:'(คลิกที่ไอคอน PC-C บนแผนภาพด้านบน)',desc:'กำหนด IP/Subnet/Gateway ให้ PC-C ผ่านหน้าต่างตั้งค่า'}},
+
+  // ── เฟส 2: ตั้งค่า OSPF บน R1 (ฝั่งซ้ายของ R2) — R1 ทำก่อน จึงยังไม่มี Neighbor ──
+  {id:10,router:'R1',name:'R1 — เปิดใช้งาน OSPF (Process ID 1)',short:'OSPF setup',mode:'config',prompt:'R1(config)#',
+   hint:'router ospf 1\nnetwork 172.25.1.0 0.0.0.255 area 0\nnetwork 172.25.2.0 0.0.0.3 area 0',
+   cmdHint:{cmd:'R1(config)# router ospf 1',desc:'เข้าสู่โหมดตั้งค่า OSPF — เลข Process ID (1) มีผลแค่ภายใน Router เครื่องนี้'},
+   hints:[
+     {cmd:'R1(config)# router ospf 1',desc:'เข้าสู่โหมดตั้งค่า OSPF ด้วย Process ID 1'},
+     {cmd:'R1(config-router)# network 172.25.1.0 0.0.0.255 area 0',desc:'ประกาศ network ฝั่ง PC-A ด้วย wildcard mask — วง LAN นี้เป็น /24 ให้หา inverse เอง พร้อม Area 0'},
+     {cmd:'R1(config-router)# network 172.25.2.0 0.0.0.3 area 0',desc:'ประกาศ network ฝั่ง R2 ด้วย wildcard mask — ลิงก์นี้เป็น /30 ให้หา inverse เอง พร้อม Area 0'}
+   ],
+   answer:'router ospf 1\nnetwork 172.25.1.0 0.0.0.255 area 0\nnetwork 172.25.2.0 0.0.0.3 area 0',
+   commands:[
+     {mode:'config',       pat:routerOspfPat('1'), next:'config-router',pr:'R1(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:networkAreaPat('172.25.1.0','0.0.0.255','0'),next:'config-router',pr:'R1(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:networkAreaPat('172.25.2.0','0.0.0.3','0'),  next:'config',pr:'R1(config)#',adv:true,
+      msg:'✓ เปิด OSPF (Process ID 1) บน R1 แล้วครับ — ประกาศ network ทั้ง 2 ฝั่งใน Area 0'}
+   ]},
+  {id:11,router:'R1',name:'R1 — ตรวจสอบด้วย show ip protocols (Checkpoint)',short:'show protocols',mode:'config',prompt:'R1(config)#',
+   hint:'do show ip protocols',
+   cmdHint:{cmd:'R1(config)# do show ip protocols',desc:'ตรวจสอบว่า OSPF process กำลังทำงานอยู่ก่อน save (R1 ทำก่อน R2 จึงยังไม่มี Neighbor ให้ดู)'},
+   answer:'do show ip protocols',
+   commands:[
+     {mode:'config',pat:/^do\s+sh(ow)?\s+ip\s+prot(o(c(o(l(s)?)?)?)?)?$/i,next:'config',pr:'R1(config)#',adv:true,
+      msg:'Routing Protocol is "ospf 1"\n  Router ID 172.25.2.1\n  Number of areas in this router is 1. 1 normal 0 stub 0 nssa\n  Routing for Networks:\n    172.25.1.0 0.0.0.255 area 0\n    172.25.2.0 0.0.0.3 area 0\n  Distance: (default is 110)\n\n✓ OSPF process กำลังทำงานอยู่ครับ — บันทึกความคืบหน้าไว้แล้ว'}
+   ]},
+  {id:12,router:'R1',name:'R1 — end & write memory',short:'save R1',mode:'config',prompt:'R1(config)#',
+   hint:'end\nwrite memory',
+   cmdHint:{cmd:'R1(config)# end  →  write memory',desc:'บันทึก config R1'},
+   hints:[
+     {cmd:'R1(config)# end',desc:'ออกจาก config mode (end หรือ exit ก็ได้)'},
+     {cmd:'R1# write memory',desc:'บันทึก config R1 ที่ตั้งค่าไว้ให้ถาวร'}
+   ],
+   answer:'end\nwrite memory',
+   commands:[
+     {mode:'config',   pat:END_OR_EXIT_PAT,                       next:'exec-priv',pr:'R1#',adv:false,msg:'R1#'},
+     {mode:'exec-priv',pat:writeMemPat(),next:'exec-priv',pr:'R1#',adv:true,
+      msg:'Building configuration...\n[OK]\n✓ R1 config บันทึกแล้วครับ — สลับไปทำ R3 ต่อครับ'}
+   ]},
+
+  // ── เฟส 2 (ต่อ): ตั้งค่า EIGRP บน R3 (ฝั่งขวาของ R2) — R3 ทำก่อน จึงยังไม่มี Neighbor ──
+  {id:13,router:'R3',name:'R3 — เปิดใช้งาน EIGRP (AS 100)',short:'EIGRP setup',mode:'config',prompt:'R3(config)#',
+   hint:'router eigrp 100\nnetwork 172.25.2.4 0.0.0.3\nnetwork 172.25.3.0 0.0.0.255\nno auto-summary',
+   cmdHint:{cmd:'R3(config)# router eigrp 100',desc:'เข้าสู่โหมดตั้งค่า EIGRP บน Autonomous System 100'},
+   hints:[
+     {cmd:'R3(config)# router eigrp 100',desc:'เข้าสู่โหมดตั้งค่า EIGRP บน Autonomous System 100 (ต้องตรงกับ R2 เสมอ ต่างจาก OSPF Process ID)'},
+     {cmd:'R3(config-router)# network 172.25.2.4 0.0.0.3',desc:'ประกาศ network ฝั่ง R2 ด้วย wildcard mask — ลิงก์นี้เป็น /30 ให้หา inverse เอง'},
+     {cmd:'R3(config-router)# network 172.25.3.0 0.0.0.255',desc:'ประกาศ network ฝั่ง PC-C ด้วย wildcard mask — วง LAN นี้เป็น /24 ให้หา inverse เอง'},
+     {cmd:'R3(config-router)# no auto-summary',desc:'ปิดการสรุป subnet อัตโนมัติที่ classful boundary'}
+   ],
+   answer:'router eigrp 100\nnetwork 172.25.2.4 0.0.0.3\nnetwork 172.25.3.0 0.0.0.255\nno auto-summary',
+   commands:[
+     {mode:'config',       pat:routerEigrpPat('100'),   next:'config-router',pr:'R3(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:networkWildcardPat('172.25.2.4','0.0.0.3'),  next:'config-router',pr:'R3(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:networkWildcardPat('172.25.3.0','0.0.0.255'),next:'config-router',pr:'R3(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:NOAUTOSUM_PAT,     next:'config',pr:'R3(config)#',adv:true,
+      msg:'✓ เปิด EIGRP (AS 100) บน R3 แล้วครับ — ประกาศ network ทั้ง 2 ฝั่งพร้อมปิด auto-summary'}
+   ]},
+  {id:14,router:'R3',name:'R3 — ตรวจสอบด้วย show ip protocols (Checkpoint)',short:'show protocols',mode:'config',prompt:'R3(config)#',
+   hint:'do show ip protocols',
+   cmdHint:{cmd:'R3(config)# do show ip protocols',desc:'ตรวจสอบว่า EIGRP process กำลังทำงานอยู่ก่อน save (R3 ทำก่อน R2 จึงยังไม่มี Neighbor ให้ดู)'},
+   answer:'do show ip protocols',
+   commands:[
+     {mode:'config',pat:/^do\s+sh(ow)?\s+ip\s+prot(o(c(o(l(s)?)?)?)?)?$/i,next:'config',pr:'R3(config)#',adv:true,
+      msg:'Routing Protocol is "eigrp 100"\n  EIGRP-IPv4 Protocol for AS(100)\n    Automatic Summarization: disabled\n    Routing for Networks:\n      172.25.2.4/30\n      172.25.3.0/24\n    Distance: internal 90 external 170\n\n✓ EIGRP process กำลังทำงานอยู่ครับ — บันทึกความคืบหน้าไว้แล้ว'}
+   ]},
+  {id:15,router:'R3',name:'R3 — end & write memory',short:'save R3',mode:'config',prompt:'R3(config)#',
+   hint:'end\nwrite memory',
+   cmdHint:{cmd:'R3(config)# end  →  write memory',desc:'บันทึก config R3 ที่ตั้งค่าไว้ให้ถาวร'},
+   hints:[
+     {cmd:'R3(config)# end',desc:'ออกจาก config mode (end หรือ exit ก็ได้)'},
+     {cmd:'R3# write memory',desc:'บันทึก config R3 ที่ตั้งค่าไว้ให้ถาวร'}
+   ],
+   answer:'end\nwrite memory',
+   commands:[
+     {mode:'config',   pat:END_OR_EXIT_PAT,next:'exec-priv',pr:'R3#',adv:false,msg:'R3#'},
+     {mode:'exec-priv',pat:writeMemPat(),next:'exec-priv',pr:'R3#',adv:true,
+      msg:'Building configuration...\n[OK]\n✓ R3 config บันทึกแล้วครับ — สลับไปทำ R2 ต่อครับ'}
+   ]},
+
+  // ── เฟส 3: R2 เปิดทั้ง OSPF และ EIGRP (ตอนนี้ Neighbor จะขึ้นทันทีทั้งสองฝั่ง เพราะ R1/R3 ตั้งไว้ก่อนแล้ว) ──
+  {id:16,router:'R2',name:'R2 — เปิดใช้งาน OSPF (Process ID 2, ฝั่ง R1)',short:'OSPF setup',mode:'config',prompt:'R2(config)#',
+   hint:'router ospf 2\nnetwork 172.25.2.0 0.0.0.3 area 0',
+   cmdHint:{cmd:'R2(config)# router ospf 2',desc:'เข้าสู่โหมดตั้งค่า OSPF ด้วย Process ID 2 (ไม่ต้องตรงกับ R1 ที่ใช้ 1 — Locally Significant) — ประกาศเฉพาะฝั่งที่ต่อกับ R1 เท่านั้น'},
+   hints:[
+     {cmd:'R2(config)# router ospf 2',desc:'เข้าสู่โหมดตั้งค่า OSPF — คนละ Process ID กับ R1 ก็ได้'},
+     {cmd:'R2(config-router)# network 172.25.2.0 0.0.0.3 area 0',desc:'ประกาศเฉพาะ interface ฝั่ง R1 ด้วย wildcard mask — ลิงก์นี้เป็น /30 ให้หา inverse เอง พร้อม Area 0 — ฝั่ง R3 เป็น EIGRP ไม่เกี่ยวกับ OSPF'}
+   ],
+   answer:'router ospf 2\nnetwork 172.25.2.0 0.0.0.3 area 0',
+   commands:[
+     {mode:'config',       pat:routerOspfPat('2'), next:'config-router',pr:'R2(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:networkAreaPat('172.25.2.0','0.0.0.3','0'),next:'config',pr:'R2(config)#',adv:true,
+      msg:'✓ เปิด OSPF (Process ID 2) บน R2 แล้วครับ — ประกาศเฉพาะฝั่ง R1'}
+   ]},
+  {id:17,router:'R2',name:'R2 — ตรวจสอบ Neighbor ด้วย show ip ospf neighbor (Checkpoint)',short:'show ospf nb',mode:'config',prompt:'R2(config)#',
+   hint:'do show ip ospf neighbor',
+   cmdHint:{cmd:'R2(config)# do show ip ospf neighbor',desc:'ตรวจสอบว่า R2 เจอ Neighbor (R1) ผ่าน OSPF แล้ว — R1 config ไว้ก่อนแล้ว จึงควรเห็น Neighbor ทันที'},
+   answer:'do show ip ospf neighbor',
+   commands:[
+     {mode:'config',pat:/^do\s+sh(ow)?\s+ip\s+ospf\s+neigh(b(o(r)?)?)?$/i,next:'config',pr:'R2(config)#',adv:true,
+      msg:'Neighbor ID     Pri   State           Dead Time   Address         Interface\n172.25.2.1        1   FULL/BDR        00:00:35    172.25.2.1      GigabitEthernet0/0\n\n✓ เห็น Neighbor R1 (Router ID 172.25.2.1) ผ่าน OSPF แล้วครับ — บันทึกความคืบหน้าไว้แล้ว'}
+   ]},
+  {id:18,router:'R2',name:'R2 — เปิดใช้งาน EIGRP (AS 100, ฝั่ง R3)',short:'EIGRP setup',mode:'config',prompt:'R2(config)#',
+   hint:'router eigrp 100\nnetwork 172.25.2.4 0.0.0.3\nno auto-summary',
+   cmdHint:{cmd:'R2(config)# router eigrp 100',desc:'เข้าสู่โหมดตั้งค่า EIGRP บน Autonomous System 100 (ต้องตรงกับ R3) — ประกาศเฉพาะฝั่งที่ต่อกับ R3 เท่านั้น'},
+   hints:[
+     {cmd:'R2(config)# router eigrp 100',desc:'เข้าสู่โหมดตั้งค่า EIGRP — AS Number ต้องตรงกับ R3 (100) เสมอ'},
+     {cmd:'R2(config-router)# network 172.25.2.4 0.0.0.3',desc:'ประกาศเฉพาะ interface ฝั่ง R3 ด้วย wildcard mask — ลิงก์นี้เป็น /30 ให้หา inverse เอง — ฝั่ง R1 เป็น OSPF ไม่เกี่ยวกับ EIGRP'},
+     {cmd:'R2(config-router)# no auto-summary',desc:'ปิดการสรุป subnet อัตโนมัติที่ classful boundary'}
+   ],
+   answer:'router eigrp 100\nnetwork 172.25.2.4 0.0.0.3\nno auto-summary',
+   commands:[
+     {mode:'config',       pat:routerEigrpPat('100'), next:'config-router',pr:'R2(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:networkWildcardPat('172.25.2.4','0.0.0.3'),next:'config-router',pr:'R2(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:NOAUTOSUM_PAT,   next:'config',pr:'R2(config)#',adv:true,
+      msg:'✓ เปิด EIGRP (AS 100) บน R2 แล้วครับ — ประกาศเฉพาะฝั่ง R3'}
+   ]},
+  {id:19,router:'R2',name:'R2 — ตรวจสอบ Neighbor ด้วย show ip eigrp neighbors (Checkpoint)',short:'show eigrp nb',mode:'config',prompt:'R2(config)#',
+   hint:'do show ip eigrp neighbors',
+   cmdHint:{cmd:'R2(config)# do show ip eigrp neighbors',desc:'ตรวจสอบว่า R2 เจอ Neighbor (R3) ผ่าน EIGRP แล้ว — R3 config ไว้ก่อนแล้ว จึงควรเห็น Neighbor ทันที'},
+   answer:'do show ip eigrp neighbors',
+   commands:[
+     {mode:'config',pat:/^do\s+sh(ow)?\s+ip\s+eigrp\s+neigh(b(o(r(s)?)?)?)?$/i,next:'config',pr:'R2(config)#',adv:true,
+      msg:'EIGRP-IPv4 Neighbors for AS(100)\nH   Address         Interface    Hold Uptime   SRTT   RTO  Q  Seq\n0   172.25.2.6      Gi0/1        13   00:00:05  1     200  0  3\n\n✓ เห็น Neighbor R3 (172.25.2.6) ผ่าน EIGRP แล้วครับ ตอนนี้ R2 คุยได้ทั้ง OSPF และ EIGRP พร้อมกันแล้ว — บันทึกความคืบหน้าไว้แล้ว'}
+   ]},
+
+  // ── เฟส 4: จุดสำคัญของ Lab นี้ — ตรวจสอบ "ก่อน" Redistribute แล้วค่อยแก้ปัญหา ──
+  {id:100,router:'R1',name:'R1 — ตรวจสอบก่อน Redistribute (show ip route)',short:'route ก่อน redist',mode:'exec-priv',prompt:'R1#',
+   hint:'show ip route',
+   cmdHint:{cmd:'R1# show ip route',desc:'สังเกตให้ดี: R1 ยังไม่เห็น network 172.25.3.0/24 (ของ PC-C) เลย ทั้งที่ R2 (Neighbor ของเรา) ต่อกับมันโดยตรง — เพราะ R2 ยังไม่ได้ Redistribute เส้นทางจาก EIGRP เข้ามาใน OSPF'},
+   answer:'show ip route',
+   commands:[
+     {mode:'exec-priv',pat:/^sh(ow)?\s+ip\s+route$/i,next:'exec-priv',pr:'R1#',adv:true,
+      msg:'Codes: L - local, C - connected, O - OSPF\n\nC    172.25.1.0/24 is directly connected, GigabitEthernet0/0\nC    172.25.2.0/30 is directly connected, GigabitEthernet0/1\n\n✗ สังเกตว่ายังไม่มี network 172.25.3.0/24 (ของ PC-C) เลย ทั้งที่ R2 ต่อกับมันโดยตรงผ่าน EIGRP! เพราะ R1 รู้จักแค่โลกของ OSPF เท่านั้น ต้องให้ R2 (ASBR) redistribute เส้นทางจาก EIGRP เข้ามาใน OSPF ก่อนถึงจะเห็น — บันทึกความคืบหน้าไว้แล้ว'}
+   ]},
+  {id:20,router:'R2',name:'R2 — Redistribute ข้าม Protocol ทั้งสองทาง',short:'Redistribute',mode:'config',prompt:'R2(config)#',
+   hint:'router ospf 2\nredistribute eigrp 100 subnets\nexit\nrouter eigrp 100\nredistribute ospf 2 metric 10000 100 255 1 1500\nexit',
+   cmdHint:{cmd:'R2(config)# router ospf 2',desc:'กลับเข้าโหมด OSPF (Process 2) เพื่อดึงเส้นทางจาก EIGRP เข้ามา'},
+   hints:[
+     {cmd:'R2(config)# router ospf 2',desc:'กลับเข้าโหมดตั้งค่า OSPF Process ID 2 ที่มีอยู่แล้ว'},
+     {cmd:'R2(config-router)# redistribute eigrp 100 subnets',desc:'ดึงเส้นทางจาก EIGRP AS 100 เข้ามาประกาศใน OSPF — ต้องมีคำว่า "subnets" ต่อท้ายเสมอ ไม่งั้น OSPF จะดึงมาแค่ major network แบบ classful เท่านั้น (172.25.3.0/24 เป็น subnet จะถูกข้ามไปเงียบๆ)'},
+     {cmd:'R2(config-router)# exit',desc:'ออกจากโหมด OSPF กลับสู่ Global Config'},
+     {cmd:'R2(config)# router eigrp 100',desc:'เข้าโหมด EIGRP AS 100 ที่มีอยู่แล้ว เพื่อดึงเส้นทางจาก OSPF เข้ามาเช่นกัน'},
+     {cmd:'R2(config-router)# redistribute ospf 2 metric 10000 100 255 1 1500',desc:'ดึงเส้นทางจาก OSPF Process 2 เข้ามาใน EIGRP — EIGRP ต้องระบุ Seed Metric เอง 5 ค่าตามลำดับ Bandwidth Delay Reliability Load MTU ให้พิมพ์เป็น 10000 100 255 1 1500 (ค่ามาตรฐานที่ใช้ในแล็บนี้) เพราะแปลง Metric จาก Protocol อื่นให้อัตโนมัติไม่ได้'},
+     {cmd:'R2(config-router)# exit',desc:'ออกจากโหมด EIGRP กลับสู่ Global Config'}
+   ],
+   answer:'router ospf 2\nredistribute eigrp 100 subnets\nexit\nrouter eigrp 100\nredistribute ospf 2 metric 10000 100 255 1 1500\nexit',
+   commands:[
+     {mode:'config',       pat:routerOspfPat('2'),      next:'config-router',pr:'R2(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:redistributeIntoOspfPat('eigrp','100'),    next:'config-router',pr:'R2(config-router)#',adv:false,
+      msg:'✓ Redistribute EIGRP เข้า OSPF แล้ว (พร้อม subnets เพื่อดึง subnet ที่ไม่ใช่ classful มาด้วย)'},
+     {mode:'config-router',pat:EXIT_PAT,               next:'config',       pr:'R2(config)#',       adv:false,msg:''},
+     {mode:'config',       pat:routerEigrpPat('100'),         next:'config-router',pr:'R2(config-router)#',adv:false,msg:''},
+     {mode:'config-router',pat:redistributeIntoEigrpPat('ospf','2','10000','100','255','1','1500'),   next:'config-router',pr:'R2(config-router)#',adv:false,
+      msg:'✓ Redistribute OSPF เข้า EIGRP แล้ว (พร้อม Seed Metric เพราะ EIGRP แปลง Metric จาก Protocol อื่นเองไม่ได้)'},
+     {mode:'config-router',pat:EXIT_PAT,               next:'config',       pr:'R2(config)#',       adv:true,
+      msg:'✓ Redistribute ครบทั้งสองทางแล้วครับ — R1 และ R3 จะเริ่มมองเห็นเครือข่ายของอีกฝั่งได้แล้ว'}
+   ]},
+  {id:101,router:'R2',name:'R2 — end & write memory',short:'save R2',mode:'config',prompt:'R2(config)#',
+   hint:'end\nwrite memory',
+   cmdHint:{cmd:'R2(config)# end  →  write memory',desc:'บันทึก config R2 (รวม Redistribution) ให้ถาวร'},
+   hints:[
+     {cmd:'R2(config)# end',desc:'ออกจาก config mode (end หรือ exit ก็ได้)'},
+     {cmd:'R2# write memory',desc:'บันทึก config R2 ที่ตั้งค่าไว้ให้ถาวร'}
+   ],
+   answer:'end\nwrite memory',
+   commands:[
+     {mode:'config',   pat:END_OR_EXIT_PAT,                       next:'exec-priv',pr:'R2#',adv:false,msg:'R2#'},
+     {mode:'exec-priv',pat:writeMemPat(),next:'exec-priv',pr:'R2#',adv:true,
+      msg:'Building configuration...\n[OK]\n✓ R2 config บันทึกแล้วครับ — สลับไปทำ R1 ต่อเพื่อตรวจผลลัพธ์ครับ'}
+   ]},
+  {id:102,router:'R1',name:'R1 — ตรวจสอบหลัง Redistribute (show ip route)',short:'route หลัง redist',mode:'exec-priv',prompt:'R1#',
+   hint:'show ip route',
+   cmdHint:{cmd:'R1# show ip route',desc:'เช็คอีกครั้ง — คราวนี้ควรเห็น network 172.25.3.0/24 โผล่มาแล้ว ผ่านเส้นทางแบบ OSPF External (O E2)'},
+   answer:'show ip route',
+   commands:[
+     {mode:'exec-priv',pat:/^sh(ow)?\s+ip\s+route$/i,next:'exec-priv',pr:'R1#',adv:true,
+      msg:'Codes: L - local, C - connected, O - OSPF, O E2 - OSPF external type 2\n\nC    172.25.1.0/24 is directly connected, GigabitEthernet0/0\nC    172.25.2.0/30 is directly connected, GigabitEthernet0/1\nO E2 172.25.3.0/24 [110/20] via 172.25.2.2, 00:00:10, GigabitEthernet0/1\n\n✓ เห็น network 172.25.3.0/24 โผล่มาเป็น O E2 (OSPF External) แล้วครับ! นี่คือผลของการ Redistribute — R2 แปลงเส้นทางจาก EIGRP ให้ R1 เข้าใจได้ผ่าน OSPF'}
+   ]},
+  {id:103,router:'PC-A',type:'pcping',name:'PC-A — ทดสอบ ping ไปยัง PC-C ผ่าน Command Prompt',short:'ping PC-C (PC)',mode:'pcping',prompt:'(คลิก PC-A)',
+   target:{ip:'172.25.3.10',label:'PC-C'},
+   cmdHint:{cmd:'(คลิกที่ไอคอน PC-A บนแผนภาพด้านบน แล้วพิมพ์ ping 172.25.3.10 ในหน้า Command Prompt)',desc:'ทดสอบว่า PC-A คุยกับ PC-C ได้จริงจากมุมมองผู้ใช้งานทั่วไป (ไม่ผ่าน Router) — ยืนยันว่า Redistribution ทำให้ข้ามไปมาระหว่าง 2 Protocol ได้จริง'}}
+];
+
+var PRETEST=[
+  {id:'q1',type:'mcq',q:'Route Redistribution คืออะไร?',
+   opts:['การเพิ่ม Bandwidth ให้ Interface','กระบวนการแปลงและส่งต่อ Route ที่เรียนรู้จาก Routing Protocol หนึ่ง ไปประกาศใน Routing Protocol อีกตัวหนึ่ง','การสำรอง Router ID ไว้ล่วงหน้า','การเข้ารหัส Routing Update'],
+   ans:1,exp:'Redistribution คือการที่ Router ตัวหนึ่ง (ซึ่งรัน 2 Protocol พร้อมกัน เรียกว่า ASBR — Autonomous System Boundary Router) นำ Route ที่เรียนรู้มาจาก Protocol A มาประกาศต่อใน Protocol B เพื่อให้ Network ที่ใช้คนละ Protocol กันมองเห็นเส้นทางถึงกันได้ — ในแล็บนี้ R2 ทำหน้าที่นี้ระหว่าง OSPF (ฝั่ง R1) กับ EIGRP (ฝั่ง R3)'},
+  {id:'q2',type:'mcq',q:'เพราะเหตุใดคำสั่ง redistribute eigrp 100 subnets ฝั่ง OSPF จึงต้องมีคำว่า "subnets" ต่อท้ายเสมอ?',
+   opts:['เพื่อความสวยงามของคำสั่งเท่านั้น ไม่มีผลจริง','ถ้าไม่ใส่ subnets, OSPF จะดึงมาแค่ major network แบบ classful เท่านั้น — subnet ที่ไม่ตรง classful boundary (เช่น 172.25.3.0/24 ที่เป็นส่วนหนึ่งของ Class B เดิม) จะถูกข้ามไปเงียบๆ','เพื่อเปลี่ยน Router ID ของ Router','เพื่อบังคับให้ใช้ Area 0 เท่านั้น'],
+   ans:1,exp:'OSPF ค่า Default ของคำสั่ง redistribute จะดึงมาเฉพาะ Route ที่เป็น Classful Network เท่านั้น หากไม่ใส่ subnets ต่อท้าย Route ที่ถูก Subnet มาแล้ว (เกือบทุก Route ในโลกจริง) จะไม่ถูกดึงเข้ามาเลย โดยไม่มี Error แจ้งเตือนใดๆ — เป็นสาเหตุอันดับ 1 ที่ทำให้ Redistribution "ดูเหมือนไม่ทำงาน" ทั้งที่ config ถูกต้องแล้ว'},
+  {id:'q3',type:'mcq',q:'ทำไมคำสั่ง redistribute ospf 2 metric 10000 100 255 1 1500 ฝั่ง EIGRP ต้องระบุตัวเลข Metric เอง 5 ค่า ทั้งที่ redistribute ฝั่ง OSPF ไม่ต้องระบุ?',
+   opts:['เพราะ EIGRP รองรับ Router น้อยกว่า OSPF','เพราะ EIGRP ใช้ Composite Metric (Bandwidth, Delay, Reliability, Load, MTU) ซึ่งคำนวณจาก Protocol อื่นโดยอัตโนมัติไม่ได้ จึงต้องกำหนด Seed Metric เริ่มต้นให้เอง','เพราะเป็นข้อบังคับของ Cisco IOS เวอร์ชันใหม่เท่านั้น','เพราะ EIGRP ไม่รองรับ Redistribution จริงๆ ต้องใส่ค่าหลอกไว้'],
+   ans:1,exp:'EIGRP ใช้ Metric แบบ Composite ที่รวม Bandwidth + Delay + Reliability + Load + MTU เข้าด้วยกัน ซึ่งเป็นค่าเฉพาะของ EIGRP เอง — เมื่อดึง Route จาก Protocol อื่น (เช่น OSPF ที่ใช้ Cost) เข้ามา EIGRP ไม่มีทางแปลงค่า Cost เป็น Composite Metric ได้เอง จึงบังคับให้ผู้ดูแลระบบกำหนด Seed Metric เริ่มต้นตรงนี้เสมอ ไม่งั้น Redistribute จะไม่สำเร็จ'},
+  {id:'q4',type:'mcq',q:'Route ที่ถูก Redistribute เข้ามาใน OSPF (จาก Protocol อื่น) จะปรากฏในตาราง Routing Table ด้วยรหัสใด และมี Administrative Distance เท่าไหร่ (ค่า Default)?',
+   opts:['O — Administrative Distance 110 เท่า OSPF ปกติ','O E2 — Administrative Distance 110 เช่นกัน (ใช้ External Metric 20 เป็นค่า Default)','E — Administrative Distance 90','O IA — Administrative Distance 170'],
+   ans:1,exp:'Route ที่ถูก Redistribute เข้า OSPF จะแสดงเป็น O E2 (OSPF External Type 2) — Administrative Distance ยังคงเป็น 110 เหมือน OSPF ปกติ แต่ Metric ภายในจะแสดงเป็นค่า External Metric แบบคงที่ (Default 20) ไม่ได้บวกเพิ่มตาม Cost ของแต่ละ Hop เหมือน Route OSPF ปกติ (Type 1 ถึงจะบวกเพิ่ม)'},
+  {id:'q5',type:'dragdrop',q:'จับคู่คำสั่งกับหน้าที่ของมัน',
+   pairs:[
+     {left:'router ospf 2 → redistribute eigrp 100 subnets',right:'ดึง Route จาก EIGRP AS 100 เข้ามาประกาศใน OSPF (ต้องมี subnets กันตกหล่น Route ที่ไม่ใช่ Classful)'},
+     {left:'router eigrp 100 → redistribute ospf 2 metric 10000 100 255 1 1500',right:'ดึง Route จาก OSPF Process 2 เข้ามาใน EIGRP พร้อมกำหนด Seed Metric 5 ค่าเอง'},
+     {left:'show ip route (ฝั่ง OSPF) แสดง O E2',right:'สัญญาณว่า Route นี้มาจากการ Redistribute ไม่ใช่ OSPF ล้วนๆ'},
+     {left:'ASBR (Autonomous System Boundary Router)',right:'Router ที่เชื่อมต่อและแลกเปลี่ยน Route ระหว่าง 2 Routing Domain ที่ต่าง Protocol กัน (ในแล็บนี้คือ R2)'}
+   ]}
+];
+
+var APP={step:1,stepsDone:[],wrong:0,mode:'exec',prompt:'Router>',chatHistory:[],cmdIdx:0,
+  wrongSinceSave:0,lastSaveTime:Date.now()};
+var isBusy=false,termBusy=false,ddSel=null;
+var ddMap={};
+
+window.onload=function(){
+  renderSidebar();renderPretest();renderTopology();updateSteps();
+  document.getElementById('termInput').disabled=false;
+  tPrint('# Ch.10 Redistribution — NETLab','t-info');
+  tPrint('# อ้างอิง: Cisco Networking Academy W10','t-hint');
+  tPrint('# Topology: PC-A—R1—R2—R3—PC-C (OSPF ฝั่ง R1-R2, EIGRP ฝั่ง R2-R3, R2 คือ ASBR)','t-dim');
+  tPrint('# R1: g0/0=172.25.1.1/24  g0/1=172.25.2.1/30','t-dim');
+  tPrint('# R2: g0/0=172.25.2.2/30  g0/1=172.25.2.5/30','t-dim');
+  tPrint('# R3: g0/0=172.25.2.6/30  g0/1=172.25.3.1/24','t-dim');
+  tPrint('# OSPF Process 1/2 (Area 0) ↔ R2 (ASBR) ↔ EIGRP AS 100 — ต้อง Redistribute 2 ทางให้ครบ','t-dim');
+  tPrint('');
+  tPrint('# เริ่มที่ R1 — พิมพ์: enable','t-hint');
+  updateCmdHint();
+  checkHealth();setInterval(checkHealth,30000);
+  addMsg('ai','สวัสดีครับ! Ch.10 Redistribution\n\nTopology: PC-A—R1—R2—R3—PC-C โดย R1-R2 คุยกันด้วย OSPF และ R2-R3 คุยกันด้วย EIGRP — R2 ทำหน้าที่เป็น ASBR (Autonomous System Boundary Router)\nขั้นตอนแรก: ตั้งชื่อ hostname และ IP ให้ครบทุกอุปกรณ์ก่อน (รวม PC-A, PC-C ด้วย) แล้วเปิด OSPF บน R1/R2 และ EIGRP บน R2/R3 ให้ทำงานได้ก่อน จากนั้นจะเห็นว่า R1 ยังมองไม่เห็นเครือข่ายฝั่ง PC-C เลย (เพราะคนละ Protocol) จนกว่าจะสั่งให้ R2 ทำ Redistribution ทั้ง 2 ทาง รวม 29 steps (มีจุด Checkpoint ก่อน-หลัง Redistribute ให้เห็นความแตกต่างชัดเจน)\n\nทำ Pre-test ก่อนหรือข้ามไป Lab เลยก็ได้ครับ');
+  loadSavedProgress();
+};
+
+// เก็บเวลาฝึกที่เหลือ (ยังไม่ครบ Step) ตอนออกจากหน้า กันเวลาหายถ้าไม่ได้ทำ Step สำเร็จก่อนปิด
+window.addEventListener('pagehide',function(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var elapsedSec=Math.round((Date.now()-APP.lastSaveTime)/1000);
+  if(elapsedSec<1&&APP.wrongSinceSave===0)return;
+  var payload=JSON.stringify({
+    studentId:studentId, labId:10, courseId:'netlab1', token:getToken(),
+    stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
+    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:false
+  });
+  if(navigator.sendBeacon){
+    navigator.sendBeacon(API_BASE+'/progress',new Blob([payload],{type:'application/json'}));
+  }
+});
+
+
+/* ── ตาราง IP Address ─────────────────────────────────────────────────────
+   สร้างจาก STEPS ตอนรันจริง ไม่ได้พิมพ์ค่าซ้ำไว้ต่างหาก ตารางจึงตรงกับเนื้อหา
+   ของ Lab เสมอแม้จะมีการแก้ค่าในอนาคต */
+function buildIpTable(){
+  var rows=[], curIf=null;
+  STEPS.forEach(function(s){
+    if(s.type==='pcconfig'&&s.expected){
+      rows.push({dev:s.router, itf:'NIC', ip:s.expected.ip, mask:s.expected.mask, gw:s.expected.gateway||'—'});
+      return;
+    }
+    if(!s.answer)return;
+    s.answer.split('\n').forEach(function(line){
+      var l=line.trim();
+      var mi=l.match(/^int(?:erface)?\s+(\S+)$/i);
+      if(mi){curIf=mi[1];return;}
+      var ma=l.match(/^ip\s+add(?:ress)?\s+(\S+)\s+(\S+)$/i);
+      if(ma&&s.router){
+        rows.push({dev:s.router, itf:curIf||'—', ip:ma[1], mask:ma[2], gw:'—'});
+      }
+    });
+  });
+  return rows;
+}
+
+function linkRows(){
+  return (typeof LINKS!=='undefined'?LINKS:[]).map(function(lk){
+    return {from:lk.from, to:lk.to, subnet:lk.subnet,
+            if1:lk.if1||'—', if2:lk.if2||'—'};
+  });
+}
+
+function renderIpTable(){
+  var host=document.getElementById('viewIptab');
+  if(!host)return;
+  var rows=buildIpTable();
+  var links=linkRows();
+
+  var h='<div class="iptab-head">'
+    +'<div class="iptab-title">ตาราง IP Address ของ Lab นี้</div>'
+    +'<div class="iptab-sub">ค่าทั้งหมดที่ต้องใช้ตลอด Lab รวมไว้ที่เดียว — เปิดดูควบคู่กับแผนภาพได้ตลอดเวลา '
+    +'ไม่ต้องจำหรือเลื่อนหาย้อนหลัง</div></div>';
+
+  h+='<div class="iptab-wrap"><table class="iptab">'
+    +'<caption>ค่าที่ต้องตั้งบนอุปกรณ์แต่ละตัว</caption>'
+    +'<thead><tr><th>อุปกรณ์</th><th>Interface</th><th>IP Address</th><th>Subnet Mask</th><th>Default Gateway</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    h+='<tr><td class="ipt-dev">'+r.dev+'</td><td class="ipt-mono">'+r.itf+'</td>'
+      +'<td class="ipt-mono">'+r.ip+'</td><td class="ipt-mono">'+r.mask+'</td>'
+      +'<td class="ipt-mono">'+r.gw+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+
+  if(links.length){
+    h+='<div class="iptab-wrap"><table class="iptab">'
+      +'<caption>เครือข่ายแต่ละวงและ Interface ที่ต่ออยู่</caption>'
+      +'<thead><tr><th>เชื่อมระหว่าง</th><th>Network</th><th>Interface ฝั่งซ้าย</th><th>Interface ฝั่งขวา</th></tr></thead><tbody>';
+    links.forEach(function(l){
+      h+='<tr><td class="ipt-dev">'+l.from+' — '+l.to+'</td>'
+        +'<td class="ipt-mono">'+l.subnet+'</td>'
+        +'<td class="ipt-mono">'+l.if1+'</td><td class="ipt-mono">'+l.if2+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+
+  h+='<div class="ipt-note"><b>อ่านตารางนี้ยังไง:</b> คอลัมน์ Network คือเลขวงเครือข่าย '
+   +'ซึ่งเป็นค่าที่ต้องใช้ตอนประกาศ <code>network</code> ให้ Routing Protocol '
+   +'ส่วนเลขหลังเครื่องหมาย / บอกขนาดของวง เอาไว้คำนวณ Subnet Mask และ Wildcard Mask เอง</div>';
+
+  host.innerHTML=h;
+}
+
+function switchTab(t){
+  if(t==='iptab')renderIpTable();
+  ['pretest','lab','iptab'].forEach(function(id){
+    var cap=id.charAt(0).toUpperCase()+id.slice(1);
+    document.getElementById('tab'+cap).classList.toggle('active',id===t);
+    document.getElementById('view'+cap).classList.toggle('active',id===t);
+  });
+  if(t==='lab')setTimeout(function(){document.getElementById('termInput').focus();},100);
+}
+
+function renderTopology(){
+  var svg=document.getElementById('topoSvg');
+  var ny=115,rr=36,hr=21;
+  var cGreen=cv('--green'),cBorder=cv('--border'),cCyan=cv('--cyan'),cText2=cv('--text2'),
+      cText3=cv('--text3'),cPanel=cv('--panel2');
+  var out='<defs>'
+    +'<marker id="ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
+    +'<path d="M2 1L8 5L2 9" fill="none" stroke="'+cBorder+'" stroke-width="1.5"/></marker>'
+    +'<marker id="mg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">'
+    +'<path d="M2 1L8 5L2 9" fill="none" stroke="'+cGreen+'" stroke-width="1.5"/></marker>'
+    +'</defs>';
+
+  LINKS.forEach(function(lk){
+    var fn=null,tn=null;
+    NODES.forEach(function(n){if(n.id===lk.from)fn=n;if(n.id===lk.to)tn=n;});
+    var act=lk.activateOnSteps.every(function(id){return APP.stepsDone.indexOf(id)>=0;});
+    var x1=fn.x+(fn.role==='router'?rr:hr)+2;
+    var x2=tn.x-(tn.role==='router'?rr:hr)-2;
+    var mid=(x1+x2)/2;
+    var col=act?cGreen:cBorder;
+    var mk=act?'mg':'ma';
+    out+='<line x1="'+x1+'" y1="'+ny+'" x2="'+x2+'" y2="'+ny+'" stroke="'+col+'" stroke-width="'+(act?2:1.5)+'" marker-end="url(#'+mk+')"/>';
+    out+='<text x="'+mid+'" y="'+(ny-20)+'" font-size="13.5" fill="'+(act?cGreen:cText3)+'" text-anchor="middle" font-family="Cascadia Code,monospace">'+lk.subnet+'</text>';
+    if(lk.if1)out+='<text x="'+(x1+4)+'" y="'+(ny+25)+'" font-size="13.5" fill="'+cText3+'" text-anchor="start" font-family="Cascadia Code,monospace">'+lk.if1+'</text>';
+    if(lk.if2)out+='<text x="'+(x2-4)+'" y="'+(ny+25)+'" font-size="13.5" fill="'+cText3+'" text-anchor="end" font-family="Cascadia Code,monospace">'+lk.if2+'</text>';
+    if(act&&APP.stepsDone.length>=STEPS.length){
+      var dur=(0.9+LINKS.indexOf(lk)*0.2).toFixed(1);
+      out+='<circle r="5.5" fill="'+cCyan+'" opacity=".85"><animateMotion dur="'+dur+'s" repeatCount="indefinite" path="M'+x1+','+ny+' L'+x2+','+ny+'"/></circle>';
+    }
+  });
+
+  var ips={'PC-A':'172.25.1.10','R1':'172.25.1.1','R2':'172.25.2.5','R3':'172.25.3.1','PC-C':'172.25.3.10'};
+  var curR=STEPS[APP.step-1]?STEPS[APP.step-1].router:'';
+  NODES.forEach(function(n){
+    var isR=n.role==='router';
+    var r=isR?rr:hr;
+    var isAct=n.id===curR;
+    var pcCfgStep=!isR?findPcStep(n.id):null;
+    var pcPingStep=!isR?findPcPingStep(n.id):null;
+    var isConfigured=(pcCfgStep&&APP.stepsDone.indexOf(pcCfgStep.id)>=0)||(pcPingStep&&APP.stepsDone.indexOf(pcPingStep.id)>=0);
+    var fill=isAct?'rgba(61,139,255,.15)':(isConfigured?'rgba(70,184,124,.12)':cPanel);
+    var stroke=isAct?cCyan:(isConfigured?cGreen:(isR?cBorder:cText3));
+    var clickable=(pcCfgStep||pcPingStep)?' style="cursor:pointer" onclick="openPcModal(\''+n.id+'\')"':'';
+    if(isR){
+      out+='<circle cx="'+n.x+'" cy="'+ny+'" r="'+r+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>';
+    }else{
+      out+='<rect x="'+(n.x-r)+'" y="'+(ny-r)+'" width="'+(r*2)+'" height="'+(r*2)+'" rx="4" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"'+clickable+'/>';
+    }
+    out+='<text x="'+n.x+'" y="'+(ny-r-9)+'" font-size="15.5" font-weight="700" fill="'+(isR?cCyan:(isConfigured?cGreen:cText2))+'" text-anchor="middle" font-family="Segoe UI,sans-serif"'+clickable+'>'+n.id+(isConfigured?' ✓':'')+'</text>';
+    out+='<text x="'+n.x+'" y="'+(ny+r+19)+'" font-size="13.5" fill="'+cText3+'" text-anchor="middle" font-family="Cascadia Code,monospace">'+ips[n.id]+'</text>';
+  });
+
+  svg.innerHTML=out;
+  document.getElementById('stepChip').textContent='Step '+APP.step+'/'+STEPS.length;
+}
+
+function tPrint(txt,cls){
+  var term=document.getElementById('terminal');
+  (txt||'').split('\n').forEach(function(line){
+    var d=document.createElement('div');
+    d.className='t-line'+(cls?' '+cls:'');
+    d.textContent=line;
+    term.appendChild(d);
+  });
+  term.scrollTop=99999;
+}
+
+// รายการคำที่ tab เติมได้ แยกตาม mode ปัจจุบัน (เหมือน Cisco IOS จริงที่ completion จะกรองตามคำสั่งที่ใช้ได้ในโหมดนั้นๆ)
+var MODE_KEYWORDS=modeKeywords(['network','area','exit','redistribute','no','auto-summary','eigrp','ospf','subnets','metric']);
+
+var CMD_HISTORY=[];
+var histIdx=-1;
+var histDraft='';
+
+function handleTermKey(e){
+  if(e.key==='Tab'){
+    e.preventDefault();
+    tabComplete();
+    return;
+  }
+  if(e.key==='ArrowUp'){
+    e.preventDefault();
+    historyNav(-1);
+    return;
+  }
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    historyNav(1);
+    return;
+  }
+  if(e.key!=='Enter')return;
+  var inp=document.getElementById('termInput');
+  var cmd=inp.value.trim();inp.value='';
+  histIdx=-1;histDraft='';
+  if(!cmd)return;
+  CMD_HISTORY.push(cmd);
+  runCmd(cmd);
+}
+
+function historyNav(dir){
+  if(!CMD_HISTORY.length)return;
+  var inp=document.getElementById('termInput');
+  if(dir<0){
+    if(histIdx===-1){histDraft=inp.value;histIdx=CMD_HISTORY.length-1;}
+    else if(histIdx>0){histIdx--;}
+  }else{
+    if(histIdx===-1)return;
+    if(histIdx<CMD_HISTORY.length-1){histIdx++;}
+    else{histIdx=-1;inp.value=histDraft;return;}
+  }
+  inp.value=CMD_HISTORY[histIdx];
+  inp.setSelectionRange(inp.value.length,inp.value.length);
+}
+
+/* Tab completion.
+   เหมือน Cisco IOS คือกด Tab แล้วเติมคำให้ แต่เพิ่มการวนคำสั่งเมื่อคำที่พิมพ์ยังตรงได้หลายคำ
+   กด Tab ซ้ำเพื่อไล่ดูตัวเลือกถัดไปเรื่อยๆ และแสดงรายการตัวเลือกให้ดูเหมือนที่ IOS ทำเวลากด ? */
+var tabCycle={prefix:null, mode:null, matches:[], idx:-1, listed:false};
+
+function tabComplete(){
+  var inp=document.getElementById('termInput');
+  var val=inp.value;
+  if(!val||/\s$/.test(val)){tabCycle.prefix=null;return;}
+  var parts=val.split(/(\s+)/);
+  var lastWord=parts[parts.length-1];
+  if(!lastWord){tabCycle.prefix=null;return;}
+  var lw=lastWord.toLowerCase();
+  var keywords=MODE_KEYWORDS[APP.mode]||[];
+
+  // กด Tab ซ้ำในคำเดิม = ไล่ไปตัวเลือกถัดไป
+  var cycling = tabCycle.prefix!==null
+    && tabCycle.mode===APP.mode
+    && tabCycle.matches.length>1
+    && tabCycle.matches[tabCycle.idx]===lw;
+
+  if(cycling){
+    tabCycle.idx=(tabCycle.idx+1)%tabCycle.matches.length;
+  }else{
+    var matches=keywords.filter(function(k){return k.indexOf(lw)===0;});
+    // ถ้าพิมพ์ครบคำพอดีและไม่มีคำอื่นต่อยอดได้ ก็ไม่ต้องทำอะไร
+    if(!matches.length)return;
+    if(matches.length===1&&matches[0]===lw){inp.value=parts.join('')+' ';tabCycle.prefix=null;return;}
+    tabCycle={prefix:lw, mode:APP.mode, matches:matches, idx:0, listed:false};
+    // มีหลายตัวเลือก: แสดงรายการให้ดูครั้งแรกเหมือน IOS ตอนกด ?
+    if(matches.length>1){
+      tPrint(APP.prompt+' '+val);
+      tPrint(matches.join('   '), 't-hint');
+      tPrint('# กด Tab ซ้ำเพื่อไล่ดูตัวเลือกถัดไป', 't-hint');
+      tabCycle.listed=true;
+    }
+  }
+
+  var pick=tabCycle.matches[tabCycle.idx];
+  parts[parts.length-1]=pick;
+  // เติมช่องว่างท้ายเฉพาะตอนที่เหลือตัวเลือกเดียว จะได้พิมพ์ส่วนถัดไปต่อได้เลย
+  inp.value=parts.join('')+(tabCycle.matches.length===1?' ':'');
+  if(tabCycle.matches.length===1)tabCycle.prefix=null;
+  inp.focus();
+}
+
+function runCmd(cmd){
+  tPrint(APP.prompt+' '+cmd);
+  var step=STEPS[APP.step-1];
+  if(!step)return;
+  if(step.type==='pcconfig'){
+    tPrint('# ขั้นตอนนี้ต้องคลิกที่ไอคอน '+step.router+' บนแผนภาพด้านบนเพื่อกำหนดค่า IP ครับ ไม่ต้องพิมพ์คำสั่ง','t-hint');
+    return;
+  }
+  if(step.type==='pcping'){
+    tPrint('# ขั้นตอนนี้ต้องคลิกที่ไอคอน '+step.router+' บนแผนภาพด้านบน แล้วพิมพ์ ping ในหน้า Command Prompt ครับ ไม่ต้องพิมพ์ในเทอร์มินัลนี้','t-hint');
+    return;
+  }
+  var hit=false;
+  // Only try command at current cmdIdx (sequential enforcement)
+  var p=step.commands[APP.cmdIdx];
+  if(p && p.mode===APP.mode && p.pat.test(cmd)){
+    hit=true;
+    if(p.msg)tPrint(p.msg,'t-ok');
+    APP.mode=p.next;APP.prompt=p.pr;
+    document.getElementById('tPrompt').textContent=p.pr;
+    APP.wrong=0;hideHint();
+    if(p.adv){
+      APP.cmdIdx=0;
+      notifyTerminal(cmd,true,p.msg);setTimeout(advanceStep,600);
+    } else {
+      APP.cmdIdx++;updateCmdHint();
+    }
+  }
+  if(!hit){
+    if(isGibberish(cmd,APP.mode)){
+      // พิมพ์มั่ว/สุ่มไม่เกี่ยวกับคำสั่งเลย (อาจตั้งใจ spam เพื่อ grind ให้ครบ 4 ครั้งแล้วได้เฉลย)
+      // ไม่นับเป็นครั้งที่ผิด และไม่เรียก AI — กันทั้ง token และกันการเลี่ยงกฎ "ต้องลองจริงก่อนถึงเฉลย"
+      tPrint("% Invalid input detected at '^' marker.",'t-err');
+      tPrint('# อันนี้ไม่ใช่คำสั่ง Cisco IOS ที่เกี่ยวข้องเลยครับ ลองพิมพ์คำสั่งจริงดูนะ (ไม่นับเป็นครั้งที่ตอบผิด)','t-hint');
+      return;
+    }
+    APP.wrong++;APP.wrongSinceSave++;
+    // ข้อความต้องสะท้อน "สิ่งที่ผิด" ไม่ใช่ "ผิดมากี่ครั้ง" — คำสั่งที่รูปแบบถูกต้องแต่ค่าไม่ตรงขั้นตอน
+    // ไม่ใช่ syntax error และของจริง IOS ก็จะรับคำสั่งนั้นไปเลย จึงต้องบอกให้ตรงว่าไม่ตรงกับขั้นตอนนี้
+    var firstWord=(cmd.trim().split(/\s+/)[0]||'').toLowerCase();
+    var known=(MODE_KEYWORDS[APP.mode]||[]).some(function(k){return k.indexOf(firstWord)===0;});
+    if(known){
+      tPrint('% คำสั่งนี้ยังไม่ตรงกับสิ่งที่ขั้นตอนนี้ต้องการ — ตรวจค่าที่ใส่อีกครั้งครับ','t-err');
+    }else{
+      tPrint("% Invalid input detected at '^' marker.",'t-err');
+    }
+    showHint();
+    var curHint=(step.hints&&step.hints[APP.cmdIdx])||step.cmdHint;
+    if(isLikelyTypo(cmd,curHint&&curHint.cmd)){
+      // พิมพ์ผิดนิดเดียว (ตัวอักษรเกิน/ขาด หรือช่องว่างผิดที่) — ไม่เรียก AI เพื่อประหยัด token
+      tPrint('# ดูเหมือนพิมพ์ผิดนิดเดียว ลองเช็คตัวสะกด/ช่องว่างอีกครั้งครับ','t-hint');
+    } else if(isIpTypingSlip(cmd,curHint&&curHint.cmd)){
+      // พิมพ์ IP/Subnet Mask เพลินมือ เผลอมีจุด(.) เกินหรือพิมพ์ octet ซ้ำ — ไม่เรียก AI เพื่อประหยัด token
+      tPrint('# ลองเช็ค IP Address/Subnet Mask ที่พิมพ์อีกครั้งครับ อาจมีจุด(.) เกินหรือตัวเลขซ้ำ','t-hint');
+    } else {
+      notifyTerminal(cmd,false,null);
+    }
+  }
+}
+
+// ตรวจจับ input แบบพิมพ์มั่ว/สุ่ม ที่ไม่เกี่ยวข้องกับคำสั่ง Cisco IOS ของโหมดปัจจุบันเลย
+// เทียบคำแรกกับ keyword ที่ valid ในโหมดนี้ (MODE_KEYWORDS) — ถ้าไม่ตรงและไม่ใกล้เคียงเลยสักคำ ถือว่ามั่ว
+function isGibberish(cmd,mode){
+  var first=(cmd||'').trim().toLowerCase().split(/\s+/)[0];
+  if(!first)return false;
+  var kws=MODE_KEYWORDS[mode]||[];
+  for(var i=0;i<kws.length;i++){
+    var k=kws[i];
+    if(first===k||k.indexOf(first)===0||first.indexOf(k)===0)return false;
+    if(levenshtein(first,k)<=1)return false;
+  }
+  return true;
+}
+
+// ตรวจจับ human error แบบพิมพ์ผิดนิดเดียว (ตัวเกิน/ขาด/สลับ 1-2 ตัวอักษร หรือช่องว่างผิดที่)
+// เทียบกับคำสั่งที่ถูกต้องของขั้นตอนนี้ ถ้าใกล้เคียงมากถือว่าเป็น typo ไม่ใช่ความเข้าใจผิด จึงไม่ต้องเรียก AI
+function levenshtein(a,b){
+  var dp=[],i,j;
+  for(i=0;i<=a.length;i++)dp[i]=[i];
+  for(j=0;j<=b.length;j++)dp[0][j]=j;
+  for(i=1;i<=a.length;i++){
+    for(j=1;j<=b.length;j++){
+      dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
+    }
+  }
+  return dp[a.length][b.length];
+}
+function isLikelyTypo(cmd,expectedWithPrompt){
+  if(!expectedWithPrompt)return false;
+  var expected=expectedWithPrompt.replace(/^\S+[>#]\s*/,'').trim().toLowerCase();
+  var typed=(cmd||'').trim().toLowerCase();
+  if(!typed||!expected||expected.length<4)return false;
+  // ถ้าตัวเลข (เลข interface, IP, subnet mask ฯลฯ) ไม่ตรงกันเป๊ะ ถือว่าเป็นค่าที่พิมพ์ผิดจริง
+  // (ความเข้าใจผิด) ไม่ใช่ fat-finger typo แม้ระยะห่างของตัวอักษรจะใกล้กันก็ตาม — ต้องให้ AI ช่วยอธิบาย
+  var typedNums=(typed.match(/\d+/g)||[]).join(',');
+  var expectedNums=(expected.match(/\d+/g)||[]).join(',');
+  if(typedNums!==expectedNums)return false;
+  var dist=levenshtein(typed,expected);
+  return dist>0&&dist<=2;
+}
+
+// ตรวจจับ "พิมพ์ IP/Subnet Mask เพลินมือ" เช่น 192.168.1.1.1 (พิมพ์ octet ซ้ำต่อท้าย)
+// หรือ 192.1.1..1 (จุดซ้อนกัน) — เทียบทีละคำกับคำสั่งที่ถูกต้อง คำสั่งฐาน (ip/address/route ฯลฯ)
+// ต้องตรงเป๊ะทุกคำ มีแค่ตำแหน่ง dotted-decimal เท่านั้นที่ต่างกัน และต้อง "แก้" ให้ตรงกับคำตอบ
+// จริงได้เป๊ะเท่านั้นถึงจะถือว่าเป็นแค่พิมพ์เพลิน ไม่ใช่ค่าที่ตั้งใจพิมพ์ต่างไปจริงๆ
+// เทียบ token dotted-decimal ที่พิมพ์ กับ octet ที่ถูกต้อง — ตัด segment ว่างจากจุดซ้อน (..) ออกก่อน
+// แล้วถ้ายังมี octet เกินมา 1 ตัว (พิมพ์ต่อท้ายเพลินมือ) ลองตัดออกทีละตำแหน่งดูว่าตรงคำตอบไหม
+function fixDottedToken(raw,expectedToken){
+  var expOcts=expectedToken.split('.');
+  var octs=raw.split('.').filter(function(s){return s.length>0;});
+  if(octs.length===expOcts.length)return octs.join('.')===expOcts.join('.');
+  if(octs.length===expOcts.length+1){
+    for(var i=0;i<octs.length;i++){
+      var trimmed=octs.slice(0,i).concat(octs.slice(i+1));
+      if(trimmed.join('.')===expOcts.join('.'))return true;
+    }
+  }
+  return false;
+}
+function isIpTypingSlip(cmd,expectedWithPrompt){
+  if(!expectedWithPrompt)return false;
+  var expected=expectedWithPrompt.replace(/^\S+[>#]\s*/,'').trim().toLowerCase();
+  var typed=(cmd||'').trim().toLowerCase();
+  if(!typed||typed===expected)return false;
+  var ew=expected.split(/\s+/),tw=typed.split(/\s+/);
+  if(ew.length!==tw.length)return false;
+  var sawDiff=false;
+  for(var i=0;i<ew.length;i++){
+    if(ew[i]===tw[i])continue;
+    if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(ew[i]))return false;
+    if(!fixDottedToken(tw[i],ew[i]))return false;
+    sawDiff=true;
+  }
+  return sawDiff;
+}
+
+function advanceStep(){
+  var cur=STEPS[APP.step-1];
+  if(APP.stepsDone.indexOf(cur.id)>=0)return;
+  APP.stepsDone.push(cur.id);
+  if(APP.step<STEPS.length){
+    var prevRouter=cur.router;
+    APP.step++;
+    APP.cmdIdx=0;
+    var next=STEPS[APP.step-1];
+    APP.mode=next.mode;APP.prompt=next.prompt;
+    document.getElementById('tPrompt').textContent=next.prompt;
+    if(next.router!==prevRouter){tPrint('');tPrint('══ สลับไปทำ '+next.router+' ══','t-info');}
+    updateSteps();updateCmdHint();renderTopology();renderSidebar();
+    saveProgress(false);
+  }else{completeLab();}
+}
+
+function completeLab(){
+  var pcBackdrop=document.getElementById('pcModalBackdrop');
+  if(pcBackdrop)pcBackdrop.classList.remove('show');
+  renderTopology();renderSidebar();
+  document.getElementById('labComplete').classList.add('show');
+  document.getElementById('completeChip').classList.add('show');
+  document.getElementById('nextLabChip').classList.add('show');
+  addMsg('ai','ยินดีด้วยครับ! Lab Ch.10 เสร็จสมบูรณ์!\n\nสรุป:\n• R1-R2 คุยกันด้วย OSPF (Area 0), R2-R3 คุยกันด้วย EIGRP (AS 100) — R2 ทำหน้าที่เป็น ASBR\n• ก่อน Redistribute: R1 มองไม่เห็น network ฝั่ง PC-C เลย แม้ R2 จะต่อกับมันโดยตรง เพราะคนละ Protocol กัน\n• สั่ง R2 ให้ redistribute eigrp 100 subnets เข้า OSPF และ redistribute ospf 2 metric ... เข้า EIGRP ทั้ง 2 ทาง\n• หลัง Redistribute: R1 เห็น network ฝั่ง PC-C เป็น O E2 (OSPF External) และ ping ไปถึง PC-C ได้สำเร็จ');
+  saveProgress(true);
+}
+
+function closeLabComplete(){
+  document.getElementById('labComplete').classList.remove('show');
+}
+function openLabComplete(){
+  document.getElementById('labComplete').classList.add('show');
+}
+function goNextLab(){
+  location.href='../lab11-bgp/lab11.html';
+}
+
+// ให้ทำ Lab ที่เคยจบแล้วซ้ำได้ — สถานะ "เคยจบแล้ว" ใน dashboard ไม่หาย เพราะ completed ใน backend ยังเป็น true อยู่เดิม
+// (saveProgress ครั้งถัดไปจะยังส่ง completed:true ทุกครั้งที่จบใหม่ ไม่มีการ "ยกเลิกความสำเร็จ" ย้อนหลัง)
+function resetLab(){
+  document.getElementById('labComplete').classList.remove('show');
+  document.getElementById('completeChip').classList.remove('show');
+  document.getElementById('nextLabChip').classList.remove('show');
+  APP.step=1;APP.stepsDone=[];APP.wrong=0;APP.cmdIdx=0;
+  APP_PC_VALUES={};APP_PC_PINGED={};
+  document.getElementById('pcCmdBackdrop').classList.remove('show');
+  APP.mode=STEPS[0].mode;APP.prompt=STEPS[0].prompt;
+  APP.wrongSinceSave=0;APP.lastSaveTime=Date.now();
+  document.getElementById('tPrompt').textContent=APP.prompt;
+  document.getElementById('terminal').innerHTML='';
+  tPrint('# เริ่ม Lab ใหม่อีกครั้งครับ — พิมพ์: enable','t-info');
+  updateSteps();updateCmdHint();renderTopology();renderSidebar();
+  switchTab('lab');
+}
+
+// ── ตั้งค่า IP ให้ PC ผ่าน popup (คลิกที่ไอคอน PC บนแผนภาพ) ──
+// เก็บค่าที่กรอกไว้ต่อ PC แต่ละตัว ไว้โชว์ตอนเปิดดูซ้ำ/หลังกด reset
+var APP_PC_VALUES={};
+var pcModalTarget=null;
+
+function findPcStep(pcId){
+  for(var i=0;i<STEPS.length;i++){
+    if(STEPS[i].type==='pcconfig'&&STEPS[i].router===pcId)return STEPS[i];
+  }
+  return null;
+}
+
+function openPcConfig(pcId){
+  var step=findPcStep(pcId);
+  if(!step)return;
+  var isCurrent=STEPS[APP.step-1]===step;
+  var isDone=APP.stepsDone.indexOf(step.id)>=0;
+  if(!isCurrent&&!isDone){
+    tPrint('# ยังไม่ถึงขั้นตอนตั้งค่า '+pcId+' ครับ ทำ Step ปัจจุบันให้เสร็จก่อนนะครับ','t-hint');
+    return;
+  }
+  pcModalTarget=step;
+  document.getElementById('pcModalTitle').textContent=pcId+' — IP Configuration';
+  document.getElementById('pcModalSub').textContent=isDone?'ตั้งค่าไว้แล้วครับ (แก้ไขใหม่ได้)':'กรอกค่าตาม Topology ด้านบนให้ตรงครับ';
+  var saved=APP_PC_VALUES[pcId]||{};
+  document.getElementById('pcIpInput').value=saved.ip||'';
+  document.getElementById('pcMaskInput').value=saved.mask||'';
+  document.getElementById('pcGwInput').value=saved.gateway||'';
+  document.getElementById('pcModalErr').textContent='';
+  ['pcIpInput','pcMaskInput','pcGwInput'].forEach(function(id){document.getElementById(id).classList.remove('err');});
+  document.getElementById('pcModalBackdrop').classList.add('show');
+  setTimeout(function(){document.getElementById('pcIpInput').focus();},50);
+}
+
+function closePcConfig(){
+  document.getElementById('pcModalBackdrop').classList.remove('show');
+  pcModalTarget=null;
+}
+
+function submitPcConfig(){
+  if(!pcModalTarget)return;
+  var ip=document.getElementById('pcIpInput').value.trim();
+  var mask=document.getElementById('pcMaskInput').value.trim();
+  var gw=document.getElementById('pcGwInput').value.trim();
+  var exp=pcModalTarget.expected;
+  var errs=[];
+  ['pcIpInput','pcMaskInput','pcGwInput'].forEach(function(id){document.getElementById(id).classList.remove('err');});
+  if(ip!==exp.ip){errs.push('IP Address');document.getElementById('pcIpInput').classList.add('err');}
+  if(mask!==exp.mask){errs.push('Subnet Mask');document.getElementById('pcMaskInput').classList.add('err');}
+  if(gw!==exp.gateway){errs.push('Default Gateway');document.getElementById('pcGwInput').classList.add('err');}
+  if(errs.length){
+    document.getElementById('pcModalErr').textContent=errs.join(', ')+' ไม่ถูกต้อง ลองเช็คอีกครั้งครับ';
+    return;
+  }
+  APP_PC_VALUES[pcModalTarget.router]={ip:ip,mask:mask,gateway:gw};
+  var wasDone=APP.stepsDone.indexOf(pcModalTarget.id)>=0;
+  var pcId=pcModalTarget.router;
+  closePcConfig();
+  if(!wasDone){
+    tPrint('# ✓ '+pcId+' — ตั้งค่า IP '+ip+' / '+mask+' / Gateway '+gw+' สำเร็จครับ','t-ok');
+    advanceStep();
+  }else{
+    renderTopology();
+  }
+}
+
+// ── ทดสอบ ping ระหว่าง PC ผ่านหน้าจอ Command Prompt จำลอง (คลิกที่ไอคอน PC บนแผนภาพ) ──
+// แยกจาก pcconfig เพราะ PC เดียวกันต้องกดตั้ง IP ก่อน แล้วค่อยกลับมา ping ทีหลัง — openPcModal() เป็นตัวตัดสินว่าจะเปิด modal ไหน
+var APP_PC_PINGED={};
+var pcCmdTarget=null;
+
+function findPcPingStep(pcId){
+  for(var i=0;i<STEPS.length;i++){
+    if(STEPS[i].type==='pcping'&&STEPS[i].router===pcId)return STEPS[i];
+  }
+  return null;
+}
+
+// จุดเดียวที่ topology เรียกตอนคลิก PC — เลือกเปิด modal ตั้งค่า IP หรือ Command Prompt ตามว่า step ไหนค้างอยู่
+function openPcModal(pcId){
+  var cfgStep=findPcStep(pcId), pingStep=findPcPingStep(pcId);
+  var cfgDone=cfgStep&&APP.stepsDone.indexOf(cfgStep.id)>=0;
+  if(pingStep&&(cfgDone||!cfgStep)){ openPcCmd(pcId); }
+  else if(cfgStep){ openPcConfig(pcId); }
+  else if(pingStep){ openPcCmd(pcId); }
+}
+
+function openPcCmd(pcId){
+  var step=findPcPingStep(pcId);
+  if(!step)return;
+  var isCurrent=STEPS[APP.step-1]===step;
+  var isDone=APP.stepsDone.indexOf(step.id)>=0;
+  if(!isCurrent&&!isDone){
+    tPrint('# ยังไม่ถึงขั้นตอนทดสอบ ping จาก '+pcId+' ครับ ทำ Step ปัจจุบันให้เสร็จก่อนนะครับ','t-hint');
+    return;
+  }
+  pcCmdTarget=step;
+  document.getElementById('pcCmdTitle').textContent=pcId+' — Command Prompt';
+  document.getElementById('pcCmdSub').textContent=isDone?'ทดสอบ ping สำเร็จไว้แล้วครับ (ลองใหม่ได้)':'พิมพ์ ping ตามด้วย IP ปลายทางแล้วกด Enter';
+  var screen=document.getElementById('pcCmdScreen');
+  if(APP_PC_PINGED[pcId]){
+    screen.innerHTML=APP_PC_PINGED[pcId];
+  }else{
+    screen.textContent='Microsoft Windows [Version 10.0.19045.3803]\n(c) Microsoft Corporation. All rights reserved.\n';
+  }
+  document.getElementById('pcCmdInput').value='';
+  document.getElementById('pcCmdBackdrop').classList.add('show');
+  setTimeout(function(){
+    document.getElementById('pcCmdInput').focus();
+    screen.scrollTop=screen.scrollHeight;
+  },50);
+}
+
+function closePcCmd(){
+  document.getElementById('pcCmdBackdrop').classList.remove('show');
+  pcCmdTarget=null;
+}
+
+function pcCmdPrint(screen,text,cls){
+  var span=document.createElement('span');
+  if(cls)span.className=cls;
+  span.textContent=text+'\n';
+  screen.appendChild(span);
+  screen.scrollTop=screen.scrollHeight;
+}
+
+function runPcPing(){
+  if(!pcCmdTarget)return;
+  var input=document.getElementById('pcCmdInput');
+  var cmd=input.value.trim();
+  if(!cmd)return;
+  input.value='';
+  var screen=document.getElementById('pcCmdScreen');
+  pcCmdPrint(screen,'C:\\Users\\Student>'+cmd);
+  var target=pcCmdTarget.target;
+  var m=cmd.match(/^ping\s+(\S+)$/i);
+  if(!m){
+    pcCmdPrint(screen,"'"+cmd.split(/\s+/)[0]+"' is not recognized as an internal or external command,\noperable program or batch file.",'pc-cmd-err');
+    return;
+  }
+  var ip=m[1];
+  if(ip!==target.ip){
+    pcCmdPrint(screen,'Ping request could not find host '+ip+'. Please check the name and try again.','pc-cmd-err');
+    return;
+  }
+  pcCmdPrint(screen,'');
+  pcCmdPrint(screen,'Pinging '+ip+' with 32 bytes of data:');
+  var ttl=target.ttl||125;
+  for(var i=0;i<4;i++)pcCmdPrint(screen,'Reply from '+ip+': bytes=32 time<1ms TTL='+ttl,'pc-cmd-ok');
+  pcCmdPrint(screen,'');
+  pcCmdPrint(screen,'Ping statistics for '+ip+':');
+  pcCmdPrint(screen,'    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),');
+  pcCmdPrint(screen,'Approximate round trip times in milli-seconds:');
+  pcCmdPrint(screen,'    Minimum = 0ms, Maximum = 0ms, Average = 0ms','pc-cmd-ok');
+  var wasDone=APP.stepsDone.indexOf(pcCmdTarget.id)>=0;
+  var pcId=pcCmdTarget.router;
+  var label=target.label;
+  APP_PC_PINGED[pcId]=screen.innerHTML;
+  if(!wasDone){
+    setTimeout(function(){
+      closePcCmd();
+      tPrint('# ✓ '+pcId+' ping ไปยัง '+label+' ('+ip+') สำเร็จผ่าน Command Prompt ครับ','t-ok');
+      advanceStep();
+    },900);
+  }
+}
+
+// บันทึกความคืบหน้าลง backend (SQLite) — ยิงทุกครั้งที่ทำ Step สำเร็จ ไม่ใช่ทุก keystroke
+// ส่งเป็น "ส่วนต่าง" (wrong ที่เพิ่มมา, เวลาที่ผ่านไป) ไม่ใช่ยอดสะสมทั้งหมด เพราะฝั่ง backend จะบวกทับให้เอง
+function saveProgress(completed){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return; // ยังไม่ล็อกอิน (เช่นตอน dev เปิดตรงๆ) ก็แค่ข้าม ไม่ต้อง error
+  var now=Date.now();
+  var elapsedSec=Math.round((now-APP.lastSaveTime)/1000);
+  var payload={
+    studentId:studentId, labId:10, courseId:'netlab1', token:getToken(),
+    stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
+    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:!!completed
+  };
+  APP.lastSaveTime=now;APP.wrongSinceSave=0;
+  fetch(API_BASE+'/progress',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)}).catch(function(){});
+}
+
+// กู้คืนความคืบหน้าจาก backend ตอนเปิดหน้าใหม่ — ทำ Step ตามลำดับเสมอ ไม่มีการข้าม
+// ดังนั้น steps_done (จำนวนนับ) พอบอกได้ว่า STEPS 0..N-1 (ตามลำดับ array) เสร็จแล้ว
+// เล่นซ้ำ transcript ของคำสั่งที่ทำสำเร็จไปแล้ว N step แรก ตอนกู้คืนความคืบหน้า
+// (คำสั่งที่ถูกต้องตามคำตอบของแต่ละ step ไม่ใช่ keystroke จริงเป๊ะ แต่ให้ scroll กลับไปดูได้)
+function replayHistory(n){
+  var prevRouter=null;
+  for(var idx=0;idx<n;idx++){
+    var s=STEPS[idx];
+    if(prevRouter!==null&&s.router!==prevRouter){tPrint('');tPrint('══ สลับไปทำ '+s.router+' ══','t-info');}
+    if(s.type==='pcconfig'){
+      var e=s.expected;
+      tPrint('# ✓ '+s.router+' — ตั้งค่า IP '+e.ip+' / '+e.mask+' / Gateway '+e.gateway+' สำเร็จครับ','t-ok');
+      prevRouter=s.router;
+      continue;
+    }
+    if(s.type==='pcping'){
+      tPrint('# ✓ '+s.router+' ping ไปยัง '+s.target.label+' ('+s.target.ip+') สำเร็จผ่าน Command Prompt ครับ','t-ok');
+      prevRouter=s.router;
+      continue;
+    }
+    var lines=s.answer.split('\n');
+    var curPrompt=s.prompt;
+    for(var i=0;i<s.commands.length;i++){
+      tPrint(curPrompt+' '+lines[i]);
+      var c=s.commands[i];
+      if(c.msg)tPrint(c.msg,'t-ok');
+      curPrompt=c.pr;
+    }
+    prevRouter=s.router;
+  }
+  tPrint('');
+}
+
+async function loadSavedProgress(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var row;
+  try{
+    var res=await fetch(API_BASE+'/progress/'+encodeURIComponent(studentId)+'?token='+encodeURIComponent(getToken()));
+    var data=await res.json();
+    row=(data.labs||[]).filter(function(r){return r.lab_id===10&&(r.course_id==null||r.course_id==='netlab1');})[0];
+  }catch(e){return;}
+  if(!row||!row.steps_done)return;
+
+  var n=Math.min(row.steps_done,STEPS.length);
+  APP.stepsDone=STEPS.slice(0,n).map(function(s){return s.id;});
+  if(n>0)replayHistory(n);
+
+  if(n>=STEPS.length){
+    APP.step=STEPS.length;
+    updateSteps();renderTopology();renderSidebar();
+    document.getElementById('labComplete').classList.add('show');
+    document.getElementById('completeChip').classList.add('show');
+  document.getElementById('nextLabChip').classList.add('show');
+    tPrint('# กู้คืนความคืบหน้า: ทำ Lab นี้เสร็จแล้วก่อนหน้านี้ครับ','t-info');
+    return;
+  }
+
+  var next=STEPS[n];
+  APP.step=n+1;APP.mode=next.mode;APP.prompt=next.prompt;APP.cmdIdx=0;
+  document.getElementById('tPrompt').textContent=next.prompt;
+  updateSteps();updateCmdHint();renderTopology();renderSidebar();
+  tPrint('# กู้คืนความคืบหน้า: ทำสำเร็จไปแล้ว '+n+'/'+STEPS.length+' Step ครับ ทำต่อจาก Step '+APP.step+' ('+next.name+')','t-info');
+}
+
+function updateSteps(){
+  var row=document.getElementById('stepsRow');
+  row.innerHTML='';
+  STEPS.forEach(function(s,i){
+    if(i>0){var sep=document.createElement('span');sep.className='sep';sep.textContent='›';row.appendChild(sep);}
+    var pill=document.createElement('div');
+    var done=APP.stepsDone.indexOf(s.id)>=0;
+    var cur=i===APP.step-1;
+    pill.className='step-pill '+(done?'pill-done':cur?'pill-cur':'pill-next');
+    pill.textContent=(done?'✓ ':cur?'● ':'')+s.short;
+    row.appendChild(pill);
+  });
+}
+
+function updateCmdHint(){
+  var s=STEPS[APP.step-1];if(!s)return;
+  var h=(s.hints&&s.hints[APP.cmdIdx])||s.cmdHint;
+  document.getElementById('cmdHintCmd').textContent='สิ่งที่ต้องทำตอนนี้';
+  document.getElementById('cmdHintDesc').textContent=h.desc;
+}
+
+function renderSidebar(){
+  var cont=document.getElementById('sidebarSteps');
+  cont.innerHTML='';
+  var lastR='';
+  STEPS.forEach(function(s,i){
+    if(s.router!==lastR){
+      var lbl=document.createElement('div');lbl.className='sb-label';lbl.textContent=s.router;cont.appendChild(lbl);lastR=s.router;
+    }
+    var done=APP.stepsDone.indexOf(s.id)>=0;
+    var cur=i===APP.step-1;
+    var div=document.createElement('div');
+    div.className='step-item'+(done?' done':'')+(cur?' active':'');
+    div.innerHTML='<div class="step-num '+(done?'sn-done':cur?'sn-active':'sn-next')+'">'+(done?'✓':(i+1))+'</div>'
+      +'<div class="step-info"><div class="step-title">'+s.name+'</div><div class="step-sub">'+s.prompt+'</div></div>';
+    cont.appendChild(div);
+  });
+  var pct=Math.round(APP.stepsDone.length/STEPS.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progText').textContent=pct+'%';
+}
+
+function showHint(){
+  var s=STEPS[APP.step-1];if(!s)return;
+  var h=(s.hints&&s.hints[APP.cmdIdx])||s.cmdHint;
+  var cmdOnly=h.cmd.replace(/^\S+[#>]\s*/,'');
+  var firstWord=cmdOnly.split(/\s+/)[0];
+  document.getElementById('hintBox').classList.add('show');
+  document.getElementById('hintTitle').textContent='Hint (ผิด '+APP.wrong+' ครั้ง)';
+  var txt='Mode: '+APP.prompt+'\n'+h.desc;
+  if(APP.wrong>=4){
+    txt+='\n\nคำสั่งที่ต้องพิมพ์: '+cmdOnly;
+  }else if(APP.wrong>=2){
+    txt+='\n\nเริ่มต้นคำสั่งด้วย: '+firstWord+' ...';
+  }
+  document.getElementById('hintText').textContent=txt;
+  document.getElementById('answerBtn').classList.toggle('show',APP.wrong>=4);
+}
+function hideHint(){document.getElementById('hintBox').classList.remove('show');}
+function showAnswer(){var s=STEPS[APP.step-1];if(s)addMsg('ai','เฉลย Step '+APP.step+':\n'+s.answer);}
+
+function renderPretest(){
+  var cont=document.getElementById('pretestContent');
+  var html='';
+  PRETEST.forEach(function(q,qi){
+    if(q.type==='mcq'){
+      html+='<div class="q-card" id="qcard_'+qi+'" data-ans="'+q.ans+'">'
+        +'<div class="q-num">คำถามที่ '+(qi+1)+'</div>'
+        +'<div class="q-text">'+q.q+'</div>'
+        +'<div class="q-opts">'+q.opts.map(function(o,oi){
+          return '<div class="q-opt" id="qopt_'+qi+'_'+oi+'" onclick="selOpt('+qi+','+oi+')">'
+            +'<div class="q-dot"></div><span>'+o+'</span></div>';
+        }).join('')+'</div>'
+        +'<div class="q-explain" id="qexp_'+qi+'">'+q.exp+'</div></div>';
+    }else{
+      var sh=q.pairs.slice().sort(function(){return Math.random()-.5;});
+      html+='<div class="q-card" id="qcard_'+qi+'">'
+        +'<div class="q-num">คำถามที่ '+(qi+1)+' — Drag &amp; Drop</div>'
+        +'<div class="q-text">'+q.q+'</div>'
+        +'<div class="dd-grid"><div><div class="dd-col-label">คลิกเลือก</div>'
+        +'<div class="dd-items" id="ddL_'+qi+'">'+sh.map(function(p,pi){
+          var lv=p.left.replace(/'/g,"\\'");
+          return '<div class="dd-item" id="ddi_'+qi+'_'+pi+'" onclick="selDD('+qi+','+pi+',\''+lv+'\')">'+p.left+'</div>';
+        }).join('')+'</div></div>'
+        +'<div><div class="dd-col-label">จับคู่กับ</div>'
+        +'<div class="dd-items" id="ddR_'+qi+'">'+q.pairs.map(function(p,pi){
+          return '<div class="dd-target" id="ddt_'+qi+'_'+pi+'" data-answer="'+p.right+'" onclick="dropDD('+qi+','+pi+')">'+p.right+'</div>';
+        }).join('')+'</div></div></div></div>';
+    }
+  });
+  cont.innerHTML=html;
+}
+
+function selOpt(qi,oi){
+  var card=document.getElementById('qcard_'+qi);if(card.dataset.answered)return;
+  for(var i=0;i<4;i++){var el=document.getElementById('qopt_'+qi+'_'+i);if(el)el.classList.remove('selected');}
+  document.getElementById('qopt_'+qi+'_'+oi).classList.add('selected');
+  card.dataset.selected=oi;
+}
+
+function selDD(qi,pi,value){
+  var item=document.getElementById('ddi_'+qi+'_'+pi);
+  if(item.classList.contains('checked'))return;
+  if(ddSel&&ddSel.el===item){item.classList.remove('sel');ddSel=null;return;}
+  if(ddSel)ddSel.el.classList.remove('sel');
+  item.classList.add('sel');
+  ddSel={el:item,value:value,qi:qi,pi:pi};
+}
+
+function dropDD(qi,ti){
+  if(!ddSel||ddSel.qi!==qi)return;
+  var target=document.getElementById('ddt_'+qi+'_'+ti);
+  if(!ddMap[qi])ddMap[qi]={};
+  Object.keys(ddMap[qi]).forEach(function(k){
+    if(ddMap[qi][k].lpi===ddSel.pi){
+      var old=document.getElementById('ddt_'+qi+'_'+k);
+      if(old){old.classList.remove('pending');old.textContent=old.dataset.answer;}
+      delete ddMap[qi][k];
+    }
+  });
+  ddMap[qi][ti]={lpi:ddSel.pi,lv:ddSel.value};
+  ddSel.el.classList.remove('sel');ddSel.el.classList.add('pending');
+  target.classList.add('pending');target.textContent='→ '+ddSel.value;
+  ddSel=null;
+}
+
+// บันทึกคะแนน Pre-test ลง backend (ตาราง quiz_attempts) — ยิงครั้งเดียวตอนกด "ตรวจคำตอบ"
+function savePretestScore(score,total){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  fetch(API_BASE+'/quiz-score',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({token:getToken(),labId:10,courseId:'netlab1',quizKey:'pretest',score:score,maxScore:total})}).catch(function(){});
+}
+
+function checkPretest(){
+  var correct=0,total=0;
+  PRETEST.forEach(function(q,qi){
+    if(q.type==='mcq'){
+      total++;
+      var card=document.getElementById('qcard_'+qi);
+      var answered=card.dataset.selected!=null;
+      var sel=answered?parseInt(card.dataset.selected):-1;
+      for(var i=0;i<q.opts.length;i++){
+        var el=document.getElementById('qopt_'+qi+'_'+i);if(!el)continue;
+        el.classList.add('answered');
+        if(answered){
+          if(i===q.ans)el.classList.add('correct');
+          else if(i===sel)el.classList.add('wrong');
+        }
+      }
+      if(sel===q.ans)correct++;
+      if(answered)document.getElementById('qexp_'+qi).classList.add('show');
+      card.dataset.answered=1;
+    }else{
+      var m=ddMap[qi]||{};
+      q.pairs.forEach(function(pair,ti){
+        total++;
+        var target=document.getElementById('ddt_'+qi+'_'+ti);
+        var mp=m[ti];if(!target)return;
+        target.classList.remove('pending');
+        if(mp){
+          if(mp.lv.trim()===pair.left.trim()){
+            target.classList.add('filled');target.textContent='✓ '+mp.lv;correct++;
+            var lel=document.getElementById('ddi_'+qi+'_'+mp.lpi);
+            if(lel){lel.classList.remove('pending');lel.classList.add('matched');}
+          }else{
+            target.classList.add('wrong-m');target.textContent='✗ '+mp.lv;
+            (function(t,p){setTimeout(function(){t.classList.remove('wrong-m');t.textContent=p;},1500);})(target,pair.right);
+            var lel2=document.getElementById('ddi_'+qi+'_'+mp.lpi);if(lel2)lel2.classList.remove('pending');
+          }
+        }else{target.textContent=pair.right;}
+      });
+      document.querySelectorAll('[id^="ddi_'+qi+'_"]').forEach(function(el){el.classList.add('checked');});
+    }
+  });
+  var pct=total>0?Math.round(correct/total*100):100;
+  document.getElementById('scoreResult').innerHTML='<span class="score-badge '+(pct>=70?'score-good':'score-ok')+'">'+correct+'/'+total+' ('+pct+'%)</span>';
+  document.getElementById('goLabBtn').style.display='inline-block';
+  savePretestScore(correct,total);
+}
+
+function buildSys(){
+  var s=STEPS[APP.step-1];
+  return 'Role: Cisco IOS Networking Tutor\nLanguage: Thai, ใช้ครับ\nSubject: Ch.10 Redistribution (ASBR, redistribute ospf/eigrp, OSPF ต้องมี subnets, EIGRP ต้องมี Seed Metric)\nRef: Cisco NetAcad W10\nRules: ตอบสั้นไม่เกิน 4 ประโยค, wrong>=4 ให้เฉลย\nUI ที่ผู้เรียนเห็นบนหน้าจอ (อ้างอิงได้เฉพาะสิ่งเหล่านี้เท่านั้น): แผนภาพ Topology ด้านบน | แท็บ \'ตาราง IP\' มีตาราง IP/Subnet Mask/Interface ของทุกอุปกรณ์ | รายการขั้นตอนด้านซ้าย | กล่อง \'สิ่งที่ต้องทำตอนนี้\' ใต้เทอร์มินัล ห้ามอ้างถึงเอกสาร ใบงาน หรือไฟล์ PDF ที่ไม่มีอยู่ในหน้าจอนี้\nCurrent: Step '+APP.step+'/'+STEPS.length+' — '+(s?s.name:'')+' | Mode: '+APP.prompt+' | Wrong: '+APP.wrong;
+}
+
+function addMsg(role,text){
+  var msgs=document.getElementById('messages');
+  var wrap=document.createElement('div');wrap.className='msg'+(role==='user'?' user':'');
+  var av=document.createElement('div');av.className='av '+(role==='ai'?'ai-av':'user-av');av.textContent=role==='ai'?'AI':'U';
+  var bub=document.createElement('div');bub.className='bub '+(role==='ai'?'ai-b':'user-b');bub.textContent=text;
+  wrap.appendChild(av);wrap.appendChild(bub);msgs.appendChild(wrap);msgs.scrollTop=99999;
+  APP.chatHistory=APP.chatHistory.concat([{role:role==='ai'?'assistant':'user',content:text}]).slice(-16);
+}
+
+function showTyping(){
+  var msgs=document.getElementById('messages');
+  var w=document.createElement('div');w.className='msg';w.id='typing';
+  var av=document.createElement('div');av.className='av ai-av';av.textContent='AI';
+  var d=document.createElement('div');d.className='typing-dots';
+  d.innerHTML='<span></span><span></span><span></span>';
+  w.appendChild(av);w.appendChild(d);msgs.appendChild(w);msgs.scrollTop=99999;
+}
+function hideTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+
+async function callAI(msg,sys){
+  var res=await fetch(API_BASE+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages:APP.chatHistory.slice(-8).concat([{role:'user',content:msg}]),
+    system:sys||buildSys(),max_tokens:150})});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return (await res.json()).content||'ขออภัยครับ';
+}
+
+async function sendChat(){
+  if(isBusy)return;
+  var inp=document.getElementById('chatIn');
+  var msg=inp.value.trim();if(!msg)return;
+  inp.value='';isBusy=true;document.getElementById('sendBtn').disabled=true;
+  addMsg('user',msg);showTyping();
+  try{var r=await callAI(msg);hideTyping();addMsg('ai',r);}
+  catch(e){hideTyping();addMsg('ai',e.message);}
+  finally{isBusy=false;document.getElementById('sendBtn').disabled=false;}
+}
+
+function quickAsk(msg){document.getElementById('chatIn').value=msg;sendChat();}
+
+// รูปแบบคำสั่งทั่วไป (ไม่มีค่าจริงของ Lab นี้เลย) ใช้กับปุ่ม "อธิบาย cmd" / "ขอ hint"
+// ตอบแบบ deterministic จาก client เอง ไม่ผ่าน AI เพื่อการันตีว่าไม่มีทางหลุดคำตอบจริง
+var SYNTAX_TEMPLATES=[
+  {re:/^enable$/i,           tpl:'enable',
+    desc:'เข้าสู่ Privileged EXEC mode'},
+  {re:/^configure terminal$/i,tpl:'configure terminal',
+    desc:'เข้าสู่ Global Configuration mode'},
+  {re:/^interface\s/i,       tpl:'interface [interface-type][interface-number]',
+    desc:'เข้าสู่ Interface Configuration mode ของพอร์ตที่ต้องตั้งค่า'},
+  {re:/^ip address\s/i,      tpl:'ip address [ip-address] [subnet-mask]',
+    desc:'กำหนด IP Address และ Subnet Mask ให้ interface ปัจจุบัน'},
+  {re:/^no shutdown$/i,      tpl:'no shutdown',
+    desc:'เปิดใช้งาน interface (เขียนติดกัน ไม่เว้นวรรคระหว่าง no กับ shutdown)'},
+  {re:/^shutdown$/i,         tpl:'shutdown',
+    desc:'ปิดใช้งาน interface'},
+  {re:/^exit$/i,             tpl:'exit',
+    desc:'ออกจาก mode ปัจจุบัน กลับขึ้นไปหนึ่งระดับ'},
+  {re:/^end$/i,              tpl:'end',
+    desc:'ออกจาก Configuration mode กลับสู่ Privileged EXEC ทันที'},
+  {re:/^write memory$/i,     tpl:'write memory',
+    desc:'บันทึก running-config ลง NVRAM (startup-config)'},
+  {re:/^ip route\s/i,        tpl:'ip route [destination-network] [subnet-mask] [next-hop-ip]',
+    desc:'สร้าง Static Route ไปยัง network ปลายทาง โดยส่งผ่าน next-hop ที่ระบุ'},
+  {re:/^ping\s/i,            tpl:'ping [destination-ip]',
+    desc:'ทดสอบการเชื่อมต่อไปยัง IP ปลายทาง'},
+  {re:/^do\s+sh(ow)?\s+ip\s+route$/i,tpl:'do show ip route',
+    desc:'ตรวจสอบ Routing Table จาก config mode ได้เลยโดยไม่ต้อง exit (do นำหน้า)'},
+  {re:/^sh(ow)?\s+ip\s+route$/i,     tpl:'show ip route',
+    desc:'ดู Routing Table — ถ้าอยู่ Privileged EXEC อยู่แล้วไม่ต้องใช้ do นำหน้า'},
+  {re:/^router\s+ospf\s/i,   tpl:'router ospf [process-id]',
+    desc:'เข้าสู่โหมดตั้งค่า OSPF ด้วย Process ID ที่ระบุ — เป็นค่าที่มีผลแค่ภายใน Router เครื่องนี้เอง (Locally Significant) ไม่ต้องตรงกับ Router อื่น'},
+  {re:/^router\s+eigrp\s/i,  tpl:'router eigrp [as-number]',
+    desc:'เข้าสู่โหมดตั้งค่า EIGRP ด้วย AS Number ที่ระบุ — เลขนี้ต้องตรงกันทุก Router ในโดเมน EIGRP เดียวกัน (ต่างจาก OSPF Process ID)'},
+  {re:/^network\s+\S+\s+\S+\s+area\s/i,tpl:'network [network-address] [wildcard-mask] area [area-id]',
+    desc:'ประกาศ network ให้ OSPF ทำงานบน interface ที่อยู่ในนั้น — ต้องระบุ wildcard mask และ area ที่สังกัดเสมอ'},
+  {re:/^network\s/i,         tpl:'network [network-address] [wildcard-mask]',
+    desc:'ประกาศ network ให้ EIGRP ทำงานบน interface ที่อยู่ในนั้น — ระบุด้วย wildcard mask (ไม่มี area เหมือน OSPF)'},
+  {re:/^no\s+auto-summary$/i,tpl:'no auto-summary',
+    desc:'ปิดการสรุป subnet อัตโนมัติที่ classful boundary ของ EIGRP'},
+  {re:/^redistribute\s+eigrp\s/i,tpl:'redistribute eigrp [as-number] subnets',
+    desc:'ดึง Route จาก EIGRP เข้ามาประกาศใน OSPF — ต้องมี subnets ต่อท้ายเสมอ ไม่งั้น subnet ที่ไม่ใช่ classful boundary จะถูกข้ามไปเงียบๆ'},
+  {re:/^redistribute\s+ospf\s/i,tpl:'redistribute ospf [process-id] metric [bw] [delay] [reliability] [load] [mtu]',
+    desc:'ดึง Route จาก OSPF เข้ามาประกาศใน EIGRP — ต้องระบุ Seed Metric 5 ค่าเอง เพราะ EIGRP แปลง Metric จาก Protocol อื่นอัตโนมัติไม่ได้'},
+  {re:/^do\s+sh(ow)?\s+ip\s+prot(o(c(o(l(s)?)?)?)?)?$/i,tpl:'do show ip protocols',
+    desc:'ตรวจสอบว่า Routing Protocol process กำลังทำงานอยู่ จาก config mode ได้เลย (do นำหน้า)'},
+  {re:/^do\s+sh(ow)?\s+ip\s+ospf\s+neigh/i,tpl:'do show ip ospf neighbor',
+    desc:'ตรวจสอบว่า Router เพื่อนบ้านที่ทำ OSPF ด้วยกัน (Neighbor) ขึ้นสถานะแล้ว จาก config mode ได้เลย (do นำหน้า)'},
+  {re:/^do\s+sh(ow)?\s+ip\s+eigrp\s+neigh/i,tpl:'do show ip eigrp neighbors',
+    desc:'ตรวจสอบว่า Router เพื่อนบ้านที่ทำ EIGRP ด้วยกัน (Neighbor) ขึ้นสถานะแล้ว จาก config mode ได้เลย (do นำหน้า)'}
+];
+function genericSyntax(cmdLine){
+  var bare=cmdLine.replace(/^\S+[>#]\s*/,''); // ตัด prompt เช่น "R1(config)# " ออก
+  for(var i=0;i<SYNTAX_TEMPLATES.length;i++){
+    if(SYNTAX_TEMPLATES[i].re.test(bare))return SYNTAX_TEMPLATES[i];
+  }
+  return null;
+}
+function askSyntaxOnly(kind){
+  var s=STEPS[APP.step-1];if(!s)return;
+  var curHint=(s.hints&&s.hints[APP.cmdIdx])||s.cmdHint;
+  addMsg('user',kind==='hint'?'ขอ hint step ปัจจุบัน':'อธิบาย command ที่ต้องพิมพ์ตอนนี้');
+  var t=genericSyntax(curHint.cmd);
+  var reply=t
+    ?'รูปแบบคำสั่งพื้นฐาน: `'+t.tpl+'`\n'+t.desc+'\n\nลองแทนค่าตามโจทย์ของ Step นี้ดูครับ'
+    :'ลองดูรูปแบบคำสั่ง Cisco IOS ทั่วไปที่เกี่ยวข้องกับขั้นตอนนี้ แล้วปรับค่าตามโจทย์ครับ';
+  addMsg('ai',reply);
+}
+
+var MODE_LABEL={'exec':'User EXEC','exec-priv':'Privileged EXEC','config':'Global Configuration','config-if':'Interface Configuration'};
+function showModeCommands(){
+  addMsg('user','คำสั่งที่ใช้ได้ในโหมดนี้');
+  var kws=MODE_KEYWORDS[APP.mode]||[];
+  var label=MODE_LABEL[APP.mode]||APP.mode;
+  addMsg('ai','โหมดปัจจุบัน: '+APP.prompt+' ('+label+')\nคำสั่งที่ใช้ได้: '+kws.map(function(k){return '`'+k+'`';}).join(', '));
+}
+
+function showProgressSummary(){
+  addMsg('user','สรุปที่ทำมาแล้ว');
+  if(!APP.stepsDone.length){
+    addMsg('ai','ยังไม่ได้ทำ Step ไหนสำเร็จเลยครับ เริ่มจาก Step 1 ได้เลย');
+    return;
+  }
+  var lines=STEPS.filter(function(s){return APP.stepsDone.indexOf(s.id)>=0;})
+    .map(function(s){return '✓ '+s.name;});
+  addMsg('ai','ทำสำเร็จแล้ว '+APP.stepsDone.length+'/'+STEPS.length+' step:\n'+lines.join('\n'));
+}
+
+async function notifyTerminal(cmd,ok,msg){
+  if(termBusy||isBusy)return;termBusy=true;
+  var s=STEPS[APP.step-1];if(!s){termBusy=false;return;}
+  var prompt;
+  if(ok){
+    var nextStep=STEPS[APP.step]; // APP.step ยังไม่ advance ตอนนี้ ดังนั้น STEPS[APP.step] คือ step ถัดไปจริง
+    prompt='"'+cmd+'" ถูกต้อง! Step '+APP.step+': '+s.name+' เสร็จแล้ว\n'
+      +(nextStep
+        ?('ขั้นต่อไปคือ "'+nextStep.name+'" — สิ่งที่ต้องทำ: '+nextStep.cmdHint.desc
+          +'\nแสดงความยินดีสั้น 1 ประโยค แล้วอธิบายสิ่งที่ต้องทำต่อไปแบบกว้างๆ ให้ผู้ใช้คิดคำสั่ง Cisco IOS เองครับ ห้ามบอกคำสั่งเป๊ะๆ ตรงๆ')
+        :'นี่คือ step สุดท้ายของ Lab แล้ว แสดงความยินดีที่ทำสำเร็จสั้นๆ ครับ');
+  }else{
+    var canReveal=APP.wrong>=4;
+    var curHint=(s.hints&&s.hints[APP.cmdIdx])||s.cmdHint;
+    prompt='"'+cmd+'" ผิด (ผิดมา '+APP.wrong+' ครั้ง) Mode:'+APP.prompt
+      +(canReveal?' Expected:'+curHint.cmd:' Goal:'+curHint.desc)
+      +'\n'+(canReveal?'ผิดครบ 4 ครั้งแล้ว ให้เฉลยคำสั่งของขั้นย่อยนี้ได้ (ห้ามเฉลยคำสั่งย่อยถัดไปหรือ Step ถัดไป)'
+        :APP.wrong>=2?'ให้ hint บางส่วน ห้ามบอกคำสั่งเต็มเด็ดขาด'
+        :'อธิบายสั้นๆ ห้ามบอกคำสั่งเต็มเด็ดขาด');
+  }
+  showTyping();
+  try{var r=await callAI(prompt,buildSys());hideTyping();addMsg('ai',r);}
+  catch(e){hideTyping();}
+  finally{termBusy=false;}
+}
+
+async function checkHealth(){
+  var pill=document.getElementById('aiStatus'),dot=document.getElementById('aiDot');
+  try{
+    var res=await fetch(API_BASE+'/health',{signal:AbortSignal.timeout(5000)});
+    var d=await res.json();
+    if(d.model_ready){
+      pill.className='ai-pill ai-on';dot.classList.add('pulse');
+      document.getElementById('aiStatusText').textContent='AI พร้อม';
+      document.getElementById('chatDot').style.background='var(--green)';
+      var m=d.model||(d.models&&d.models.default)||'';
+      if(m)document.getElementById('modelTag').textContent=m.split('/').pop();
+    }else{throw new Error();}
+  }catch(e){
+    pill.className='ai-pill ai-off';dot.classList.remove('pulse');
+    document.getElementById('aiStatusText').textContent='AI ออฟไลน์';
+    document.getElementById('chatDot').style.background='var(--red)';
+  }
+}
+</script>
+</body>
+</html>

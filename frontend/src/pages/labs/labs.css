@@ -1,0 +1,53 @@
+body{min-height:100vh}
+.topbar{height:72px;gap:28px;padding:0 var(--space-6);position:sticky;top:0;z-index:20}
+.brand{font-size:20px}
+
+.hero{background:linear-gradient(180deg,var(--panel2),var(--bg));border-bottom:1px solid var(--border);padding:var(--space-8) var(--space-6);overflow:hidden;position:relative}
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;display:block;filter:blur(1px) saturate(.85);
+  -webkit-mask-image:linear-gradient(to left, black 10%, transparent 55%);
+  mask-image:linear-gradient(to left, black 10%, transparent 55%);opacity:.28}
+.hero-inner{position:relative;z-index:1}
+.hero-content{max-width:640px;text-align:left}
+.hero-eyebrow{font-size:var(--step-xs);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.hero-title{font-size:42px;font-weight:800;letter-spacing:-0.02em;margin:0 0 var(--space-3);line-height:1.2;text-wrap:balance}
+.hero-sub{font-size:var(--step-lg);color:var(--text2);max-width:560px;line-height:1.75}
+
+.catalog{max-width:1040px;margin:var(--space-7) auto 0;padding:0 var(--space-5) var(--space-8)}
+.catalog-title{font-size:var(--step-xl);font-weight:700;margin-bottom:var(--space-6);letter-spacing:-0.01em;text-align:center}
+.catalog-sub{font-size:var(--step-sm);color:var(--text3);margin-bottom:var(--space-6)}
+.badge{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.35);color:#fff;letter-spacing:.3px}
+
+.roadmap{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-5);align-items:stretch}
+.road-step{height:100%}
+.road-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--step-sm);border:2px solid var(--border);background:var(--panel)}
+.road-step.done .road-num{background:var(--green-l);color:var(--green);border-color:var(--green)}
+.road-step.active .road-num{background:var(--cyan-wash);color:var(--cyan);border-color:var(--cyan)}
+.road-step.locked .road-num{color:var(--text3)}
+.road-card{position:relative;overflow:hidden;height:100%;min-width:0;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:var(--space-5);text-decoration:none;color:var(--text);display:flex;flex-direction:column;transition:border-color .12s,transform .12s}
+.road-card::before{content:'';position:absolute;inset:0;background:url('/assets/topic-images/hero-network-dashboard.png') center/cover no-repeat;opacity:.25;pointer-events:none;z-index:0;
+  -webkit-mask-image:linear-gradient(to left, black 30%, transparent 75%);
+  mask-image:linear-gradient(to left, black 30%, transparent 75%)}
+.road-card>*{position:relative;z-index:1}
+.road-card.clickable:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.road-card.clickable:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.road-card.locked{opacity:.6;pointer-events:none}
+.road-card-top{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-3)}
+.road-tags{display:flex;gap:6px;flex-wrap:wrap}
+.road-title{font-size:var(--step-xl);font-weight:700;line-height:1.35;letter-spacing:-0.01em;margin-bottom:var(--space-2)}
+.road-desc{flex:1;font-size:var(--step-sm);color:var(--text2);line-height:1.65;margin-bottom:var(--space-3)}
+.road-meta{display:flex;gap:var(--space-3);font-size:var(--step-xs);color:var(--text3);flex-wrap:wrap;margin-bottom:var(--space-3)}
+.road-progress{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-3)}
+.pbar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:3px}
+.road-progress span{font-size:var(--step-xs);color:var(--text3);flex-shrink:0}
+
+.footer-note{max-width:1120px;margin-top:48px}
+@media (max-width:760px){
+  .roadmap{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .hero{padding:var(--space-5) var(--space-4)}
+  .hero-title{font-size:26px}
+  .stat-bar{gap:var(--space-5);padding:var(--space-4) var(--space-4) 0}
+}

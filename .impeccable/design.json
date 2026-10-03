@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-05T20:00:00.000Z",
+  "title": "Design System: NETLab",
+  "extensions": {
+    "colorMeta": {
+      "bg": { "role": "neutral", "displayName": "Black Background", "canonical": "#0A0B0D", "tonalRamp": ["#0A0B0D", "#131518", "#1B1E23", "#2B2F37", "#6B7280", "#9BA3AF", "#DDE1E6", "#FFFFFF"] },
+      "signal-blue": { "role": "primary", "displayName": "Signal Blue", "canonical": "#3D8BFF", "tonalRamp": ["#0A1A33", "#122A50", "#1B3D70", "#2563C9", "#3D8BFF", "#74AEFF", "#AACDFF", "#DCEBFF"] },
+      "success-green": { "role": "secondary", "displayName": "Success Green", "canonical": "#46B87C", "tonalRamp": ["#0A1F14", "#16261D", "#1B4A2E", "#1F9D5C", "#46B87C", "#7FD1A4", "#B8E8CD", "#E3F6EC"] },
+      "warning-amber": { "role": "secondary", "displayName": "Warning Amber", "canonical": "#E5B93F", "tonalRamp": ["#241C05", "#2E2408", "#5A430D", "#97720A", "#E5B93F", "#EDD077", "#F5E4B0", "#FBF1D9"] },
+      "danger-red": { "role": "secondary", "displayName": "Danger Red", "canonical": "#F55B5B", "tonalRamp": ["#220A0A", "#2E1414", "#5C2121", "#D3382E", "#F55B5B", "#F78F8F", "#FAC0C0", "#FBE4E2"] },
+      "reserved-periwinkle": { "role": "tertiary", "displayName": "Reserved Periwinkle", "canonical": "#7B8CDE", "tonalRamp": ["#161A2E", "#232746", "#39406B", "#5563B0", "#7B8CDE", "#A4B0E9", "#C9D1F3", "#E8EBFA"] },
+      "prompt-teal": { "role": "tertiary", "displayName": "Prompt Teal", "canonical": "#4FC3D9", "tonalRamp": ["#0A2126", "#0E2E35", "#155159", "#0E7C8C", "#4FC3D9", "#8AD8E5", "#BCE9F0", "#E3F6F9"] },
+      "explain-text": { "role": "tertiary", "displayName": "Explain Green", "canonical": "#8FE0B0", "tonalRamp": ["#0A2110", "#123419", "#146C3E", "#2C8F5C", "#46B87C", "#8FE0B0", "#CDF3DC", "#EAFBF0"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The two orienting hero moments only (index.html, labs.html) — never on denser breadcrumb pages." },
+      "title": { "displayName": "Title", "purpose": "Page-level headers one tier below a true hero; steps down further the deeper a page sits in the nav." },
+      "body": { "displayName": "Body", "purpose": "All prose; generous line-height for long Thai strings." },
+      "label": { "displayName": "Label", "purpose": "Eyebrows, badges, status pills, chip text." },
+      "mono": { "displayName": "Mono", "purpose": "Anything a real CLI would render: commands, IPs, terminal I/O, code chips. Terminal history and live input are unified at one size." }
+    },
+    "shadows": [
+      { "name": "popover", "value": "0 4px 16px rgba(0,0,0,.5)", "purpose": "Floating hint box in the lab view — marks a dismissable overlay." },
+      { "name": "drawer", "value": "6px 0 24px rgba(0,0,0,.4)", "purpose": "Mobile slide-in sidebar/chat panel, and the mobile nav dropdown." }
+    ],
+    "motion": [
+      { "name": "ease-fast", "value": "100ms ease", "purpose": "Micro-interactions: option rows, chips, drag targets." },
+      { "name": "ease-standard", "value": "200ms ease", "purpose": "Default state transitions: theme toggle, color/border shifts, progress bar fill." },
+      { "name": "ease-drawer", "value": "250ms ease", "purpose": "Mobile drawer slide in/out (sidebar, chat panel)." }
+    ],
+    "typeScale": [
+      { "name": "step-xs", "value": "11px" },
+      { "name": "step-sm", "value": "12.5px" },
+      { "name": "step-base", "value": "14px" },
+      { "name": "step-md", "value": "16px" },
+      { "name": "step-lg", "value": "18.5px" },
+      { "name": "step-xl", "value": "21px" },
+      { "name": "step-2xl", "value": "24.5px" },
+      { "name": "step-3xl", "value": "28px" }
+    ],
+    "spaceScale": [
+      { "name": "space-1", "value": "4px" },
+      { "name": "space-2", "value": "8px" },
+      { "name": "space-3", "value": "12px" },
+      { "name": "space-4", "value": "16px" },
+      { "name": "space-5", "value": "24px" },
+      { "name": "space-6", "value": "32px" },
+      { "name": "space-7", "value": "48px" },
+      { "name": "space-8", "value": "64px" }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "480px" },
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "760px" },
+      { "name": "lg", "value": "900px" },
+      { "name": "xl", "value": "1180px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action that matters on a given view (start lab, submit answer). One canonical implementation shared by index.html and course.html.",
+      "html": "<button class=\"ds-btn-primary\">เริ่มทำ Lab →</button>",
+      "css": ".ds-btn-primary { padding: 11px 22px; border-radius: 9px; background: #3D8BFF; color: #FFFFFF; border: none; font-weight: 700; font-size: 12.5px; cursor: pointer; transition: filter 120ms ease; } .ds-btn-primary:hover { filter: brightness(1.08); } .ds-btn-primary:focus-visible { outline: 2px solid #3D8BFF; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting action alongside a primary button.",
+      "html": "<button class=\"ds-btn-secondary\">ดูความคืบหน้า</button>",
+      "css": ".ds-btn-secondary { padding: 11px 20px; border-radius: 9px; background: transparent; border: 1px solid #2B2F37; color: #ECEEF1; font-weight: 600; font-size: 12.5px; cursor: pointer; transition: border-color 120ms ease, color 120ms ease; } .ds-btn-secondary:hover { border-color: #3D8BFF; color: #3D8BFF; } .ds-btn-secondary:focus-visible { outline: 2px solid #3D8BFF; outline-offset: 2px; }"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Semantic-color pill for topology labels, chapter badges, AI-status indicator.",
+      "html": "<span class=\"ds-chip\"><span class=\"ds-chip-dot\"></span>AI Tutor Online</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 4px 11px; border-radius: 10px; background: #16261D; color: #46B87C; border: 1px solid #234230; } .ds-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat metric tile used in the dashboard stat grid.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-num\">72%</div><div class=\"ds-card-label\">Labs Completed</div></div>",
+      "css": ".ds-card { background: #131518; border: 1px solid #2B2F37; border-radius: 12px; padding: 16px; font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif; } .ds-card-num { font-size: 24.5px; font-weight: 800; color: #3D8BFF; } .ds-card-label { font-size: 11px; color: #6B7280; margin-top: 4px; }"
+    },
+    {
+      "name": "Chat Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Message field in the AI tutor panel.",
+      "html": "<div class=\"ds-input-row\"><input class=\"ds-input\" placeholder=\"ถาม AI Tutor...\"/><button class=\"ds-send\">▶</button></div>",
+      "css": ".ds-input-row { display: flex; gap: 6px; } .ds-input { flex: 1; font-size: 14px; border: 1px solid #2B2F37; border-radius: 7px; padding: 8px 13px; background: #1B1E23; color: #ECEEF1; outline: none; font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif; } .ds-input:focus { border-color: #2563C9; } .ds-send { width: 32px; height: 32px; border-radius: 7px; background: rgba(61,139,255,.15); border: 1px solid #2563C9; color: #3D8BFF; cursor: pointer; display: flex; align-items: center; justify-content: center; }"
+    },
+    {
+      "name": "Terminal Window",
+      "kind": "custom",
+      "refersTo": "terminal",
+      "description": "Signature component: faux-chrome console window with a live command prompt in Prompt Teal. History and prompt/input text are one unified size.",
+      "html": "<div class=\"ds-term\"><div class=\"ds-term-bar\"><span class=\"ds-dot\" style=\"background:#F55B5B\"></span><span class=\"ds-dot\" style=\"background:#E5B93F\"></span><span class=\"ds-dot\" style=\"background:#46B87C\"></span></div><div class=\"ds-term-body\"><span class=\"ds-prompt\">Router(config)#</span> <span class=\"ds-term-in\">ip route 192.168.3.0 255.255.255.0 10.0.0.2</span></div></div>",
+      "css": ".ds-term { background: #0A0B0D; border: 1px solid #2B2F37; border-radius: 10px; overflow: hidden; font-family: 'Cascadia Code', 'Consolas', monospace; } .ds-term-bar { display: flex; gap: 6px; padding: 8px 12px; background: #1B1E23; } .ds-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; } .ds-term-body { padding: 12px 14px; font-size: 14px; line-height: 1.7; } .ds-prompt { color: #4FC3D9; font-weight: 600; } .ds-term-in { color: #ECEEF1; }"
+    },
+    {
+      "name": "Topbar Nav",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sticky top navigation with active-link treatment and mobile hamburger dropdown.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\">NET<span>Lab</span></a><a class=\"ds-link ds-link-active\">Home</a><a class=\"ds-link\">Lab</a><a class=\"ds-link\">Dashboard</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 18px; height: 60px; padding: 0 24px; background: #131518; border-bottom: 1px solid #2B2F37; font-family: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif; } .ds-brand { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; color: #ECEEF1; text-decoration: none; } .ds-brand span { color: #3D8BFF; } .ds-link { font-size: 12.5px; font-weight: 600; color: #9BA3AF; text-decoration: none; padding: 8px 12px; border-radius: 8px; } .ds-link:hover { color: #ECEEF1; background: #1B1E23; } .ds-link-active { color: #3D8BFF; background: rgba(61,139,255,.15); } .ds-link:focus-visible { outline: 2px solid #3D8BFF; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Rack & Instrument",
+    "overview": "Every surface is modeled on real network-equipment consoles and lab-bench instruments — rack-mount switch UIs, oscilloscope displays, status-light panels. The palette runs cool and high-contrast: a near-true black base (\"black and blue\") carries a vivid signal-blue for every interactive element, deliberately distinct in hue from the amber used for caution states, so the two never compete for the same meaning. The light theme is deliberately unadorned — page and panel are both pure white, with only a whisper of tint reserved for recessed surfaces (inputs, code chips) that need some separation to stay legible. Both themes are built from the same tonal roles so nothing is retrofitted.\n\nThis system explicitly rejects the childish/gamified LMS look — no cartoon badges, confetti, XP bars, or streak mascots — and the generic corporate-SaaS gloss of hero-metric tiles, gradient text, glassmorphism, and soft ambient glow blobs. It should feel like a tool a network engineer would tolerate using daily, matching the AI tutor's own restraint: it withholds full answers until the student has genuinely struggled, and the interface carries that same earn-it philosophy rather than handing over shortcuts.\n\nImplementation note: color, type-scale, and spacing tokens live in styles/tokens.css; shared chrome (reset, body base, brand mark, theme toggle, footer note, buttons, main-nav topbar+dropdown, breadcrumb topbar) lives in styles/shared.css; theme-toggle + nav-dropdown behavior lives in scripts/theme.js.",
+    "keyCharacteristics": [
+      "Flat tonal panels (bg → panel → panel-2) instead of shadow-driven depth — in light mode bg and panel are the same pure white, so panels lean on their 1px border alone",
+      "One accent hue (Signal Blue) carrying interactivity and status; green/amber/red/periwinkle reserved for semantic meaning only, each a genuinely distinct hue",
+      "Monospace wherever a real CLI would use it — commands, IPs, terminal output, code chips",
+      "A shared numeric type scale and spacing scale drawn from consistently across all five pages",
+      "Bilingual layouts (Thai prose, English/mono technical tokens) that don't break rhythm when Thai strings run long"
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Signal Blue is the only color that means \"interactive.\" Green, amber, red, and periwinkle are status-only and must never be used for a clickable primary action.", "section": "colors" },
+      { "name": "The Only-White Rule", "body": "Light mode's bg and panel are the identical, literal #FFFFFF — not a near-white or tinted neutral. panel-2 is the sole exception, existing only so inputs and code chips remain visible against an all-white page.", "section": "colors" },
+      { "name": "The Distinct-Hue Rule", "body": "Every semantic role sits at a genuinely different hue, not a lighter/darker shade of a neighboring one. A new status color must fail a squint test against all five existing roles before it ships.", "section": "colors" },
+      { "name": "The Mono-Means-Real Rule", "body": "If a string is something you'd literally type into a router or see in its output — a command, an IP, a subnet mask, a config line — it renders in Cascadia Code. Everything else stays in IBM Plex Sans.", "section": "typography" },
+      { "name": "The One Terminal Rule", "body": "Every piece of text inside the terminal component — history, prompt, live input — is one size. A terminal that mixes sizes internally stops reading as a real terminal.", "section": "typography" },
+      { "name": "The Overlay-Only Rule", "body": "Shadows exist to mark something as temporarily above the layout (popover, drawer, dropdown). Nothing that sits permanently in the page flow gets a shadow, ever.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Signal Blue as the only color meaning \"interactive\" — every other color is semantic/status only.",
+      "Do render anything a real CLI would show in monospace (Cascadia Code): commands, IPs, subnet masks, terminal output, inline code chips.",
+      "Do draw every new size from the shared type-scale and spacing-scale tokens rather than a new one-off pixel value.",
+      "Do keep new components flat at rest (tonal layering + 1px border) and reserve shadows for true overlays (popovers, drawers, dropdowns).",
+      "Do define both dark and light theme values for any new token — this system has no \"we'll add light mode later.\"",
+      "Do keep radii in the 6–14px band for rectangular components; use 999px/50% only for pills and circular status glyphs.",
+      "Do design copy and empty/error states so the student has to attempt the task before the tool concedes the answer."
+    ],
+    "donts": [
+      "Don't introduce a childish/gamified LMS look — no cartoon badges, confetti, XP bars, streak mascots, or mascot illustrations.",
+      "Don't reach for corporate-SaaS clichés: gradient text, glassmorphism, hero-metric tiles, soft radial-gradient glow decoration, decorative uppercase-tracked eyebrows on every section.",
+      "Don't add a border-left/border-right colored stripe as a callout accent — the system has no legacy exception for this; use a full border, tinted background, or leading icon.",
+      "Don't pair a visible 1px border with a soft wide drop-shadow on the same element (buttons, cards) — pick one.",
+      "Don't use Prompt Teal (#4FC3D9 / #0E7C8C) for anything except rendered terminal/router output.",
+      "Don't let ink-faint carry body text or anything load-bearing — verify contrast in both themes before using it for more than a timestamp or a disabled hint.",
+      "Don't hardcode a color literal that duplicates a token's value — reference the token instead so a future palette change can't silently miss a spot."
+    ]
+  }
+}

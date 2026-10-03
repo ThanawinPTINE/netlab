@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch.2 Cable Termination — NETLab</title>
+<link rel="stylesheet" href="../../styles/tokens.css?v=3">
+<link rel="stylesheet" href="../../styles/shared.css?v=2">
+<script src="../../scripts/auth.js?v=3"></script>
+<style>
+body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;padding:0 var(--space-4);gap:var(--space-3);flex-shrink:0}
+.chapter-badge{background:var(--cyan-d);color:#fff;font-size:var(--step-xs);font-weight:700;padding:4px 11px;border-radius:10px}
+.ai-pill{display:flex;align-items:center;gap:6px;font-size:var(--step-xs);padding:4px 11px;border-radius:10px;font-weight:600;margin-left:auto;flex-shrink:0}
+.lab-topbar-right{display:flex;align-items:center;gap:var(--space-3);flex-shrink:0}
+.ai-on{background:var(--green-l);color:var(--green);border:1px solid var(--green-border)}
+.ai-off{background:var(--red-l);color:var(--red);border:1px solid var(--red-border)}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.ai-dot.pulse{animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.main{flex:1;display:grid;grid-template-columns:290px minmax(0,1fr) 360px;overflow:hidden}
+.sidebar{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.sb-section{padding:8px 0}
+.sb-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:9px var(--space-4) 5px}
+.step-item{display:flex;align-items:flex-start;gap:var(--space-2);padding:8px var(--space-4);border-left:2px solid transparent}
+.step-item.active{background:var(--cyan-wash);border-left-color:var(--cyan)}
+.step-item.clickable{cursor:pointer}
+.step-item.clickable:hover{background:var(--panel2)}
+.review-note{display:flex;align-items:center;gap:7px;font-size:var(--step-xs);color:var(--text3);margin-top:var(--space-3);padding:7px 11px;border-radius:7px;background:var(--panel2);border:1px solid var(--border)}
+.review-note b{color:var(--text2);font-weight:700}
+.step-item.done{opacity:.7}
+.step-num{width:23px;height:23px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:var(--step-xs);font-weight:700;margin-top:2px}
+.sn-done{background:var(--green-l);color:var(--green)}
+.sn-active{background:var(--cyan-wash);color:var(--cyan)}
+.sn-next{background:var(--panel2);color:var(--text3)}
+.step-info{flex:1;min-width:0}
+.step-title{font-size:var(--step-sm);line-height:1.4}
+.step-sub{font-size:var(--step-xs);color:var(--text3);margin-top:2px}
+.progress-wrap{padding:var(--space-3) var(--space-4);border-top:1px solid var(--border);margin-top:auto}
+.prog-label{font-size:var(--step-xs);color:var(--text2);margin-bottom:5px;display:flex;justify-content:space-between}
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:3px;transition:width .5s}
+.center{display:flex;flex-direction:column;overflow:hidden}
+.content-area{flex:1;position:relative;overflow:hidden}
+.lesson-view{position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto}
+.lesson-status{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-3) var(--space-5) 0}
+.topo-chip{font-size:var(--step-sm);color:var(--text2);background:var(--panel2);padding:4px 11px;border-radius:7px;font-weight:600}
+.complete-reopen-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--green-l);color:var(--green);border:1px solid var(--green-border);cursor:pointer;display:none}
+.complete-reopen-chip.show{display:inline-block}
+.next-lab-chip{font-size:var(--step-sm);padding:4px 11px;border-radius:7px;font-weight:600;background:var(--green);color:var(--btn-text);border:1px solid var(--green);cursor:pointer;display:none}
+.next-lab-chip.show{display:inline-block}
+.lesson-wrap{padding:var(--space-5);width:100%}
+.lesson-section-label{font-size:var(--step-xs);font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.lesson-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:var(--space-6)}
+.lesson-title{font-size:var(--step-xl);font-weight:700;letter-spacing:-0.01em;margin-bottom:var(--space-4)}
+.lesson-body{font-size:var(--step-base);color:var(--text2);line-height:1.75}
+.lesson-body p{margin:0 0 12px}
+.lesson-body ul{margin:0 0 12px;padding-left:22px}
+.lesson-body li{margin-bottom:6px}
+.lesson-body b{color:var(--text)}
+.lesson-body code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:4px;font-size:.92em}
+.review-intro{font-size:var(--step-sm);color:var(--text2);margin-bottom:var(--space-4);line-height:1.6}
+.rv-item{border:1px solid var(--border);border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-3);background:var(--panel)}
+.rv-item.ok{border-color:var(--green);background:var(--green-wash)}
+.rv-item.bad{border-color:var(--red)}
+.rv-head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:9px}
+.rv-num{font-size:var(--step-xs);font-weight:700;color:var(--text3);background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:2px 11px;white-space:nowrap}
+.rv-mark{margin-left:auto;font-size:var(--step-sm);font-weight:700}
+.rv-mark.ok{color:var(--green)}
+.rv-mark.bad{color:var(--red)}
+.rv-q{font-size:var(--step-base);color:var(--text);line-height:1.6;margin-bottom:10px;font-weight:600}
+.rv-score{font-size:var(--step-md);font-weight:700;margin-top:var(--space-3)}
+.lesson-table-wrap{overflow-x:auto;margin:var(--space-4) 0 0;border:1px solid var(--border);border-radius:9px}
+.lesson-table{width:100%;border-collapse:collapse;font-size:var(--step-sm);min-width:440px}
+.lesson-table caption{caption-side:top;text-align:left;padding:9px 12px;font-size:var(--step-xs);font-weight:700;color:var(--text2);background:var(--panel2);border-bottom:1px solid var(--border)}
+.lesson-table th{text-align:left;padding:9px 12px;background:var(--panel2);color:var(--text2);font-weight:700;border-bottom:1px solid var(--border);white-space:nowrap}
+.lesson-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;line-height:1.55}
+.lesson-table tbody tr:last-child td{border-bottom:none}
+.lesson-table td:first-child{font-weight:700;white-space:nowrap;color:var(--text)}
+.lesson-table .t-ok{color:var(--green);font-weight:700}
+.lesson-table .t-no{color:var(--red);font-weight:700}
+.lesson-table code{font-family:var(--mono);background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:.92em}
+.lesson-fig{margin:var(--space-4) 0 0;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:var(--space-4) var(--space-3) var(--space-3)}
+.lesson-fig svg{display:block;width:100%;height:auto;margin:0 auto;max-width:600px;overflow:visible}
+.fig-cap{text-align:center;color:var(--text2);font-size:var(--step-xs);margin-top:10px;line-height:1.5}
+.f-box{fill:var(--panel);stroke:var(--border);stroke-width:1.4}
+.f-box-a{fill:var(--cyan-wash);stroke:var(--cyan);stroke-width:1.4}
+.f-box-g{fill:var(--green-wash);stroke:var(--green);stroke-width:1.4}
+.f-box-am{fill:var(--amber-wash);stroke:var(--amber);stroke-width:1.4}
+.f-box-p{fill:var(--purple-wash);stroke:var(--purple);stroke-width:1.4}
+.f-box-r{fill:var(--red-l);stroke:var(--red);stroke-width:1.4}
+.f-ln{stroke:var(--border);stroke-width:1.4;fill:none}
+.f-ln-a{stroke:var(--cyan);stroke-width:1.8;fill:none}
+.f-ln-g{stroke:var(--green);stroke-width:1.8;fill:none}
+.f-ln-d{stroke:var(--text3);stroke-width:1.2;fill:none;stroke-dasharray:4 3}
+.f-fill-a{fill:var(--cyan)}
+.f-fill-g{fill:var(--green)}
+.f-fill-am{fill:var(--amber)}
+.f-fill-p{fill:var(--purple)}
+.f-fill-r{fill:var(--red)}
+.f-t{fill:var(--text);font-size:12.5px;font-family:var(--font)}
+.f-tb{fill:var(--text);font-size:13.5px;font-weight:700;font-family:var(--font)}
+.f-ts{fill:var(--text2);font-size:12.5px;font-family:var(--font)}
+.f-tm{fill:var(--text);font-size:13.5px;font-family:var(--mono)}
+.f-ta{fill:var(--cyan);font-size:12.5px;font-weight:700;font-family:var(--font)}
+.f-tg{fill:var(--green);font-size:12.5px;font-weight:700;font-family:var(--font)}
+.lesson-actions{display:flex;justify-content:flex-end;margin-top:var(--space-5)}
+.q-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:var(--space-4);margin-bottom:var(--space-3)}
+.q-num{font-size:var(--step-xs);color:var(--text3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.q-text{font-size:var(--step-md);font-weight:600;margin-bottom:var(--space-3);line-height:1.55}
+.q-opts{display:flex;flex-direction:column;gap:6px}
+.q-opt{display:flex;align-items:center;gap:var(--space-2);padding:9px 13px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-size:var(--step-sm);color:var(--text2);transition:all .1s}
+.q-opt:hover:not(.answered){border-color:var(--cyan-d);color:var(--text)}
+.q-opt.selected{background:var(--cyan-wash);border-color:var(--cyan);color:var(--cyan)}
+.q-opt.correct{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.q-opt.wrong{background:var(--red-l);border-color:var(--red);color:var(--red)}
+.q-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+.q-opt.selected .q-dot{border-color:var(--cyan);background:var(--cyan)}
+.q-opt.correct .q-dot{border-color:var(--green);background:var(--green)}
+.q-opt.wrong .q-dot{border-color:var(--red);background:var(--red)}
+.q-explain{margin-top:9px;font-size:var(--step-xs);padding:9px 11px;border-radius:8px;border:1px solid var(--green);background:var(--green-l);color:var(--explain-text);line-height:1.55;display:none}
+.q-explain.show{display:block}
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-top:10px}
+.dd-col-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.dd-items{display:flex;flex-direction:column;gap:5px}
+.dd-item{padding:7px 11px;border-radius:7px;border:1px solid var(--border);font-size:var(--step-xs);color:var(--text2);cursor:pointer;background:var(--panel2);transition:all .1s}
+.dd-item:hover:not(.checked){border-color:var(--cyan-d);color:var(--text)}
+.dd-item.sel{border-color:var(--cyan);background:var(--cyan-wash);color:var(--cyan)}
+.dd-item.matched{border-color:var(--green);background:var(--green-l);color:var(--green);cursor:default}
+.dd-item.pending{border-color:var(--cyan-d);background:rgba(61,139,255,.06)}
+.dd-item.checked{cursor:default}
+.dd-target{padding:7px 11px;border-radius:7px;border:2px dashed var(--border);font-size:var(--step-xs);color:var(--text2);min-height:36px;display:flex;align-items:center;cursor:pointer;transition:all .1s}
+.dd-target.pending{border-style:solid;border-color:var(--cyan-d);background:rgba(61,139,255,.06);color:var(--cyan)}
+.dd-target.filled{border-style:solid;border-color:var(--green);background:var(--green-l);color:var(--green)}
+.dd-target.wrong-m{border-color:var(--red);background:var(--red-l)}
+.dd-item[draggable="true"]{cursor:grab}
+.dd-item.dragging{opacity:.45;cursor:grabbing}
+.dd-target.drag-over{border-style:solid;border-color:var(--cyan);background:var(--cyan-wash)}
+.dd-hint{font-size:var(--step-xs);color:var(--text2);margin-top:8px}
+.checkpoint-actions{display:flex;align-items:center;gap:var(--space-3);margin-top:var(--space-4)}
+.btn-check{padding:8px 20px;border-radius:8px;background:var(--cyan);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-base);font-weight:700}
+.btn-skip2{padding:8px 16px;border-radius:8px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;font-size:var(--step-sm);font-weight:600}
+.btn-next-lab{padding:9px 18px;border-radius:8px;background:var(--green);color:var(--btn-text);border:none;cursor:pointer;font-size:var(--step-base);font-weight:700}
+.checkpoint-fb{font-size:var(--step-sm);font-weight:600}
+.checkpoint-fb.ok{color:var(--green)}
+.checkpoint-fb.bad{color:var(--red)}
+.wire-scenario{font-size:var(--step-sm);color:var(--text2);line-height:1.65;margin-bottom:var(--space-4)}
+.wire-pins{display:flex;gap:6px;margin-bottom:var(--space-4);flex-wrap:wrap}
+.wire-pin{flex:1;min-width:70px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.wire-pin-num{font-size:var(--step-xs);color:var(--text2);font-weight:700}
+.wire-pin-slot{width:100%;height:44px;border-radius:7px;border:2px dashed var(--border);cursor:pointer;transition:all .1s;display:flex;align-items:center;justify-content:center}
+.wire-pin-slot.filled{border-style:solid}
+.wire-pin-slot.pending-target{border-color:var(--cyan-d);background:rgba(61,139,255,.08)}
+.wire-pin-slot.correct{border-color:var(--green)}
+.wire-pin-slot.wrong{border-color:var(--red)}
+.wire-pool-label{font-size:var(--step-xs);font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.wire-pool{display:flex;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-5)}
+.wire-chip{width:70px;height:38px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:all .1s;flex-shrink:0}
+.wire-chip.sel{border-color:var(--cyan);box-shadow:0 0 0 2px var(--cyan-wash)}
+.wire-chip.placed{opacity:.25;cursor:default}
+.wire-chip-wrap{display:flex;flex-direction:column;align-items:center;gap:5px}
+.wire-chip-label{text-align:center;font-size:var(--step-xs);color:var(--text2);white-space:nowrap;line-height:1.3}
+.w-orange{background:#f97316}
+.w-white-orange{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#f97316 5px,#f97316 10px)}
+.w-green{background:#22c55e}
+.w-white-green{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#22c55e 5px,#22c55e 10px)}
+.w-blue{background:#3b82f6}
+.w-white-blue{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#3b82f6 5px,#3b82f6 10px)}
+.w-brown{background:#92400e}
+.w-white-brown{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#92400e 5px,#92400e 10px)}
+.hint-box{display:none;background:var(--amber-l);border:1px solid var(--amber-border);border-radius:10px;padding:var(--space-3);margin-top:var(--space-3)}
+.hint-box.show{display:block}
+.hint-title{font-size:var(--step-xs);font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.hint-text{font-size:var(--step-sm);color:var(--text2);line-height:1.55}
+.hint-answer-btn{margin-top:8px;padding:6px 14px;border-radius:7px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;font-size:var(--step-xs);font-weight:600;display:none}
+.hint-answer-btn.show{display:inline-block}
+.lab-complete{display:none;position:fixed;inset:0;background:var(--overlay);z-index:60;align-items:center;justify-content:center}
+.lab-complete.show{display:flex}
+.lab-complete-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:var(--space-7);width:440px;max-width:92vw;box-shadow:0 16px 50px rgba(0,0,0,.5);position:relative;text-align:center}
+.lab-complete-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px}
+.complete-title{font-size:var(--step-2xl);font-weight:700;color:var(--green);letter-spacing:-0.01em}
+.complete-sub{font-size:var(--step-base);color:var(--text2);max-width:400px;line-height:1.6;margin:12px auto 0}
+.lab-complete-actions{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-5)}
+.chat-panel{border-left:1px solid var(--border);display:grid;grid-template-rows:42px 1fr auto 50px;overflow:hidden;background:var(--panel)}
+.chat-header{display:flex;align-items:center;gap:7px;padding:0 var(--space-3);border-bottom:1px solid var(--border);background:var(--panel2)}
+.chat-title{font-size:var(--step-sm);font-weight:700;flex:1}
+.model-tag{font-size:11.5px;color:var(--text3);background:var(--panel);padding:2px 7px;border-radius:6px;border:1px solid var(--border)}
+.messages{overflow-y:auto;padding:var(--space-3);display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:8px;max-width:100%}
+.msg.user{flex-direction:row-reverse}
+.av{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700}
+.ai-av{background:var(--cyan-wash);color:var(--cyan)}
+.user-av{background:var(--panel2);color:var(--text2)}
+.bub{padding:8px 12px;border-radius:10px;font-size:var(--step-sm);line-height:1.55;white-space:pre-wrap;max-width:100%}
+.ai-b{background:var(--panel2);color:var(--text)}
+.user-b{background:var(--cyan-wash);color:var(--text)}
+.typing-dots{display:flex;gap:3px;padding:8px 12px;background:var(--panel2);border-radius:10px}
+.typing-dots span{width:5px;height:5px;border-radius:50%;background:var(--text3);animation:blink 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+.chat-chips{display:flex;gap:6px;flex-wrap:wrap;padding:var(--space-2) var(--space-3);border-top:1px solid var(--border)}
+.chip{font-size:12.5px;padding:4px 10px;border-radius:20px;background:var(--panel2);color:var(--text2);border:1px solid var(--border);cursor:pointer;white-space:nowrap}
+.chip:hover{border-color:var(--cyan-d);color:var(--text)}
+.chat-input-row{display:flex;gap:8px;padding:0 var(--space-3);align-items:center;border-top:1px solid var(--border)}
+.chat-in{flex:1;padding:9px 12px;border-radius:20px;border:1px solid var(--border);background:var(--panel2);color:var(--text);outline:none;font-size:var(--step-sm)}
+.send-btn{width:32px;height:32px;border-radius:50%;background:var(--cyan);color:var(--btn-text);border:none;cursor:pointer;font-size:14px;flex-shrink:0}
+.mobile-toggle{display:none}
+@media (max-width:900px){
+  .topbar .crumb:not(.current),.topbar .crumb-sep{display:none}
+  .topbar .crumb.current{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar .ai-pill span{display:none}
+  .topbar{overflow:hidden}
+  .main{grid-template-columns:1fr;position:relative}
+  .sidebar,.chat-panel{position:fixed;top:52px;bottom:0;width:280px;z-index:40;transition:transform .2s}
+  .sidebar{left:0;transform:translateX(-100%)}
+  .sidebar.mobile-open{transform:translateX(0)}
+  .chat-panel{right:0;transform:translateX(100%)}
+  .chat-panel.mobile-open{transform:translateX(0)}
+  .mobile-toggle{display:block;background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer}
+  .mobile-backdrop{display:none;position:fixed;inset:0;background:var(--overlay);z-index:35}
+  .mobile-backdrop.show{display:block}
+}
+@media (max-width:480px){
+  .chapter-badge{display:none}
+  .topbar>span:first-child{font-size:14px}
+  .q-card{padding:12px}
+  .lesson-title{font-size:18px}
+}
+</style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="topbar">
+  <button class="mobile-toggle" id="sidebarToggle" onclick="toggleMobilePanel('sidebar')" title="Steps">☰</button>
+  <a class="brand" href="../../index.html">NET<span>Lab</span></a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="../../labs.html">Lab</a>
+  <span class="crumb-sep">›</span>
+  <a class="crumb" href="../../course.html">Network Eng. Lab I</a>
+  <span class="crumb-sep">›</span>
+  <span class="chapter-badge">Lab 2</span>
+  <span class="crumb current">Cable Termination</span>
+  <div class="ai-pill ai-off" id="aiStatus">
+    <div class="ai-dot" id="aiDot"></div>
+    <span id="aiStatusText">กำลังเชื่อมต่อ...</span>
+  </div>
+  <div class="lab-topbar-right">
+    <div id="authSlot"></div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="โหมดกลางคืน">🌙</button>
+    <button class="mobile-toggle" id="chatToggle" onclick="toggleMobilePanel('chat')" title="AI Tutor">💬</button>
+  </div>
+</div>
+
+<div class="mobile-backdrop" id="mobileBackdrop" onclick="closeMobilePanels()"></div>
+
+<div class="main">
+  <div class="sidebar" id="sidebarPanel">
+    <div class="sb-section"><div id="sidebarSteps"></div></div>
+    <div class="progress-wrap">
+      <div class="prog-label"><span>ความคืบหน้า</span><span id="progText">0%</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="content-area">
+      <div class="lesson-view">
+        <div class="lesson-status">
+          <div class="topo-chip" id="stepChip">Step 1/20</div>
+          <div class="complete-reopen-chip" id="completeChip" onclick="openLabComplete()">✓ Lab สำเร็จ — ดูสรุปผล</div>
+          <div class="next-lab-chip" id="nextLabChip" onclick="goNextLab()">ไป Lab ถัดไป →</div>
+        </div>
+        <div class="lesson-wrap" id="lessonWrap"></div>
+        <div class="lab-complete" id="labComplete" onclick="if(event.target===this)closeLabComplete()">
+          <div class="lab-complete-box" role="dialog" aria-labelledby="completeTitle">
+            <button class="lab-complete-close" onclick="closeLabComplete()" title="ปิด (ดูทบทวนเนื้อหาได้)">✕</button>
+            <div class="complete-title" id="completeTitle">Lab Ch.2 สำเร็จ!</div>
+            <div class="complete-sub">ฝึกเรียงสาย T568A และ T568B ครบ พร้อมเข้าใจหน้าที่ของ Crimper, Punch-down Tool, Keystone Jack และ Patch Panel — พร้อมสำหรับการคำนวณ IP Address ใน Lab ถัดไปแล้วครับ</div>
+            <div class="lab-complete-actions">
+              <button class="btn-skip2" onclick="closeLabComplete()">ปิด — ทบทวนเนื้อหา</button>
+              <button class="btn-check" onclick="resetLab()">ทำ Lab นี้อีกครั้ง →</button>
+              <button class="btn-next-lab" onclick="goNextLab()">ไป Lab ถัดไป →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+      <div id="chatDot" style="width:7px;height:7px;border-radius:50%;background:var(--text3)"></div>
+      <div class="chat-title">AI — Network Tutor</div>
+      <div class="model-tag" id="modelTag">Gemini 2.5 Flash</div>
+    </div>
+    <div class="messages" id="messages"></div>
+    <div class="chat-chips">
+      <div class="chip" onclick="askAboutTopic()">อธิบายเพิ่มเติม</div>
+      <div class="chip" onclick="showProgressSummary()">สรุปที่เรียนมาแล้ว</div>
+      <div class="chip" onclick="location.href='../../index.html'">หน้าอ้างอิงหลัก</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-in" id="chatIn" placeholder="ถาม AI Tutor..." onkeydown="if(event.key==='Enter'&&!isBusy)sendChat()"/>
+      <button class="send-btn" id="sendBtn" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../scripts/theme.js?v=2"></script>
+<script>renderAuthNav();</script>
+<script>
+'use strict';
+var API_BASE=(window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')
+  ?'http://localhost:8000':'http://'+window.location.hostname+'/api';
+
+// ── เนื้อหา Lab: สลับกันระหว่าง 'lesson' (อ่านเนื้อหา กด ถัดไป ได้เลย) กับ 'checkpoint' (ต้องตอบถูกก่อนถึงจะไปต่อ) ──
+// final:true = อยู่ในช่วงทบทวนท้ายบท (สรุปรวมทุกหัวข้อที่ผ่านมา) ต่างจาก checkpoint ระหว่างบทที่เพิ่งเรียนจบหัวข้อเดียว
+var STEPS=[
+  // ── หมวด A: เครื่องมือและวัสดุ ──
+  {id:1,type:'lesson',fig:'<svg viewBox="0 0 600 112"><rect x="6" y="28" width="132" height="70" rx="7" class="f-box"/><text x="72" y="56" class="f-tb" text-anchor="middle">Crimping Tool</text><text x="72" y="78" class="f-ts" text-anchor="middle">ย้ำหัว RJ45 ให้แน่น</text><rect x="154" y="28" width="132" height="70" rx="7" class="f-box"/><text x="220" y="56" class="f-tb" text-anchor="middle">Wire Stripper</text><text x="220" y="78" class="f-ts" text-anchor="middle">ปอกเปลือกนอกสาย</text><rect x="302" y="28" width="132" height="70" rx="7" class="f-box"/><text x="368" y="56" class="f-tb" text-anchor="middle">Punch Down Tool</text><text x="368" y="78" class="f-ts" text-anchor="middle">กดสายเข้า Jack/Panel</text><rect x="450" y="28" width="132" height="70" rx="7" class="f-box"/><text x="516" y="56" class="f-tb" text-anchor="middle">Cable Tester</text><text x="516" y="78" class="f-ts" text-anchor="middle">ทดสอบว่าสายใช้ได้จริง</text></svg>',figCap:'เครื่องมือหลัก 4 ชิ้นของงานเข้าหัวสาย — Cable Tester คือขั้นตอนสุดท้ายที่ยืนยันว่าสายที่เข้าหัวแล้วใช้งานได้จริง',section:'A. เครื่องมือและวัสดุ',title:'อุปกรณ์และเครื่องมือที่ใช้เข้าหัวสาย',
+   body:'<p>อุปกรณ์หลักที่ใช้ในงานเข้าสาย UTP:</p><p><b>วัสดุที่ใช้:</b></p><ul><li><b>สาย UTP (Unshielded Twisted Pair)</b> — คือสายทองแดง 8 เส้นที่จับเป็น 4 คู่แล้วบิดเป็นเกลียว โดยคำว่า Unshielded แปลว่าไม่มีชั้นโลหะหุ้มกันสัญญาณรบกวน <u>หลักการของการบิดเกลียว</u> คือทำให้สัญญาณรบกวนเข้าใส่สายทั้งสองเส้นในคู่เท่าๆ กันแล้วหักล้างกันไป <u>ระดับที่ใช้</u> คือ Cat5e รองรับ 1 Gbps และ Cat6 บิดถี่กว่าจึงรองรับความถี่สูงกว่า</li><li><b>RJ45 Connector</b> — คือหัวต่อพลาสติกใสที่มี <b>ขาทองเหลือง 8 ขา</b> เรียงอยู่ด้านหน้า <u>หลักการ</u> คือเมื่อถูกย้ำ ขาทองเหลืองจะถูกกดให้เจาะทะลุฉนวนของสายแต่ละเส้นลงไปสัมผัสทองแดงข้างใน จึงไม่ต้องปอกฉนวนของเส้นเล็กก่อน <u>ข้อจำกัด</u> คือย้ำแล้วถอดกลับมาใช้ใหม่ไม่ได้ ต้องตัดทิ้งแล้วเปลี่ยนหัวใหม่</li><li><b>Keystone Jack</b> — คือเต้ารับ RJ45 สำหรับติดตั้งถาวรที่ผนังหรือในแผงรวมสาย <u>หลักการ</u> คือด้านหลังมีร่องโลหะที่กดสายลงไปแล้วโลหะจะบาดฉนวนสัมผัสทองแดงเอง เรียกว่าแบบ IDC จึงไม่ต้องย้ำหัว RJ45</li><li><b>Patch Panel</b> — คือแผงที่รวมปลายสายจากทุกห้องมาไว้ที่เดียวในตู้ Rack โดยด้านหลังกดสายแบบเดียวกับ Keystone Jack ส่วนด้านหน้าเป็นช่อง RJ45 เรียงเป็นแถวพร้อมหมายเลขกำกับ</li></ul><p><b>เครื่องมือที่ใช้:</b></p><ul><li><b>Cable Crimper (คีมย้ำหัว)</b> — ใช้ย้ำหัว RJ45 <u>หลักการ</u> คือเมื่อบีบด้ามจนสุด แม่พิมพ์จะกดขาทองเหลืองทั้ง 8 ขาลงพร้อมกัน และกดตัวล็อกให้บีบเปลือกนอกของสายไว้ไม่ให้หลุดเมื่อถูกดึง</li><li><b>Wire Stripper (ที่ปอกสาย)</b> — ใช้ปอกเฉพาะเปลือกนอก <u>หลักการ</u> คือใบมีดถูกตั้งระยะไว้ให้ลึกพอตัดเปลือกนอกแต่ไม่ลึกถึงฉนวนของเส้นเล็กข้างใน</li><li><b>Punch-down Tool</b> — ใช้กับ Keystone Jack และ Patch Panel <u>หลักการ</u> คือมีสปริงที่ดีดกดสายลงร่องด้วยแรงคงที่ พร้อมใบมีดที่ตัดปลายส่วนเกินทิ้งในจังหวะเดียวกัน</li><li><b>Cable Tester</b> — ใช้ทดสอบหลังเข้าหัวเสร็จ <u>หลักการ</u> คือแยกเป็นตัวส่งกับตัวรับ แล้วปล่อยกระแสไล่ทีละเส้นตั้งแต่ 1 ถึง 8 ถ้าไฟติดครบและเรียงตามลำดับแปลว่าถูกต้อง ถ้าดวงไหนไม่ติดแปลว่าเส้นนั้นขาด และถ้าติดข้ามลำดับแปลว่าเรียงสีสลับ</li></ul><p>รายละเอียดการใช้งานและข้อควรระวังของแต่ละชิ้น:</p><ul><li><b>Wire Stripper</b> — ปอกเฉพาะเปลือกนอกเท่านั้น ถ้ากดแรงเกินจนบาดฉนวนของเส้นเล็กข้างในหรือทำทองแดงเป็นรอย สายเส้นนั้นจะส่งสัญญาณผิดพลาด ให้หมุนรอบสายเบาๆ แล้วดึงเปลือกออก</li><li><b>Cable Crimper</b> — ส่วนใหญ่มีใบมีดปอกและตัดในตัว ตอนย้ำต้องกดจนสุดจนได้ยินเสียงคลิก เพราะถ้ากดไม่สุด pin ทองเหลืองจะไม่เจาะทะลุฉนวนลงไปแตะทองแดง</li><li><b>Punch-down Tool</b> — ใช้กับ Keystone Jack และ Patch Panel มีสปริงที่กดสายลงร่องพร้อมตัดปลายส่วนเกินในจังหวะเดียว ต้องหันด้านมีดออกนอกตัวช่องเสมอ</li><li><b>Cable Tester</b> — มีสองส่วนคือตัวส่งและตัวรับ ไฟจะไล่ติดทีละดวงตั้งแต่ 1 ถึง 8 ถ้าดวงไหนไม่ติดแปลว่าเส้นนั้นไม่ต่อถึงกัน และถ้าไฟติดข้ามลำดับแปลว่าเรียงสีสลับ</li></ul><p>ของที่ต้องเตรียมเพิ่มคือ <b>หัว RJ45</b> (ควรเผื่อไว้เสมอเพราะย้ำแล้วถอดกลับมาใช้ใหม่ไม่ได้) และ <b>ปลอกยาง</b> สำหรับสวมกันหัก</p>'},
+  {id:2,type:'lesson',fig:'<svg viewBox="0 0 600 186"><rect x="20" y="30" width="250" height="120" rx="58" class="f-box"/><text x="145" y="22" class="f-ts" text-anchor="middle">เปลือกนอก (Jacket)</text><circle cx="87" cy="68" r="11" fill="#E8871E" opacity="0.45" stroke="var(--border)"/><circle cx="103" cy="68" r="11" fill="#E8871E" opacity="0.95" stroke="var(--border)"/><circle cx="187" cy="68" r="11" fill="#3BA55C" opacity="0.45" stroke="var(--border)"/><circle cx="203" cy="68" r="11" fill="#3BA55C" opacity="0.95" stroke="var(--border)"/><circle cx="87" cy="116" r="11" fill="#3D6FE8" opacity="0.45" stroke="var(--border)"/><circle cx="103" cy="116" r="11" fill="#3D6FE8" opacity="0.95" stroke="var(--border)"/><circle cx="187" cy="116" r="11" fill="#8A6242" opacity="0.45" stroke="var(--border)"/><circle cx="203" cy="116" r="11" fill="#8A6242" opacity="0.95" stroke="var(--border)"/><text x="145" y="168" class="f-ts" text-anchor="middle">4 คู่ = 8 เส้น</text><text x="306" y="44" class="f-tb">คู่ที่ 1</text><text x="380" y="44" class="f-t">ขาว/น้ำเงิน + น้ำเงิน</text><text x="306" y="72" class="f-tb">คู่ที่ 2</text><text x="380" y="72" class="f-t">ขาว/ส้ม + ส้ม</text><text x="306" y="100" class="f-tb">คู่ที่ 3</text><text x="380" y="100" class="f-t">ขาว/เขียว + เขียว</text><text x="306" y="128" class="f-tb">คู่ที่ 4</text><text x="380" y="128" class="f-t">ขาว/น้ำตาล + น้ำตาล</text><text x="306" y="168" class="f-ts">ตีเกลียวเป็นคู่เพื่อหักล้างสัญญาณรบกวนซึ่งกันและกัน</text></svg>',figCap:'สาย UTP หนึ่งเส้นมี 8 เส้นย่อย จับเป็น 4 คู่ตีเกลียว — ยิ่งตีเกลียวถี่ยิ่งต้านสัญญาณรบกวนได้ดี',section:'A. เครื่องมือและวัสดุ',title:'โครงสร้างสาย UTP',
+   body:'<p>UTP ย่อมาจาก <b>Unshielded Twisted Pair</b> — สายทองแดง 4 คู่ (8 เส้น) แต่ละคู่บิดเกลียวกันเอง โดยแต่ละคู่จะมีสีพื้น 1 เส้น และสีขาวคาดแถบสีเดียวกัน 1 เส้น:</p><ul><li>คู่ส้ม: Orange / White-Orange</li><li>คู่เขียว: Green / White-Green</li><li>คู่น้ำเงิน: Blue / White-Blue</li><li>คู่น้ำตาล: Brown / White-Brown</li></ul><p>เหตุผลที่ต้อง <b>บิดเกลียว</b> แต่ละคู่คือเพื่อลด <b>Crosstalk</b> (สัญญาณรบกวนระหว่างคู่สายที่วิ่งขนานกัน) — ยิ่งบิดถี่ (Cat6 บิดถี่กว่า Cat5e) ยิ่งรองรับความเร็วสูงได้มากขึ้น</p><p>สาย UTP หนึ่งเส้นมี 8 เส้นย่อยก็จริง แต่ไม่ได้ใช้ครบทุกเส้นเสมอไป:</p><div class="lesson-table-wrap"><table class="lesson-table"><caption>สายเส้นไหนถูกใช้จริงที่ความเร็วเท่าไร</caption><thead><tr><th>ความเร็ว</th><th>Pin ที่ใช้</th><th>หน้าที่</th><th>Pin ที่ไม่ได้ใช้</th></tr></thead><tbody><tr><td>10 / 100 Mbps</td><td>Pin 1, 2</td><td>คู่ส่ง (TX)</td><td>Pin 4, 5, 7, 8 ไม่ได้ใช้ส่งข้อมูลเลย</td></tr><tr><td>10 / 100 Mbps</td><td>Pin 3, 6</td><td>คู่รับ (RX)</td><td>Pin 4, 5, 7, 8 ไม่ได้ใช้ส่งข้อมูลเลย</td></tr><tr><td>1 Gbps ขึ้นไป</td><td>ทั้ง 8 Pin</td><td>ทุกคู่ส่งและรับพร้อมกันในเส้นเดียว</td><td><span class="t-ok">ไม่มี ใช้ครบทุกเส้น</span></td></tr></tbody></table></div><p>นี่คือเหตุผลที่สายเข้าหัวผิดบางเส้นแล้วยัง "ใช้ได้" ที่ความเร็ว 100 Mbps แต่พอต่อกับอุปกรณ์ Gigabit กลับใช้ไม่ได้ — เป็นอาการที่เจอบ่อยมากในงานจริง</p><p>เรื่องคู่สี ให้จำว่าสีขาวที่มีแถบสีอะไร จะเป็นคู่กับเส้นสีล้วนสีนั้นเสมอ เช่น ขาว/ส้ม คู่กับ ส้ม — และคู่สีที่นับเป็นคู่ที่ 1 ตามมาตรฐานคือคู่ Blue ซึ่งเป็นมรดกจากระบบโทรศัพท์เดิม</p><p>ระดับ Category บอกความถี่ที่สายรองรับ ยิ่งสูงยิ่งบิดเกลียวถี่ขึ้น: Cat5e รองรับ 100 MHz, Cat6 รองรับ 250 MHz และ Cat6a รองรับ 500 MHz</p>'},
+  {id:3,type:'quiz',section:'A. เครื่องมือและวัสดุ',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'เครื่องมือและวัสดุ',section:'A. เครื่องมือและวัสดุ',q:'เครื่องมือใดใช้สำหรับย้ำหัว RJ45 ให้ pin ทองเหลืองสัมผัสกับสายทองแดงด้านใน?',
+   opts:['Punch-down Tool','Cable Tester','Cable Crimper','Wire Stripper'],
+   ans:2,exp:'Cable Crimper คือคีมย้ำหัว ทำหน้าที่กดให้ pin ทองเหลืองในหัว RJ45 เจาะทะลุฉนวนลงไปสัมผัสกับทองแดงด้านใน — Punch-down Tool ใช้กับ Keystone Jack และ Patch Panel, Wire Stripper ใช้ปอกเปลือกนอก และ Cable Tester ใช้ทดสอบหลังเข้าหัวเสร็จแล้ว'},
+
+  // ── หมวด B: มาตรฐาน T568A / T568B ──,
+     {topic:'เครื่องมือและวัสดุ',q:'สาย UTP หนึ่งเส้นประกอบด้วยสายทองแดงกี่เส้น และจัดเป็นกี่คู่?',
+      opts:['4 เส้น จัดเป็น 2 คู่','8 เส้น จัดเป็น 4 คู่','6 เส้น จัดเป็น 3 คู่','8 เส้น จัดเป็น 8 คู่'],
+      ans:1,exp:'UTP มาตรฐานมีสายทองแดง 8 เส้นจับเป็น 4 คู่แล้วบิดเป็นเกลียว การบิดทำให้สัญญาณรบกวนเข้าใส่สายทั้งสองเส้นในคู่เท่ากันแล้วหักล้างกันไป ที่ความเร็ว 10/100 Mbps ใช้จริงเพียง 4 เส้น แต่ที่ 1 Gbps ขึ้นไปใช้ครบทั้ง 8 เส้น'},
+     {topic:'เครื่องมือและวัสดุ',q:'เครื่องมือใดใช้ปอกเฉพาะเปลือกนอกของสายโดยไม่ให้มีดโดนฉนวนของสายเส้นเล็กข้างใน?',
+      opts:['Punch-down Tool','Cable Tester','Wire Stripper','Cable Crimper'],
+      ans:2,exp:'Wire Stripper มีใบมีดที่ตั้งระยะไว้ให้ลึกพอตัดเปลือกนอกแต่ไม่ถึงฉนวนของเส้นเล็ก ถ้ากดแรงเกินจนบาดทองแดง สายเส้นนั้นจะส่งสัญญาณผิดพลาด วิธีที่ถูกคือหมุนรอบสายเบาๆ แล้วดึงเปลือกออก'}
+   ]},
+  {id:4,type:'lesson',fig:'<svg viewBox="0 0 600 178"><text x="150" y="20" class="f-tb" text-anchor="middle">ปลายสองด้านเรียงไม่ตรงมาตรฐาน</text><rect x="30" y="34" width="60" height="52" rx="4" class="f-box"/><rect x="210" y="34" width="60" height="52" rx="4" class="f-box"/><line x1="90" y1="42" x2="210" y2="78" stroke="var(--red)" stroke-width="1.6"/><line x1="90" y1="54" x2="210" y2="66" stroke="var(--red)" stroke-width="1.6"/><line x1="90" y1="66" x2="210" y2="54" stroke="var(--red)" stroke-width="1.6"/><line x1="90" y1="78" x2="210" y2="42" stroke="var(--red)" stroke-width="1.6"/><text x="150" y="108" class="f-ts" text-anchor="middle" fill="var(--red)">สัญญาณไปผิดขา — ใช้งานไม่ได้</text><text x="450" y="20" class="f-tb" text-anchor="middle">เรียงตามมาตรฐานเดียวกันทั้งสองด้าน</text><rect x="330" y="34" width="60" height="52" rx="4" class="f-box"/><rect x="510" y="34" width="60" height="52" rx="4" class="f-box"/><line x1="390" y1="42" x2="510" y2="42" stroke="var(--green)" stroke-width="1.6"/><line x1="390" y1="54" x2="510" y2="54" stroke="var(--green)" stroke-width="1.6"/><line x1="390" y1="66" x2="510" y2="66" stroke="var(--green)" stroke-width="1.6"/><line x1="390" y1="78" x2="510" y2="78" stroke="var(--green)" stroke-width="1.6"/><text x="450" y="108" class="f-ts" text-anchor="middle" fill="var(--green)">ขาตรงกันทุกเส้น — ใช้งานได้</text><text x="300" y="146" class="f-t" text-anchor="middle">มาตรฐานทำให้ช่างคนละคน คนละบริษัท เข้าหัวสายแล้วใช้ร่วมกันได้</text><text x="300" y="166" class="f-ts" text-anchor="middle">จึงมีข้อตกลงกลางว่าสีไหนต้องอยู่ Pin ไหน — คือ T568A และ T568B</text></svg>',figCap:'ถ้าต่างคนต่างเรียงสี สายจะใช้งานร่วมกันไม่ได้ — มาตรฐาน T568A/T568B จึงกำหนดตำแหน่งของทุกสีไว้ตายตัว',section:'B. มาตรฐาน T568A/T568B',title:'ทำไมต้องมีมาตรฐานการเข้าสาย',
+   body:'<p>ถ้าแต่ละคนเรียงสีสายเข้า RJ45 ตามใจชอบ แม้จะใช้งานได้ในบางกรณี แต่จะไม่มีทางรู้ได้ว่าสายเส้นไหนเข้าถูกหรือผิด และจะใช้ทดแทนกันไม่ได้ — TIA/EIA จึงกำหนดมาตรฐานการเรียงลำดับสีไว้ 2 แบบคือ <b>T568A</b> และ <b>T568B</b> เพื่อให้ทุกคนเข้าสายแบบเดียวกัน ทดสอบและซ่อมแซมได้ง่าย</p><p>มาตรฐานที่ใช้อ้างอิงกันทั่วโลกคือ <b>TIA/EIA-568</b> ซึ่งกำหนดทั้งลำดับสีและวิธีติดตั้งสายในอาคาร ทำให้ช่างคนละคนคนละบริษัททำงานต่อกันได้</p><p>สิ่งที่เกิดขึ้นถ้าเข้าหัวไม่ตามมาตรฐาน มีได้หลายระดับ ซึ่งบางระดับอันตรายกว่าเพราะไม่เห็นอาการทันที:</p><ul><li><b>ใช้ไม่ได้เลย</b> — สลับ Pin 1, 2 กับ 3, 6 ผิดฝั่ง ทำให้คู่ส่งไปชนคู่ส่ง สังเกตง่ายเพราะไฟที่พอร์ตไม่ติด</li><li><b>ใช้ได้แต่ช้า</b> — เข้าครบ 8 เส้นแต่สลับคู่ 4, 5 กับ 7, 8 จะยังใช้ได้ที่ 100 Mbps แต่ตกที่ Gigabit</li><li><b>Split Pair</b> — เข้าครบทุก Pin ถูกตำแหน่ง แต่หยิบเส้นข้ามคู่เกลียวมาใช้ ทำให้ Cable Tester ทั่วไปบอกว่าผ่าน แต่พอใช้งานจริงจะมีสัญญาณรบกวนสูงและหลุดเป็นช่วงๆ — เป็นอาการที่หาต้นเหตุยากที่สุด</li></ul><p>บทเรียนคือ ให้เรียงตามมาตรฐานเสมอ อย่าเรียงตามใจแม้ว่าจะ "เรียงเหมือนกันทั้งสองด้าน" ก็ตาม</p>'},
+  {id:5,type:'lesson',fig:'<svg viewBox="0 0 600 122"><text x="300" y="16" class="f-ta" text-anchor="middle">T568B — เรียงจาก Pin 1 ถึง Pin 8</text><rect x="24" y="50" width="64" height="30" rx="3" fill="#E8871E"/><rect x="24" y="50" width="64" height="15" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="24" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="56" y="42" class="f-ts" text-anchor="middle">Pin 1</text><text x="56" y="94" class="f-ts" text-anchor="middle">ขาว/ส้ม</text><rect x="94" y="50" width="64" height="30" rx="3" fill="#E8871E"/><rect x="94" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="126" y="42" class="f-ts" text-anchor="middle">Pin 2</text><text x="126" y="94" class="f-ts" text-anchor="middle">ส้ม</text><rect x="164" y="50" width="64" height="30" rx="3" fill="#3BA55C"/><rect x="164" y="50" width="64" height="15" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="164" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="196" y="42" class="f-ts" text-anchor="middle">Pin 3</text><text x="196" y="94" class="f-ts" text-anchor="middle">ขาว/เขียว</text><rect x="234" y="50" width="64" height="30" rx="3" fill="#3D6FE8"/><rect x="234" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="266" y="42" class="f-ts" text-anchor="middle">Pin 4</text><text x="266" y="94" class="f-ts" text-anchor="middle">น้ำเงิน</text><rect x="304" y="50" width="64" height="30" rx="3" fill="#3D6FE8"/><rect x="304" y="50" width="64" height="15" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="304" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="336" y="42" class="f-ts" text-anchor="middle">Pin 5</text><text x="336" y="94" class="f-ts" text-anchor="middle">ขาว/น้ำเงิน</text><rect x="374" y="50" width="64" height="30" rx="3" fill="#3BA55C"/><rect x="374" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="406" y="42" class="f-ts" text-anchor="middle">Pin 6</text><text x="406" y="94" class="f-ts" text-anchor="middle">เขียว</text><rect x="444" y="50" width="64" height="30" rx="3" fill="#8A6242"/><rect x="444" y="50" width="64" height="15" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="444" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="476" y="42" class="f-ts" text-anchor="middle">Pin 7</text><text x="476" y="94" class="f-ts" text-anchor="middle">ขาว/น้ำตาล</text><rect x="514" y="50" width="64" height="30" rx="3" fill="#8A6242"/><rect x="514" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="546" y="42" class="f-ts" text-anchor="middle">Pin 8</text><text x="546" y="94" class="f-ts" text-anchor="middle">น้ำตาล</text></svg>',figCap:'ลำดับ T568B ที่ต้องจำ — ขาว/ส้ม, ส้ม, ขาว/เขียว, น้ำเงิน, ขาว/น้ำเงิน, เขียว, ขาว/น้ำตาล, น้ำตาล',section:'B. มาตรฐาน T568A/T568B',title:'มาตรฐาน T568B (นิยมใช้มากที่สุด)',
+   body:'<p>ลำดับสีจาก Pin 1 ถึง Pin 8 ของมาตรฐาน T568B:</p><ol><li>White-Orange</li><li>Orange</li><li>White-Green</li><li>Blue</li><li>White-Blue</li><li>Green</li><li>White-Brown</li><li>Brown</li></ol><p>T568B เป็นมาตรฐานที่ใช้ในงานติดตั้งเชิงพาณิชย์ส่วนใหญ่ในปัจจุบัน</p><p>วิธีจำ T568B ที่ใช้กันบ่อยคือจำเป็นจังหวะว่า <b>ขาวส้ม ส้ม ขาวเขียว น้ำเงิน ขาวน้ำเงิน เขียว ขาวน้ำตาล น้ำตาล</b> โดยสังเกตว่าทุกคู่เรียงติดกันหมด ยกเว้นคู่เขียวที่ถูกคู่น้ำเงินแทรกกลาง</p><p>อีกวิธีคือจำลำดับสีล้วนก่อนว่า <b>ส้ม เขียว น้ำเงิน น้ำตาล</b> แล้วค่อยแทรกเส้นขาวของสีนั้นไว้ข้างหน้า จากนั้นสลับเฉพาะตำแหน่งของน้ำเงินกับเขียวให้ถูก</p><p>สิ่งที่ควรรู้เพิ่มคือหน้าที่ของแต่ละ Pin ในความเร็ว 100 Mbps: <b>Pin 1 และ 2 คือคู่ส่ง (TX)</b> ส่วน <b>Pin 3 และ 6 คือคู่รับ (RX)</b> — จำสองคู่นี้ไว้จะเข้าใจเรื่อง Crossover ในบทถัดไปได้ทันที เพราะสาย Crossover ก็คือการสลับคู่ส่งกับคู่รับให้กันนั่นเอง</p><p>เวลาถือหัว RJ45 ให้หันด้านที่มีสลักล็อกลง แล้วให้ปลายสายชี้ออกจากตัว Pin 1 จะอยู่ทางซ้ายมือเสมอ</p>'},
+  {id:6,type:'lesson',fig:'<svg viewBox="0 0 600 122"><text x="300" y="16" class="f-tg" text-anchor="middle">T568A — เรียงจาก Pin 1 ถึง Pin 8</text><rect x="24" y="50" width="64" height="30" rx="3" fill="#3BA55C"/><rect x="24" y="50" width="64" height="15" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="24" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="56" y="42" class="f-ts" text-anchor="middle">Pin 1</text><text x="56" y="94" class="f-ts" text-anchor="middle">ขาว/เขียว</text><rect x="94" y="50" width="64" height="30" rx="3" fill="#3BA55C"/><rect x="94" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="126" y="42" class="f-ts" text-anchor="middle">Pin 2</text><text x="126" y="94" class="f-ts" text-anchor="middle">เขียว</text><rect x="164" y="50" width="64" height="30" rx="3" fill="#E8871E"/><rect x="164" y="50" width="64" height="15" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="164" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="196" y="42" class="f-ts" text-anchor="middle">Pin 3</text><text x="196" y="94" class="f-ts" text-anchor="middle">ขาว/ส้ม</text><rect x="234" y="50" width="64" height="30" rx="3" fill="#3D6FE8"/><rect x="234" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="266" y="42" class="f-ts" text-anchor="middle">Pin 4</text><text x="266" y="94" class="f-ts" text-anchor="middle">น้ำเงิน</text><rect x="304" y="50" width="64" height="30" rx="3" fill="#3D6FE8"/><rect x="304" y="50" width="64" height="15" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="304" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="336" y="42" class="f-ts" text-anchor="middle">Pin 5</text><text x="336" y="94" class="f-ts" text-anchor="middle">ขาว/น้ำเงิน</text><rect x="374" y="50" width="64" height="30" rx="3" fill="#E8871E"/><rect x="374" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="406" y="42" class="f-ts" text-anchor="middle">Pin 6</text><text x="406" y="94" class="f-ts" text-anchor="middle">ส้ม</text><rect x="444" y="50" width="64" height="30" rx="3" fill="#8A6242"/><rect x="444" y="50" width="64" height="15" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="444" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="476" y="42" class="f-ts" text-anchor="middle">Pin 7</text><text x="476" y="94" class="f-ts" text-anchor="middle">ขาว/น้ำตาล</text><rect x="514" y="50" width="64" height="30" rx="3" fill="#8A6242"/><rect x="514" y="50" width="64" height="30" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="546" y="42" class="f-ts" text-anchor="middle">Pin 8</text><text x="546" y="94" class="f-ts" text-anchor="middle">น้ำตาล</text></svg>',figCap:'T568A สลับคู่ส้มกับคู่เขียวของ T568B — Pin 4, 5, 7, 8 เหมือนกันทั้งสองมาตรฐาน',section:'B. มาตรฐาน T568A/T568B',title:'มาตรฐาน T568A',
+   body:'<p>ลำดับสีจาก Pin 1 ถึง Pin 8 ของมาตรฐาน T568A:</p><ol><li>White-Green</li><li>Green</li><li>White-Orange</li><li>Blue</li><li>White-Blue</li><li>Orange</li><li>White-Brown</li><li>Brown</li></ol><p>สังเกตว่า T568A กับ T568B ต่างกันแค่ <b>สลับตำแหน่งคู่ Orange กับคู่ Green</b> เท่านั้น (Pin 1,2,3,6) ส่วนคู่ Blue (Pin 4,5) และคู่ Brown (Pin 7,8) เหมือนกันทั้งสองมาตรฐาน</p><p>T568A กับ T568B ใช้งานได้ดีเท่ากันทุกประการ ขอเพียงปลายทั้งสองด้านของสายเส้นเดียวกันใช้มาตรฐานเดียวกัน (ยกเว้นตั้งใจทำ Crossover)</p><p>ในทางปฏิบัติ T568B เป็นที่นิยมมากกว่าในงานเชิงพาณิชย์ทั่วไปรวมถึงในไทย ส่วน T568A ถูกกำหนดให้ใช้ในงานภาครัฐบางประเทศและงานที่อยู่อาศัยในสหรัฐอเมริกา เพราะเข้ากันได้ย้อนหลังกับระบบโทรศัพท์แบบเดิมได้ดีกว่า</p><p>ข้อสำคัญที่สุดสำหรับงานติดตั้งจริงคือ <b>เลือกมาตรฐานเดียวแล้วใช้ให้เหมือนกันทั้งอาคาร</b> ทั้งที่หัว RJ45 ที่ Keystone Jack และที่ Patch Panel เพราะถ้าใช้ปนกันโดยไม่ตั้งใจ จะเกิดสาย Crossover ขึ้นมาเองโดยไม่รู้ตัว และกลายเป็นปัญหาที่หาสาเหตุยาก</p>'},
+  {id:7,type:'lesson',fig:'<svg viewBox="0 0 600 206"><text x="150" y="20" class="f-tb" text-anchor="middle">Straight-through</text><text x="150" y="38" class="f-ts" text-anchor="middle">ปลายทั้งสองด้านเป็น T568B เหมือนกัน</text><rect x="26" y="48" width="18" height="14" rx="2" fill="#E8871E"/><rect x="26" y="48" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="26" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="46" y="48" width="18" height="14" rx="2" fill="#E8871E"/><rect x="46" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="66" y="48" width="18" height="14" rx="2" fill="#3BA55C"/><rect x="66" y="48" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="66" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="86" y="48" width="18" height="14" rx="2" fill="#3D6FE8"/><rect x="86" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="106" y="48" width="18" height="14" rx="2" fill="#3D6FE8"/><rect x="106" y="48" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="106" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="126" y="48" width="18" height="14" rx="2" fill="#3BA55C"/><rect x="126" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="146" y="48" width="18" height="14" rx="2" fill="#8A6242"/><rect x="146" y="48" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="146" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="166" y="48" width="18" height="14" rx="2" fill="#8A6242"/><rect x="166" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><text x="16" y="59" class="f-ts" text-anchor="end">A</text><rect x="26" y="108" width="18" height="14" rx="2" fill="#E8871E"/><rect x="26" y="108" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="26" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="46" y="108" width="18" height="14" rx="2" fill="#E8871E"/><rect x="46" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="66" y="108" width="18" height="14" rx="2" fill="#3BA55C"/><rect x="66" y="108" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="66" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="86" y="108" width="18" height="14" rx="2" fill="#3D6FE8"/><rect x="86" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="106" y="108" width="18" height="14" rx="2" fill="#3D6FE8"/><rect x="106" y="108" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="106" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="126" y="108" width="18" height="14" rx="2" fill="#3BA55C"/><rect x="126" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="146" y="108" width="18" height="14" rx="2" fill="#8A6242"/><rect x="146" y="108" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="146" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="166" y="108" width="18" height="14" rx="2" fill="#8A6242"/><rect x="166" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><text x="16" y="119" class="f-ts" text-anchor="end">B</text><line x1="35" y1="62" x2="35" y2="108" stroke="var(--green)" stroke-width="1.2"/><line x1="55" y1="62" x2="55" y2="108" stroke="var(--green)" stroke-width="1.2"/><line x1="75" y1="62" x2="75" y2="108" stroke="var(--green)" stroke-width="1.2"/><line x1="95" y1="62" x2="95" y2="108" stroke="var(--green)" stroke-width="1.2"/><line x1="115" y1="62" x2="115" y2="108" stroke="var(--green)" stroke-width="1.2"/><line x1="135" y1="62" x2="135" y2="108" stroke="var(--green)" stroke-width="1.2"/><line x1="155" y1="62" x2="155" y2="108" stroke="var(--green)" stroke-width="1.2"/><line x1="175" y1="62" x2="175" y2="108" stroke="var(--green)" stroke-width="1.2"/><text x="150" y="146" class="f-ts" text-anchor="middle">ใช้ต่ออุปกรณ์ต่างชนิด</text><text x="150" y="164" class="f-ts" text-anchor="middle">PC ไป Switch, Switch ไป Router</text><line x1="300" y1="10" x2="300" y2="190" class="f-ln-d"/><text x="450" y="20" class="f-tb" text-anchor="middle">Crossover</text><text x="450" y="38" class="f-ts" text-anchor="middle">ด้านหนึ่ง T568B อีกด้าน T568A</text><rect x="326" y="48" width="18" height="14" rx="2" fill="#E8871E"/><rect x="326" y="48" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="326" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="346" y="48" width="18" height="14" rx="2" fill="#E8871E"/><rect x="346" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="366" y="48" width="18" height="14" rx="2" fill="#3BA55C"/><rect x="366" y="48" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="366" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="386" y="48" width="18" height="14" rx="2" fill="#3D6FE8"/><rect x="386" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="406" y="48" width="18" height="14" rx="2" fill="#3D6FE8"/><rect x="406" y="48" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="406" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="426" y="48" width="18" height="14" rx="2" fill="#3BA55C"/><rect x="426" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="446" y="48" width="18" height="14" rx="2" fill="#8A6242"/><rect x="446" y="48" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="446" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="466" y="48" width="18" height="14" rx="2" fill="#8A6242"/><rect x="466" y="48" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><text x="316" y="59" class="f-ts" text-anchor="end">A</text><rect x="326" y="108" width="18" height="14" rx="2" fill="#3BA55C"/><rect x="326" y="108" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="326" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="346" y="108" width="18" height="14" rx="2" fill="#3BA55C"/><rect x="346" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="366" y="108" width="18" height="14" rx="2" fill="#E8871E"/><rect x="366" y="108" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="366" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="386" y="108" width="18" height="14" rx="2" fill="#3D6FE8"/><rect x="386" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="406" y="108" width="18" height="14" rx="2" fill="#3D6FE8"/><rect x="406" y="108" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="406" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="426" y="108" width="18" height="14" rx="2" fill="#E8871E"/><rect x="426" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="446" y="108" width="18" height="14" rx="2" fill="#8A6242"/><rect x="446" y="108" width="18" height="7" rx="2" fill="#FFFFFF" opacity="0.62"/><rect x="446" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="466" y="108" width="18" height="14" rx="2" fill="#8A6242"/><rect x="466" y="108" width="18" height="14" rx="2" fill="none" stroke="var(--border)" stroke-width="1"/><text x="316" y="119" class="f-ts" text-anchor="end">B</text><line x1="335" y1="62" x2="375" y2="108" stroke="var(--amber)" stroke-width="1.2"/><line x1="355" y1="62" x2="435" y2="108" stroke="var(--amber)" stroke-width="1.2"/><line x1="375" y1="62" x2="335" y2="108" stroke="var(--amber)" stroke-width="1.2"/><line x1="395" y1="62" x2="395" y2="108" stroke="var(--amber)" stroke-width="1.2"/><line x1="415" y1="62" x2="415" y2="108" stroke="var(--amber)" stroke-width="1.2"/><line x1="435" y1="62" x2="355" y2="108" stroke="var(--amber)" stroke-width="1.2"/><line x1="455" y1="62" x2="455" y2="108" stroke="var(--amber)" stroke-width="1.2"/><line x1="475" y1="62" x2="475" y2="108" stroke="var(--amber)" stroke-width="1.2"/><text x="450" y="146" class="f-ts" text-anchor="middle">ใช้ต่ออุปกรณ์ชนิดเดียวกัน</text><text x="450" y="164" class="f-ts" text-anchor="middle">PC ไป PC, Switch ไป Switch</text><text x="300" y="196" class="f-ts" text-anchor="middle">อุปกรณ์รุ่นใหม่ส่วนมากมี Auto-MDIX จึงใช้สาย Straight-through แทนได้เกือบทุกกรณี</text></svg>',figCap:'Straight-through ใช้มาตรฐานเดียวกันทั้งสองด้าน ส่วน Crossover สลับคู่ส่งกับคู่รับเพื่อให้อุปกรณ์ชนิดเดียวกันคุยกันได้',section:'B. มาตรฐาน T568A/T568B',title:'Straight-through Cable vs Crossover Cable',
+   body:'<div class="lesson-table-wrap"><table class="lesson-table"><caption>เทียบสายสามชนิดที่ต้องแยกให้ออก</caption><thead><tr><th>ชนิดสาย</th><th>ปลายสองด้าน</th><th>ใช้เชื่อม</th><th>ตัวอย่าง</th><th>พบบ่อยแค่ไหน</th></tr></thead><tbody><tr><td>Straight-through</td><td>มาตรฐานเดียวกัน (B-B หรือ A-A)</td><td>อุปกรณ์<b>ต่างชนิด</b>กัน</td><td>PC ไป Switch, Switch ไป Router</td><td><span class="t-ok">ใช้เกือบทั้งหมดในงานจริง</span></td></tr><tr><td>Crossover</td><td>คนละมาตรฐาน (A ด้านหนึ่ง B อีกด้าน)</td><td>อุปกรณ์<b>ชนิดเดียวกัน</b></td><td>PC ไป PC, Switch ไป Switch รุ่นเก่า</td><td>พบน้อยลงมากเพราะมี Auto-MDIX</td></tr><tr><td>Rollover</td><td>สลับลำดับกลับหัวทั้งเส้น (1 ไป 8)</td><td>เข้าพอร์ต Console เพื่อตั้งค่า</td><td>โน้ตบุ๊กไป Console ของ Router</td><td>ใช้เฉพาะตอนตั้งค่าอุปกรณ์ครั้งแรก</td></tr></tbody></table></div><p>หมายเหตุ: อุปกรณ์รุ่นใหม่ส่วนใหญ่รองรับ <b>Auto-MDIX</b> ที่สลับสายให้อัตโนมัติ ทำให้ปัจจุบันใช้ Straight-through ได้แทบทุกกรณี แต่ความเข้าใจเรื่อง Crossover ยังจำเป็นสำหรับอุปกรณ์รุ่นเก่าและการสอบ</p><p>เหตุผลเบื้องหลังต้องย้อนไปที่หน้าที่ของ Pin ในอุปกรณ์แต่ละชนิด ซึ่งแบ่งเป็นสองแบบ:</p><ul><li><b>MDI (Medium Dependent Interface)</b> — คือรูปแบบการวางขาของ <u>อุปกรณ์ปลายทาง</u> อย่าง PC และ Router <u>หลักการ</u> คือกำหนดให้ Pin 1 และ 2 เป็นขาส่งออก (TX) ส่วน Pin 3 และ 6 เป็นขารอรับ (RX)</li><li><b>MDI-X (MDI Crossover)</b> — คือรูปแบบการวางขาของ <u>อุปกรณ์กลาง</u> อย่าง Switch และ Hub โดยตัวอักษร X ย่อมาจาก Crossover <u>หลักการ</u> คือสลับกับ MDI คือส่งออกที่ Pin 3 และ 6 ส่วนรอรับที่ Pin 1 และ 2 <u>เหตุผลที่ออกแบบให้สลับ</u> ก็เพื่อให้ขาส่งของฝั่งหนึ่งไปตรงกับขารับของอีกฝั่งพอดีเมื่อใช้สายตรงธรรมดา</li></ul><p>ดังนั้นเมื่อต่ออุปกรณ์ต่างชนิดกัน (MDI กับ MDI-X) การสลับได้ทำไว้ในตัวอุปกรณ์อยู่แล้ว จึงใช้สาย Straight-through ได้เลย แต่ถ้าต่ออุปกรณ์ชนิดเดียวกัน ทั้งคู่จะส่งออกที่ขาเดียวกันและรอรับที่ขาเดียวกัน สัญญาณจึงวิ่งชนกัน ต้องให้สายสลับให้แทน คือใช้ Crossover</p><div class="lesson-table-wrap"><table class="lesson-table"><caption>ทำไมอุปกรณ์ต่างชนิดถึงใช้สายตรงได้</caption><thead><tr><th>รูปแบบขา</th><th>อุปกรณ์ที่ใช้</th><th>ขาส่งออก (TX)</th><th>ขารอรับ (RX)</th></tr></thead><tbody><tr><td>MDI</td><td>PC, Router (อุปกรณ์ปลายทาง)</td><td>Pin 1, 2</td><td>Pin 3, 6</td></tr><tr><td>MDI-X</td><td>Switch, Hub (อุปกรณ์กลาง)</td><td>Pin 3, 6</td><td>Pin 1, 2</td></tr></tbody></table></div><p>จากตารางจะเห็นว่า ขาส่งของ MDI (Pin 1, 2) ไปตรงกับขารับของ MDI-X (Pin 1, 2) พอดีอยู่แล้ว จึงใช้สายตรงได้เลย แต่ถ้าต่ออุปกรณ์รูปแบบเดียวกันสองตัว ขาส่งจะไปชนขาส่ง จึงต้องให้สายสลับให้แทน</p><p>ปัจจุบันอุปกรณ์เกือบทุกรุ่นมี <b>Auto-MDIX</b> ที่ตรวจจับและสลับขาให้เองอัตโนมัติ จึงใช้สาย Straight-through ได้แทบทุกกรณี แต่ยังต้องเข้าใจหลักการนี้ เพราะข้อสอบยังออกและอุปกรณ์รุ่นเก่าในห้อง Lab ยังต้องใช้</p><p>ยังมีสายอีกชนิดที่จะได้เจอคือ <b>Rollover Cable</b> (มักเป็นสีฟ้าอ่อน) ที่สลับลำดับกลับหัวทั้งเส้นคือ Pin 1 ไป Pin 8 ใช้เสียบเข้าพอร์ต Console ของ Router เพื่อตั้งค่าครั้งแรก — ซึ่งก็คือสิ่งที่จำลองเป็นหน้าเทอร์มินัลใน Lab 4 เป็นต้นไป</p>'},
+  {id:8,type:'quiz',section:'B. มาตรฐาน T568A/T568B',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'มาตรฐาน T568A/T568B',section:'B. มาตรฐาน T568A/T568B',q:'สายที่ปลายข้างหนึ่งเข้าแบบ T568A อีกข้างเข้าแบบ T568B เรียกว่าสายประเภทใด และใช้ในกรณีใด?',
+   opts:['Straight-through Cable — ใช้เชื่อม PC เข้ากับ Switch','Rollover Cable — ใช้เชื่อมเข้าพอร์ต Console ของ Router','Crossover Cable — ใช้เชื่อมอุปกรณ์ชนิดเดียวกัน เช่น PC กับ PC โดยตรง','Patch Cord — สายสำเร็จรูปสั้นๆ สำหรับต่อจาก Patch Panel เข้า Switch'],
+   ans:2,exp:'สายที่ปลายสองด้านใช้คนละมาตรฐาน (T568A ด้านหนึ่ง T568B อีกด้าน) คือ Crossover Cable ซึ่งสลับคู่ส่งกับคู่รับ ทำให้อุปกรณ์ชนิดเดียวกันคุยกันได้ — ส่วนอีกสามข้อเป็นสายที่มีอยู่จริงทั้งหมด แต่ Straight-through ใช้มาตรฐานเดียวกันทั้งสองด้าน, Rollover สลับลำดับกลับหัวทั้งเส้นสำหรับงาน Console และ Patch Cord คือสายสำเร็จรูปที่โดยทั่วไปเข้าแบบ Straight-through'},
+
+  // ── หมวด C: ฝึกเรียงสาย T568B ──,
+     {topic:'มาตรฐาน T568A/T568B',q:'T568A กับ T568B ต่างกันที่ Pin ใดบ้าง?',
+      opts:['Pin 4, 5, 7 และ 8','Pin 1, 2, 3 และ 6','ต่างกันทั้ง 8 Pin','Pin 2, 4, 6 และ 8'],
+      ans:1,exp:'ทั้งสองมาตรฐานสลับเฉพาะคู่ Orange กับคู่ Green ซึ่งอยู่ที่ Pin 1, 2, 3 และ 6 ส่วน Pin 4, 5 (คู่ Blue) และ Pin 7, 8 (คู่ Brown) อยู่ตำแหน่งเดิมทั้งคู่ — จำง่ายๆ ว่าถ้าขึ้นต้นด้วยขาว/ส้มคือ T568B ถ้าขึ้นต้นด้วยขาว/เขียวคือ T568A'},
+     {topic:'มาตรฐาน T568A/T568B',q:'ต้องการต่อ PC เข้ากับ Switch ควรใช้สายแบบใด และเพราะเหตุใด?',
+      opts:['Crossover เพราะต้องสลับคู่ส่งกับคู่รับให้','Rollover เพราะต้องกลับลำดับสายทั้งเส้น','สายแบบใดก็ได้เพราะให้ผลเหมือนกันทุกประการ','Straight-through เพราะเป็นอุปกรณ์ต่างชนิดกัน การสลับขาทำไว้ในตัวอุปกรณ์แล้ว'],
+      ans:3,exp:'PC เป็นแบบ MDI คือส่งออกที่ Pin 1, 2 ส่วน Switch เป็นแบบ MDI-X คือรอรับที่ Pin 1, 2 ขาจึงตรงกันพอดีอยู่แล้ว ใช้สาย Straight-through ได้เลย ส่วน Crossover ใช้เมื่อต่ออุปกรณ์ชนิดเดียวกันซึ่งขาส่งจะไปชนขาส่ง'}
+   ]},
+  {id:9,type:'lesson',fig:'<svg viewBox="0 0 780 156"><rect x="6" y="34" width="142" height="80" rx="8" class="f-box-a"/><circle cx="77" cy="54" r="13" class="f-box"/><text x="77" y="59" class="f-tb" text-anchor="middle">1</text><text x="77" y="84" class="f-ta" text-anchor="middle">ปอกเปลือกนอก</text><text x="77" y="104" class="f-ts" text-anchor="middle">ประมาณ 2-3 ซม.</text><text x="155" y="80" class="f-t" text-anchor="middle">→</text><rect x="161" y="34" width="142" height="80" rx="8" class="f-box-a"/><circle cx="232" cy="54" r="13" class="f-box"/><text x="232" y="59" class="f-tb" text-anchor="middle">2</text><text x="232" y="84" class="f-ta" text-anchor="middle">คลายเกลียว</text><text x="232" y="104" class="f-ts" text-anchor="middle">แยกให้ครบ 8 เส้น</text><text x="310" y="80" class="f-t" text-anchor="middle">→</text><rect x="316" y="34" width="142" height="80" rx="8" class="f-box-a"/><circle cx="387" cy="54" r="13" class="f-box"/><text x="387" y="59" class="f-tb" text-anchor="middle">3</text><text x="387" y="84" class="f-ta" text-anchor="middle">เรียงสี</text><text x="387" y="104" class="f-ts" text-anchor="middle">ตามมาตรฐานที่เลือก</text><text x="465" y="80" class="f-t" text-anchor="middle">→</text><rect x="471" y="34" width="142" height="80" rx="8" class="f-box-a"/><circle cx="542" cy="54" r="13" class="f-box"/><text x="542" y="59" class="f-tb" text-anchor="middle">4</text><text x="542" y="84" class="f-ta" text-anchor="middle">ตัดปลายให้เสมอ</text><text x="542" y="104" class="f-ts" text-anchor="middle">ยาวเท่ากันทั้ง 8 เส้น</text><text x="620" y="80" class="f-t" text-anchor="middle">→</text><rect x="626" y="34" width="142" height="80" rx="8" class="f-box-a"/><circle cx="697" cy="54" r="13" class="f-box"/><text x="697" y="59" class="f-tb" text-anchor="middle">5</text><text x="697" y="84" class="f-ta" text-anchor="middle">สอดแล้วย้ำหัว</text><text x="697" y="104" class="f-ts" text-anchor="middle">ดันจนสุดก่อนย้ำ</text><text x="390" y="142" class="f-ts" text-anchor="middle">ขั้นที่พลาดบ่อยที่สุดคือข้อ 4 — ถ้าปลายไม่เสมอกัน สายบางเส้นจะไม่แตะหน้าสัมผัสในหัว RJ45</text></svg>',figCap:'ลำดับการเข้าหัว RJ45 — ตัดปลายให้เสมอกันก่อนสอดเข้าหัวเสมอ ไม่เช่นนั้นสายบางเส้นจะไม่แตะหน้าสัมผัส',section:'C. ฝึกเรียงสาย T568B',title:'ขั้นตอนการเข้าหัว RJ45',
+   body:'<ol><li><b>ปอกฉนวนนอก</b> ประมาณ 3-4 ซม. ด้วย Cable Stripper (ระวังอย่าให้มีดโดนสายทองแดงข้างใน)</li><li><b>คลี่เกลียวสายทั้ง 4 คู่</b> ออกจากกัน</li><li><b>เรียงลำดับสี</b> ตามมาตรฐานที่ต้องการ (T568A หรือ T568B)</li><li><b>ตัดปลายสายให้เสมอกัน</b> เหลือความยาวประมาณ 1.2-1.5 ซม.</li><li><b>เสียบเข้า RJ45 Connector</b> ให้แต่ละเส้นเข้า slot ตรงตามลำดับ ดันจนสุดจนเห็นปลายทองแดงชนขอบ</li><li><b>ย้ำด้วย Cable Crimper</b> ให้ pin ทองเหลืองสัมผัสสาย</li><li><b>ทดสอบด้วย Cable Tester</b> เพื่อยืนยันว่าเข้าสายถูกต้องครบทุกเส้น</li></ol><p>ข้อผิดพลาดที่ทำให้สายใช้ไม่ได้ และวิธีเลี่ยง:</p><ul><li><b>ปอกเปลือกยาวเกินไป</b> — ถ้าคลายเกลียวยาวเกิน 13 มม. สัญญาณรบกวนจะเพิ่มขึ้นมาก ให้ปอกพอประมาณและคลายเกลียวให้สั้นที่สุดเท่าที่จะจัดเรียงได้</li><li><b>เปลือกนอกไม่เข้าไปในหัว</b> — ต้องดันให้ส่วนที่เป็นเปลือกนอกเข้าไปอยู่ใต้ตัวบีบของหัว RJ45 ด้วย ถ้าย้ำโดนแค่เส้นเล็ก สายจะหลุดง่ายเมื่อถูกดึง</li><li><b>ปลายไม่ชนสุด</b> — หลังสอดต้องส่องดูที่ปลายหัวว่าทองแดงทั้ง 8 เส้นชนผนังด้านหน้าครบทุกเส้น ถ้าเส้นใดสั้นกว่าเพื่อนจะไม่แตะ pin</li><li><b>เรียงสีถูกแต่กลับด้าน</b> — ตรวจให้แน่ใจว่ามอง Pin 1 จากด้านเดียวกันทั้งตอนเรียงและตอนสอด</li></ul><p>เมื่อย้ำเสร็จทั้งสองด้านแล้ว ขั้นตอนสุดท้ายที่ห้ามข้ามคือ <b>ทดสอบด้วย Cable Tester</b> ให้ไฟติดครบและเรียงตรงลำดับ 1 ถึง 8 ทั้งสองฝั่ง เพราะการเดินสายไปแล้วค่อยพบว่าใช้ไม่ได้ มีค่าใช้จ่ายสูงกว่าการทดสอบมาก</p>'},
+  {id:10,type:'wireorder',section:'C. ฝึกเรียงสาย T568B',title:'แบบฝึกหัด — เรียงสาย T568B',standard:'T568B',
+   scenario:'คลิกเลือกสีสาย แล้วคลิกตำแหน่ง Pin ที่ต้องการ เรียงลำดับให้ตรงตามมาตรฐาน <b>T568B</b> จาก Pin 1 ถึง Pin 8',
+   order:['white-orange','orange','white-green','blue','white-blue','green','white-brown','brown']},
+
+  // ── หมวด D: ฝึกเรียงสาย T568A + Crossover ──
+  {id:11,type:'lesson',fig:'<svg viewBox="0 0 640 208"><text x="320" y="16" class="f-ts" text-anchor="middle">เทียบตำแหน่งทีละ Pin — ต่างกันแค่ 4 ตำแหน่ง</text><text x="18" y="66" class="f-tg">T568A</text><text x="18" y="150" class="f-ta">T568B</text><text x="107" y="40" class="f-ts" text-anchor="middle">Pin 1</text><rect x="80" y="48" width="54" height="24" rx="3" fill="#3BA55C"/><rect x="80" y="48" width="54" height="12" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="80" y="48" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="80" y="132" width="54" height="24" rx="3" fill="#E8871E"/><rect x="80" y="132" width="54" height="12" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="80" y="132" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="107" y="104" class="f-ts" text-anchor="middle" fill="var(--amber)">สลับ</text><text x="175" y="40" class="f-ts" text-anchor="middle">Pin 2</text><rect x="148" y="48" width="54" height="24" rx="3" fill="#3BA55C"/><rect x="148" y="48" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="148" y="132" width="54" height="24" rx="3" fill="#E8871E"/><rect x="148" y="132" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="175" y="104" class="f-ts" text-anchor="middle" fill="var(--amber)">สลับ</text><text x="243" y="40" class="f-ts" text-anchor="middle">Pin 3</text><rect x="216" y="48" width="54" height="24" rx="3" fill="#E8871E"/><rect x="216" y="48" width="54" height="12" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="216" y="48" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="216" y="132" width="54" height="24" rx="3" fill="#3BA55C"/><rect x="216" y="132" width="54" height="12" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="216" y="132" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="243" y="104" class="f-ts" text-anchor="middle" fill="var(--amber)">สลับ</text><text x="311" y="40" class="f-ts" text-anchor="middle">Pin 4</text><rect x="284" y="48" width="54" height="24" rx="3" fill="#3D6FE8"/><rect x="284" y="48" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="284" y="132" width="54" height="24" rx="3" fill="#3D6FE8"/><rect x="284" y="132" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="311" y="104" class="f-ts" text-anchor="middle" fill="var(--text3)">เหมือน</text><text x="379" y="40" class="f-ts" text-anchor="middle">Pin 5</text><rect x="352" y="48" width="54" height="24" rx="3" fill="#3D6FE8"/><rect x="352" y="48" width="54" height="12" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="352" y="48" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="352" y="132" width="54" height="24" rx="3" fill="#3D6FE8"/><rect x="352" y="132" width="54" height="12" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="352" y="132" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="379" y="104" class="f-ts" text-anchor="middle" fill="var(--text3)">เหมือน</text><text x="447" y="40" class="f-ts" text-anchor="middle">Pin 6</text><rect x="420" y="48" width="54" height="24" rx="3" fill="#E8871E"/><rect x="420" y="48" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="420" y="132" width="54" height="24" rx="3" fill="#3BA55C"/><rect x="420" y="132" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="447" y="104" class="f-ts" text-anchor="middle" fill="var(--amber)">สลับ</text><text x="515" y="40" class="f-ts" text-anchor="middle">Pin 7</text><rect x="488" y="48" width="54" height="24" rx="3" fill="#8A6242"/><rect x="488" y="48" width="54" height="12" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="488" y="48" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="488" y="132" width="54" height="24" rx="3" fill="#8A6242"/><rect x="488" y="132" width="54" height="12" rx="3" fill="#FFFFFF" opacity="0.62"/><rect x="488" y="132" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="515" y="104" class="f-ts" text-anchor="middle" fill="var(--text3)">เหมือน</text><text x="583" y="40" class="f-ts" text-anchor="middle">Pin 8</text><rect x="556" y="48" width="54" height="24" rx="3" fill="#8A6242"/><rect x="556" y="48" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><rect x="556" y="132" width="54" height="24" rx="3" fill="#8A6242"/><rect x="556" y="132" width="54" height="24" rx="3" fill="none" stroke="var(--border)" stroke-width="1"/><text x="583" y="104" class="f-ts" text-anchor="middle" fill="var(--text3)">เหมือน</text><text x="320" y="196" class="f-ts" text-anchor="middle">Pin 4, 5, 7, 8 เหมือนกันทั้งสองมาตรฐาน จำเฉพาะ Pin 1, 2, 3, 6 ที่สลับคู่ส้มกับคู่เขียว</text></svg>',figCap:'จำแค่ว่า T568A สลับคู่ส้มกับคู่เขียวของ T568B เท่านั้น ที่เหลือเหมือนกันหมด',section:'D. ฝึกเรียงสาย T568A',title:'ทบทวนก่อนฝึก T568A',
+   body:'<p>จำไว้ว่า T568A สลับแค่ตำแหน่งคู่ <b>Orange</b> กับคู่ <b>Green</b> จาก T568B เท่านั้น (Pin 1↔3 และ Pin 2↔6 สลับกัน) ส่วนคู่ Blue (Pin 4,5) และคู่ Brown (Pin 7,8) ตำแหน่งเดิมไม่เปลี่ยน — ถ้าจำ T568B ได้แม่นแล้ว การเรียง T568A จะง่ายขึ้นมาก</p><p>เคล็ดลับการจำที่ใช้ได้จริงในห้องสอบ: เขียน T568B ให้ได้ก่อนเพียงมาตรฐานเดียว แล้ว T568A คือการสลับที่ <b>คู่ส้มกับคู่เขียว</b> เท่านั้น</p><p>ไล่ทีละ Pin จะได้ว่า Pin 1 กับ Pin 3 สลับกัน และ Pin 2 กับ Pin 6 สลับกัน ส่วน Pin 4, 5, 7, 8 ไม่ขยับเลย</p><p>อีกวิธีที่เร็วกว่าคือจำแค่ว่า <b>ขึ้นต้นด้วยอะไร</b> — ถ้าขึ้นต้น ขาว/ส้ม คือ T568B ถ้าขึ้นต้น ขาว/เขียว คือ T568A ที่เหลือไล่ตามลำดับเดิมได้เอง</p><p>ตอนทำแบบฝึกหัดถัดไป ให้ลองเขียนลำดับลงกระดาษก่อนแล้วค่อยลากวาง จะช่วยให้จำได้แม่นกว่าการเดาไปเรื่อยๆ</p>'},
+  {id:12,type:'wireorder',section:'D. ฝึกเรียงสาย T568A',title:'แบบฝึกหัด — เรียงสาย T568A',standard:'T568A',
+   scenario:'คลิกเลือกสีสาย แล้วคลิกตำแหน่ง Pin ที่ต้องการ เรียงลำดับให้ตรงตามมาตรฐาน <b>T568A</b> จาก Pin 1 ถึง Pin 8',
+   order:['white-green','green','white-orange','blue','white-blue','orange','white-brown','brown']},
+
+  // ── หมวด E: Keystone Jack และ Patch Panel ──
+  {id:13,type:'lesson',fig:'<svg viewBox="0 0 618 176"><rect x="60" y="36" width="150" height="100" rx="8" class="f-box"/><rect x="96" y="52" width="78" height="40" rx="4" class="f-box-a"/><text x="135" y="78" class="f-ts" text-anchor="middle">ช่องเสียบ RJ45</text><rect x="78" y="102" width="10" height="22" rx="2" fill="#E8871E" opacity="0.85"/><rect x="94" y="102" width="10" height="22" rx="2" fill="#E8871E" opacity="0.85"/><rect x="110" y="102" width="10" height="22" rx="2" fill="#3BA55C" opacity="0.85"/><rect x="126" y="102" width="10" height="22" rx="2" fill="#3D6FE8" opacity="0.85"/><rect x="142" y="102" width="10" height="22" rx="2" fill="#3D6FE8" opacity="0.85"/><rect x="158" y="102" width="10" height="22" rx="2" fill="#3BA55C" opacity="0.85"/><rect x="174" y="102" width="10" height="22" rx="2" fill="#8A6242" opacity="0.85"/><rect x="190" y="102" width="10" height="22" rx="2" fill="#8A6242" opacity="0.85"/><text x="135" y="152" class="f-tb" text-anchor="middle">Keystone Jack</text><text x="300" y="60" class="f-t">ใช้กดสายเข้าช่องสีด้านหลังด้วย Punch Down Tool</text><text x="300" y="84" class="f-t">ไม่ต้องเข้าหัว RJ45 เอง — ตัวช่องมีผังสีพิมพ์ไว้ให้แล้ว</text><text x="300" y="108" class="f-t">ติดตั้งที่ผนังหรือ Face Plate เป็นจุดเสียบสายประจำห้อง</text><text x="300" y="132" class="f-ta">ต้องกดตามมาตรฐานเดียวกับปลายอีกด้านของสายเสมอ</text></svg>',figCap:'Keystone Jack คือช่องเสียบ LAN ที่ผนัง — ด้านหลังมีผังสี T568A/T568B พิมพ์ไว้ ใช้ Punch Down Tool กดสายลงช่องตามสี',section:'E. Keystone Jack และ Patch Panel',title:'Keystone Jack คืออะไร',
+   body:'<p>Keystone Jack คือเต้ารับสายที่ติดตั้งบนผนัง (Wall Plate) หรือ Patch Panel แทนที่จะเข้าหัว RJ45 ตรงปลายสาย — วิธีเข้าสายต่างจาก RJ45 ตรงที่ไม่ใช้ Crimper แต่ใช้ <b>Punch-down Tool</b> กดสายลงร่องที่มีใบมีดตัดฉนวนในตัว (Insulation Displacement Contact)</p><p>ตัว Keystone Jack มักมี Label สี A และ B พิมพ์กำกับไว้ ให้เลือกเข้าตามมาตรฐานที่ใช้ในองค์กร (ส่วนใหญ่เลือก B)</p><p>Keystone Jack ใช้ในระบบเดินสายถาวรในอาคาร โดยสายจากห้องต่างๆ จะถูกกดเข้าด้านหลังของ Jack แล้วประกอบเข้ากับ <b>Face Plate</b> ที่ติดบนผนัง กลายเป็นช่องเสียบ LAN ที่ผู้ใช้เห็น</p><p>เหตุผลที่ไม่เข้าหัว RJ45 ที่ผนังโดยตรง มีสองข้อ คือหัว RJ45 ที่ห้อยอยู่จะหักและหลุดง่ายเมื่อถูกดึงบ่อยๆ และการกดลงร่องของ Jack ให้การสัมผัสที่แน่นและทนกว่าในระยะยาว</p><p>ข้อควรระวังตอนติดตั้ง:</p><ul><li>ด้านหลัง Jack จะมีผังสีพิมพ์ไว้ทั้งแบบ A และ B ต้องเลือกให้ตรงกับที่ใช้ทั้งระบบ แล้วกดตามแถวสีนั้นแถวเดียว อย่ากดสลับสองแถว</li><li>คลายเกลียวให้สั้นที่สุดเช่นเดียวกับการเข้าหัว RJ45</li><li><b>ติดป้ายชื่อทุกจุด</b> ให้ตรงกับหมายเลขที่ Patch Panel เพราะเมื่อมีหลายสิบจุด การไล่หาทีหลังโดยไม่มีป้ายจะเสียเวลามาก</li></ul>'},
+  {id:14,type:'lesson',fig:'<svg viewBox="0 0 600 176"><rect x="30" y="34" width="540" height="62" rx="6" class="f-box"/><rect x="46" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="62" y="70" class="f-ts" text-anchor="middle">1</text><rect x="90" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="106" y="70" class="f-ts" text-anchor="middle">2</text><rect x="134" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="150" y="70" class="f-ts" text-anchor="middle">3</text><rect x="178" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="194" y="70" class="f-ts" text-anchor="middle">4</text><rect x="222" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="238" y="70" class="f-ts" text-anchor="middle">5</text><rect x="266" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="282" y="70" class="f-ts" text-anchor="middle">6</text><rect x="310" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="326" y="70" class="f-ts" text-anchor="middle">7</text><rect x="354" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="370" y="70" class="f-ts" text-anchor="middle">8</text><rect x="398" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="414" y="70" class="f-ts" text-anchor="middle">9</text><rect x="442" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="458" y="70" class="f-ts" text-anchor="middle">10</text><rect x="486" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="502" y="70" class="f-ts" text-anchor="middle">11</text><rect x="530" y="48" width="32" height="34" rx="3" class="f-box-a"/><text x="546" y="70" class="f-ts" text-anchor="middle">12</text><text x="300" y="26" class="f-tb" text-anchor="middle">Patch Panel (มองจากด้านหน้าตู้ Rack)</text><text x="300" y="122" class="f-t" text-anchor="middle">รวมปลายสายจากทุกห้องมาไว้ที่เดียว แล้วใช้สาย Patch Cord สั้นๆ ต่อเข้า Switch</text><text x="300" y="146" class="f-ts" text-anchor="middle">ย้ายห้องไหนไปพอร์ตไหนก็แค่สลับสายสั้นหน้าตู้ ไม่ต้องรื้อสายในผนัง</text><text x="300" y="166" class="f-ts" text-anchor="middle">ด้านหลังกดสายด้วย Punch Down Tool เหมือน Keystone Jack</text></svg>',figCap:'Patch Panel ทำให้การเปลี่ยนผังเครือข่ายทำได้ที่หน้าตู้ Rack โดยไม่ต้องยุ่งกับสายที่เดินฝังผนังไว้แล้ว',section:'E. Keystone Jack และ Patch Panel',title:'Patch Panel คืออะไร',
+   body:'<p>Patch Panel คือแผงรวมจุดเชื่อมต่อสายทั้งหมดในตู้ Rack ของห้อง Server/ห้อง Network โดยปลายด้านหลัง (Punch-down) เชื่อมกับสายที่เดินไปตามผนัง/เพดานสู่ Keystone Jack ปลายทาง ส่วนปลายด้านหน้าใช้ Patch Cord (สาย RJ45 สั้นๆ) เชื่อมต่อไปยัง Switch</p><p>ประโยชน์หลัก: จัดระเบียบสายให้เป็นระบบ ง่ายต่อการสลับ/ซ่อมแซมจุดใดจุดหนึ่งโดยไม่กระทบสายเส้นอื่น</p><p>Patch Panel เป็นหัวใจของสิ่งที่เรียกว่า <b>ระบบสายสัญญาณแบบมีโครงสร้าง (Structured Cabling)</b> ซึ่งแบ่งสายออกเป็นสองส่วนชัดเจน:</p><ul><li><b>สายถาวรในผนัง (Horizontal Cabling)</b> — เดินจาก Patch Panel ในตู้ Rack ไปยัง Keystone Jack ที่ผนังของแต่ละห้อง ยาวได้ไม่เกิน 90 เมตร และเมื่อติดตั้งแล้วจะไม่ถูกแตะต้องอีก</li><li><b>สายสั้นหัวท้าย (Patch Cord)</b> — จาก Patch Panel ไป Switch และจาก Jack ที่ผนังไปเครื่อง PC รวมกันแล้วไม่เกิน 10 เมตร</li></ul><p>รวมทั้งหมดจึงต้องไม่เกิน 100 เมตรตามข้อจำกัดของสาย UTP ที่เรียนไปใน Lab 1</p><p>ประโยชน์ที่ชัดที่สุดคือความยืดหยุ่น เช่นถ้าต้องการย้ายห้อง 205 ไปอยู่วงเครือข่ายอื่น ก็เพียงถอดสายสั้นหน้าตู้ไปเสียบอีกพอร์ตของ Switch เท่านั้น ไม่ต้องรื้อฝ้าหรือเดินสายในผนังใหม่เลย</p>'},
+  {id:15,type:'quiz',section:'E. Keystone Jack และ Patch Panel',
+   title:'ทดสอบความรู้ก่อนไปเรื่องถัดไป',
+   intro:'ตอบให้ครบทั้ง 3 ข้อแล้วกดตรวจคำตอบครั้งเดียว — ต้องถูกครบทุกข้อจึงจะไปเรื่องถัดไปได้',
+   items:[
+     {topic:'Keystone Jack และ Patch Panel',section:'E. Keystone Jack และ Patch Panel',q:'เครื่องมือใดใช้เข้าสายกับ Keystone Jack และ Patch Panel (ต่างจากการเข้าหัว RJ45 ที่ใช้ Crimper)?',
+   opts:['Cable Crimper','Wire Stripper','Cable Tester','Punch-down Tool'],
+   ans:3,exp:'Keystone Jack และ Patch Panel ไม่ได้เข้าหัว RJ45 แต่ใช้กดสายลงในร่องโลหะด้านหลังตามผังสีที่พิมพ์ไว้ ซึ่งต้องใช้ Punch-down Tool ที่กดสายลงร่องพร้อมตัดปลายส่วนเกินในจังหวะเดียว — Cable Crimper ใช้กับหัว RJ45 เท่านั้น'},
+
+  // ── สรุปท้ายบท: ทบทวนทุกหัวข้อที่เรียนมา ──,
+     {topic:'Keystone Jack และ Patch Panel',q:'ประโยชน์หลักของการใช้ Patch Panel ในตู้ Rack คือข้อใด?',
+      opts:['ทำให้สัญญาณแรงขึ้นจึงเดินสายได้ไกลกว่าเดิม','ย้ายห้องไปวงเครือข่ายอื่นได้โดยสลับสายสั้นหน้าตู้ ไม่ต้องรื้อสายในผนัง','ลดจำนวนสายที่ต้องเดินในอาคารลงครึ่งหนึ่ง','ทำให้ไม่ต้องใช้ Switch อีกต่อไป'],
+      ans:1,exp:'Patch Panel รวมปลายสายจากทุกห้องมาไว้ที่เดียว แล้วใช้สาย Patch Cord สั้นๆ ต่อเข้า Switch เมื่อต้องการย้ายห้องไปวงอื่นจึงแค่สลับสายสั้นหน้าตู้ ไม่ต้องยุ่งกับสายที่ฝังผนังไว้แล้ว — ไม่ได้ช่วยเรื่องความแรงสัญญาณหรือลดจำนวนสาย'},
+     {topic:'Keystone Jack และ Patch Panel',q:'ในระบบสายแบบมีโครงสร้าง สายถาวรที่เดินในผนังจาก Patch Panel ไปยัง Keystone Jack ยาวได้ไม่เกินกี่เมตร?',
+      opts:['90 เมตร','100 เมตร','10 เมตร','55 เมตร'],
+      ans:0,exp:'สายถาวรในผนังกำหนดไว้ไม่เกิน 90 เมตร และเผื่อสายสั้นหัวท้ายอีกรวม 10 เมตร รวมทั้งหมดจึงไม่เกิน 100 เมตรตามข้อจำกัดของสาย UTP'}
+   ]},
+  {id:100,type:'review',final:true,fromQuizzes:true,section:'สรุปท้ายบท',
+   title:'ทบทวนรวมท้ายบท Ch.2',
+   intro:'ตอบให้ครบทุกข้อแล้วกดตรวจคำตอบครั้งเดียว — ข้อที่ยังไม่ถูกจะถูกคืนกลับมาให้แก้ใหม่',
+   pool:[
+  {topic:'มาตรฐาน T568A/T568B',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'ข้อใดคือความแตกต่างหลักระหว่างมาตรฐาน T568A กับ T568B?',
+   opts:['T568A สลับตำแหน่งคู่ Orange กับคู่ Green เมื่อเทียบกับ T568B','T568A สลับตำแหน่งคู่ Blue กับคู่ Brown เมื่อเทียบกับ T568B','T568A วางคู่ Blue ไว้ที่ Pin 1-2 ส่วน T568B วางไว้ที่ Pin 4-5','T568A เรียงลำดับสีกลับด้านจาก Pin 8 ไล่มา Pin 1'],
+   ans:0,exp:'ทั้งสองมาตรฐานต่างกันแค่การสลับคู่ Orange กับคู่ Green เท่านั้น คือ Pin 1, 2, 3 และ 6 — ส่วน Pin 4, 5 (คู่ Blue) และ Pin 7, 8 (คู่ Brown) อยู่ตำแหน่งเดิมทั้งคู่ในทั้งสองมาตรฐาน'},
+  {topic:'ฝึกเรียงสายจริง',type:'wireorder',final:true,section:'สรุปท้ายบท',title:'ทบทวน — เรียงสาย T568B อีกครั้ง',standard:'T568B',
+   scenario:'ทบทวนท้ายบท: เรียงลำดับสีสายให้ตรงตามมาตรฐาน <b>T568B</b> อีกครั้งโดยไม่ดูเฉลย',
+   order:['white-orange','orange','white-green','blue','white-blue','green','white-brown','brown']},
+  {topic:'มาตรฐาน T568A/T568B',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'ต้องการเชื่อมต่อ PC สองเครื่องเข้าด้วยกันโดยตรงผ่านสาย UTP (ไม่ผ่าน Switch) บนอุปกรณ์รุ่นเก่าที่ไม่รองรับ Auto-MDIX ควรใช้สายประเภทใด?',
+   opts:['Straight-through Cable (B ทั้งสองด้าน)','Rollover Cable','Patch Cord สำเร็จรูปที่ซื้อมา','Crossover Cable (A ด้านหนึ่ง B อีกด้าน)'],
+   ans:3,exp:'PC กับ PC เป็นอุปกรณ์ชนิดเดียวกัน ทั้งคู่ส่งสัญญาณออกที่ขาเดียวกันและรอรับที่ขาเดียวกัน ถ้าต่อตรงด้วยสายที่ไม่สลับคู่ สัญญาณจะวิ่งชนกัน จึงต้องใช้ Crossover ที่สลับคู่ส่งกับคู่รับให้ — ส่วน Patch Cord สำเร็จรูปทั่วไปเข้าแบบ Straight-through จึงใช้แทนไม่ได้ (ยกเว้นอุปกรณ์รองรับ Auto-MDIX)'},
+  {topic:'เครื่องมือและวัสดุ',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'เหตุใดสาย UTP แต่ละคู่จึงต้องถูกบิดเกลียวเข้าด้วยกัน?',
+   opts:['เพื่อให้สายโค้งงอได้โดยไม่ทำให้ทองแดงข้างในหัก','เพื่อลด Crosstalk คือสัญญาณรบกวนที่เกิดระหว่างคู่สายด้วยกันเอง','เพื่อให้สัญญาณไฟฟ้าเดินทางได้เร็วขึ้นกว่าสายตรง','เพื่อให้ใส่เส้นทองแดงได้มากขึ้นในสายขนาดเท่าเดิม'],
+   ans:1,exp:'กระแสในสายคู่หนึ่งสร้างสนามแม่เหล็กรบกวนสายข้างเคียง เรียกว่า Crosstalk การบิดเป็นเกลียวทำให้สัญญาณรบกวนที่เข้ามาตกใส่ทั้งสองเส้นเท่าๆ กันแล้วหักล้างกันไป — ยิ่งบิดถี่ยิ่งกันรบกวนได้ดี ซึ่งเป็นเหตุผลที่ Cat6 บิดถี่กว่า Cat5e'},
+  {topic:'Keystone Jack และ Patch Panel',type:'checkpoint',final:true,section:'สรุปท้ายบท',q:'จับคู่อุปกรณ์/เครื่องมือกับหน้าที่ให้ถูกต้อง (ทบทวนรวม)',
+   dragdrop:true,
+   pairs:[
+     {left:'Cable Crimper',right:'ย้ำหัว RJ45 ให้ pin สัมผัสสายทองแดง'},
+     {left:'Punch-down Tool',right:'เข้าสายกับ Keystone Jack และ Patch Panel'},
+     {left:'Cable Tester',right:'ทดสอบว่าสายเรียงถูกต้องและไม่ขาดตอน'},
+     {left:'Patch Panel',right:'แผงรวมจุดเชื่อมต่อสายทั้งหมดในตู้ Rack'}
+   ]}
+   ]}
+];
+
+var APP={step:1,maxStep:1,stepsDone:[],wrong:0,chatHistory:[],wrongSinceSave:0,lastSaveTime:Date.now()};
+var isBusy=false;
+var ddSel=null;
+var ddMap={};
+
+function toggleMobilePanel(which){
+  var panel=document.getElementById(which==='sidebar'?'sidebarPanel':'chatPanel');
+  var other=document.getElementById(which==='sidebar'?'chatPanel':'sidebarPanel');
+  other.classList.remove('mobile-open');
+  panel.classList.toggle('mobile-open');
+  document.getElementById('mobileBackdrop').classList.toggle('show',panel.classList.contains('mobile-open'));
+}
+function closeMobilePanels(){
+  document.getElementById('sidebarPanel').classList.remove('mobile-open');
+  document.getElementById('chatPanel').classList.remove('mobile-open');
+  document.getElementById('mobileBackdrop').classList.remove('show');
+}
+
+window.onload=function(){
+  renderSidebar();renderStep();
+  checkHealth();setInterval(checkHealth,30000);
+  addMsg('ai','สวัสดีครับ! Ch.2 Cable Termination\n\nLab นี้จะพาเรียนรู้เครื่องมือเข้าสาย UTP และฝึกเรียงลำดับสีสายตามมาตรฐาน T568A/T568B จริงด้วยแบบฝึกหัดคลิกเรียงสี — อ่านเนื้อหาแต่ละหัวข้อ กด "ถัดไป" เพื่อไปต่อ ตอบคำถาม Checkpoint และเรียงสายให้ถูกก่อนถึงจะไปหัวข้อถัดไปได้ครับ รวม 20 steps (มีคำถามทบทวนรวมท้ายบทอีก 5 ข้อ)');
+  loadSavedProgress();
+};
+
+window.addEventListener('pagehide',function(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var elapsedSec=Math.round((Date.now()-APP.lastSaveTime)/1000);
+  if(elapsedSec<1&&APP.wrongSinceSave===0)return;
+  var payload=JSON.stringify({
+    studentId:studentId, labId:2, courseId:'netlab1', token:getToken(),
+    stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
+    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:false
+  });
+  if(navigator.sendBeacon){
+    navigator.sendBeacon(API_BASE+'/progress',new Blob([payload],{type:'application/json'}));
+  }
+});
+
+function rvCount(s){
+  if(s.items&&s.items.length)return s.items.length;
+  var seen={},n=0;
+  (typeof rvPoolOf==='function'?rvPoolOf(s):(s.pool||[])).forEach(function(it){
+    var t=it.topic||'อื่นๆ';
+    if(!seen[t]){seen[t]=1;n++;}
+  });
+  return n;
+}
+
+function renderSidebar(){
+  var cont=document.getElementById('sidebarSteps');
+  cont.innerHTML='';
+  var lastSec='';
+  STEPS.forEach(function(s,i){
+    if(s.section!==lastSec){
+      var lbl=document.createElement('div');lbl.className='sb-label';lbl.textContent=s.section;cont.appendChild(lbl);lastSec=s.section;
+    }
+    var done=APP.stepsDone.indexOf(s.id)>=0;
+    var cur=i===APP.step-1;
+    var div=document.createElement('div');
+    div.className='step-item'+(done?' done':'')+(cur?' active':'');
+    var rawTitle=(s.type==='lesson'||s.type==='wireorder'||s.type==='review'||s.type==='quiz')?s.title:(s.q||s.title||'');
+    var title=rawTitle.length>44?rawTitle.slice(0,44)+'…':rawTitle;
+    var subLabel=s.type==='lesson'?'เนื้อหา':(s.type==='review'?(rvCount(s)+' ข้อ รวมทุกหัวข้อ'):s.type==='quiz'?(rvCount(s)+' ข้อ ทดสอบความรู้'):(s.type==='wireorder'?'ฝึกเรียงสาย':(s.final?'ทบทวนท้ายบท':'Checkpoint')));
+    div.innerHTML='<div class="step-num '+(done?'sn-done':cur?'sn-active':'sn-next')+'">'+(done?'✓':(i+1))+'</div>'
+      +'<div class="step-info"><div class="step-title">'+title+'</div><div class="step-sub">'+subLabel+'</div></div>';
+    if(i+1<=APP.maxStep&&!isLockedInTest()){
+      div.classList.add('clickable');
+      div.onclick=(function(idx){return function(){goToStep(idx+1);};})(i);
+    }
+    cont.appendChild(div);
+  });
+  var pct=Math.round(APP.stepsDone.length/STEPS.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progText').textContent=pct+'%';
+}
+
+function updateStepChip(){
+  document.getElementById('stepChip').textContent='Step '+APP.step+'/'+STEPS.length;
+}
+
+
+/* ── ทบทวนรวมท้ายบท: ทุกข้ออยู่หน้าเดียว ตรวจพร้อมกันครั้งเดียว ── */
+var rvSel={},rvDD={},rvDDsel={},rvWire={},rvWireSel={};
+
+function rvIsMcq(it){return !!(it.opts&&it.opts.length);}
+
+function rvShuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+/* ดึงคำถามจากคลัง โดยสุ่มมาหัวข้อละ 1 ข้อ แล้วสลับลำดับการถาม */
+function rvPoolOf(s){
+  var pool=(s.pool||[]).slice();
+  if(s.fromQuizzes){
+    STEPS.forEach(function(st){
+      if(st.type==='quiz'&&st.items)pool=pool.concat(st.items);
+    });
+  }
+  return pool;
+}
+
+function rvDraw(s){
+  var all=rvPoolOf(s);
+  if(!all.length)return s.items||[];
+  var byTopic={},order=[];
+  all.forEach(function(it){
+    var t=it.topic||'อื่นๆ';
+    if(!byTopic[t]){byTopic[t]=[];order.push(t);}
+    byTopic[t].push(it);
+  });
+  var picked=order.map(function(t){
+    var bucket=byTopic[t];
+    return bucket[Math.floor(Math.random()*bucket.length)];
+  });
+  return rvShuffle(picked);
+}
+
+function renderReview(s){
+  var wrap=document.getElementById('lessonWrap');
+  rvSel={};rvDD={};rvDDsel={};rvWire={};rvWireSel={};
+  if((s.pool||s.fromQuizzes)&&!(s.items&&s.items.length&&s.drawn))
+    { s.items=rvDraw(s); s.drawn=true; }
+  var html='<div class="lesson-section-label">'+s.section+'</div>'
+    +'<div class="lesson-card"><div class="lesson-title">'+s.title+'</div>'
+    +'<div class="review-intro">'+s.intro+'</div>';
+  s.items.forEach(function(it,k){html+=rvItemHtml(it,k);});
+  if(s.pool||s.fromQuizzes)html+='<div class="review-note"><b>ชุดคำถามสุ่ม</b> — สุ่มมาหัวข้อละ 1 ข้อจากทุกเรื่องที่เรียนในบทนี้ ถ้าทำ Lab ซ้ำจะได้คำถามชุดใหม่</div>';
+  html+='<div class="checkpoint-fb" id="cpFb"></div>'
+    +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitReview()">ตรวจคำตอบทั้งหมด</button></div>'
+    +'</div>';
+  wrap.innerHTML=html;
+}
+
+function rvItemHtml(it,k){
+  var h='<div class="rv-item" id="rvitem_'+k+'"><div class="rv-head">'
+    +'<div class="rv-num">ข้อ '+(k+1)+'</div><div class="rv-mark" id="rvmark_'+k+'"></div></div>'
+    +'<div class="rv-q">'+(it.q||it.title||'')+'</div>';
+  if(rvIsMcq(it)){
+    h+='<div class="q-opts">'+it.opts.map(function(o,oi){
+      return '<div class="q-opt" id="rvopt_'+k+'_'+oi+'" onclick="rvPick('+k+','+oi+')"><div class="q-dot"></div><span>'+o+'</span></div>';
+    }).join('')+'</div>'
+     +'<div class="q-explain" id="rvexp_'+k+'">'+(it.exp||'')+'</div>';
+  }else if(it.dragdrop){
+    var sh=it.pairs.slice().sort(function(){return Math.random()-.5;});
+    h+='<div class="dd-hint">ลากข้อความจากซ้ายไปวางบนคู่ที่ถูกต้องทางขวา (หรือคลิกเลือกแล้วคลิกช่องปลายทาง)</div>'
+     +'<div class="dd-grid"><div><div class="dd-col-label">คลิกเลือก</div><div class="dd-items">'
+     +sh.map(function(p,pi){
+        var lv=p.left.replace(/'/g,"\\'");
+        return '<div class="dd-item" id="rvddi_'+k+'_'+pi+'" draggable="true"'
+          +' ondragstart="rvDragStart(event,'+k+','+pi+',\''+lv+'\')" ondragend="dragEndDD(event)"'
+          +' onclick="rvDdPick('+k+','+pi+',\''+lv+'\')">'+p.left+'</div>';
+      }).join('')
+     +'</div></div><div><div class="dd-col-label">จับคู่กับ</div><div class="dd-items">'
+     +it.pairs.map(function(p,ti){
+        return '<div class="dd-target" id="rvddt_'+k+'_'+ti+'" data-answer="'+p.right+'"'
+          +' ondragover="rvDragOver(event,'+k+','+ti+')" ondragleave="rvDragLeave('+k+','+ti+')"'
+          +' ondrop="rvDrop(event,'+k+','+ti+')" onclick="rvDdDrop('+k+','+ti+')">'+p.right+'</div>';
+      }).join('')
+     +'</div></div></div>';
+  }else if(it.type==='wireorder'){
+    var shuffled=Object.keys(WIRE_COLORS).sort(function(){return Math.random()-.5;});
+    h+='<div class="wire-scenario">'+(it.scenario||'')+'</div>'
+     +'<div class="wire-pins">'+it.order.map(function(_,i){
+        return '<div class="wire-pin"><div class="wire-pin-num">Pin '+(i+1)+'</div>'
+          +'<div class="wire-pin-slot" id="rvpin_'+k+'_'+i+'" onclick="rvWirePlace('+k+','+i+')"></div></div>';
+      }).join('')+'</div>'
+     +'<div class="wire-pool-label">คลิกเลือกสี</div>'
+     +'<div class="wire-pool">'+shuffled.map(function(key){
+        return '<div class="wire-chip-wrap"><div class="wire-chip '+WIRE_COLORS[key].cls+'" id="rvchip_'+k+'_'+key+'" onclick="rvWirePick('+k+',\''+key+'\')"></div>'
+          +'<div class="wire-chip-label">'+WIRE_COLORS[key].label+'</div></div>';
+      }).join('')+'</div>';
+  }else if(it.type==='calc'){
+    h+='<div class="calc-scenario">'+(it.scenario||'')+'</div>'
+     +'<div class="calc-fields">'+it.fields.map(function(f){
+        return '<div class="calc-field"><label class="calc-field-label">'+f.label+'</label>'
+          +'<input class="calc-field-input" id="rvcalc_'+k+'_'+f.key+'" autocomplete="off" spellcheck="false" placeholder="'+f.placeholder+'"/>'
+          +'<div class="calc-field-ans" id="rvcalcans_'+k+'_'+f.key+'"></div></div>';
+      }).join('')+'</div>';
+  }
+  return h+'</div>';
+}
+
+function rvPick(k,oi){
+  var card=document.getElementById('rvitem_'+k);
+  if(card.dataset.locked)return;
+  for(var i=0;i<20;i++){var el=document.getElementById('rvopt_'+k+'_'+i);if(el)el.classList.remove('selected');}
+  document.getElementById('rvopt_'+k+'_'+oi).classList.add('selected');
+  rvSel[k]=oi;
+}
+
+function rvDdPick(k,pi,value){
+  var item=document.getElementById('rvddi_'+k+'_'+pi);
+  if(item.classList.contains('matched'))return;
+  var cur=rvDDsel[k];
+  if(cur&&cur.pi===pi){item.classList.remove('sel');rvDDsel[k]=null;return;}
+  if(cur){var old=document.getElementById('rvddi_'+k+'_'+cur.pi);if(old)old.classList.remove('sel');}
+  item.classList.add('sel');
+  rvDDsel[k]={pi:pi,value:value};
+}
+
+function rvDdDrop(k,ti){
+  var sel=rvDDsel[k];
+  if(!sel)return;
+  rvDD[k]=rvDD[k]||{};
+  Object.keys(rvDD[k]).forEach(function(t){
+    if(rvDD[k][t].pi===sel.pi){
+      var old=document.getElementById('rvddt_'+k+'_'+t);
+      if(old&&!old.classList.contains('filled')){old.classList.remove('pending');old.textContent=old.dataset.answer;}
+      delete rvDD[k][t];
+    }
+  });
+  var target=document.getElementById('rvddt_'+k+'_'+ti);
+  if(target.classList.contains('filled'))return;
+  rvDD[k][ti]={pi:sel.pi,lv:sel.value};
+  var item=document.getElementById('rvddi_'+k+'_'+sel.pi);
+  if(item){item.classList.remove('sel');item.classList.add('pending');}
+  target.classList.add('pending');target.textContent='→ '+sel.value;
+  rvDDsel[k]=null;
+}
+
+function rvDragStart(ev,k,pi,value){
+  var item=document.getElementById('rvddi_'+k+'_'+pi);
+  if(item.classList.contains('matched')){ev.preventDefault();return;}
+  rvDDsel[k]={pi:pi,value:value};
+  item.classList.add('dragging');
+  try{ev.dataTransfer.setData('text/plain',String(pi));ev.dataTransfer.effectAllowed='move';}catch(e){}
+}
+function rvDragOver(ev,k,ti){
+  if(!rvDDsel[k])return;
+  ev.preventDefault();
+  var t=document.getElementById('rvddt_'+k+'_'+ti);
+  if(t&&!t.classList.contains('filled'))t.classList.add('drag-over');
+}
+function rvDragLeave(k,ti){var t=document.getElementById('rvddt_'+k+'_'+ti);if(t)t.classList.remove('drag-over');}
+function rvDrop(ev,k,ti){ev.preventDefault();rvDragLeave(k,ti);rvDdDrop(k,ti);}
+
+function rvWirePick(k,key){
+  var chip=document.getElementById('rvchip_'+k+'_'+key);
+  if(chip.classList.contains('placed'))return;
+  if(rvWireSel[k]){var old=document.getElementById('rvchip_'+k+'_'+rvWireSel[k]);if(old)old.classList.remove('sel');}
+  chip.classList.add('sel');
+  rvWireSel[k]=key;
+}
+
+function rvWirePlace(k,i){
+  var slot=document.getElementById('rvpin_'+k+'_'+i);
+  rvWire[k]=rvWire[k]||{};
+  if(rvWire[k][i]!=null&&!rvWireSel[k]){
+    var oldChip=document.getElementById('rvchip_'+k+'_'+rvWire[k][i]);
+    if(oldChip)oldChip.classList.remove('placed');
+    delete rvWire[k][i];
+    slot.className='wire-pin-slot';slot.innerHTML='';
+    return;
+  }
+  if(!rvWireSel[k])return;
+  if(rvWire[k][i]!=null){
+    var prev=document.getElementById('rvchip_'+k+'_'+rvWire[k][i]);
+    if(prev)prev.classList.remove('placed');
+  }
+  var key=rvWireSel[k];
+  rvWire[k][i]=key;
+  var chip=document.getElementById('rvchip_'+k+'_'+key);
+  chip.classList.remove('sel');chip.classList.add('placed');
+  slot.className='wire-pin-slot filled';
+  slot.innerHTML='<div class="wire-chip '+WIRE_COLORS[key].cls+'" style="width:90%;height:80%;cursor:default"></div>';
+  rvWireSel[k]=null;
+}
+
+function rvGradeItem(it,k){
+  var card=document.getElementById('rvitem_'+k);
+  var mark=document.getElementById('rvmark_'+k);
+  var ok=false;
+  if(rvIsMcq(it)){
+    ok=rvSel[k]===it.ans;
+    for(var i=0;i<it.opts.length;i++){
+      var el=document.getElementById('rvopt_'+k+'_'+i);
+      el.classList.add('answered');
+      if(i===it.ans&&ok)el.classList.add('correct');
+      else if(i===rvSel[k]&&!ok)el.classList.add('wrong');
+    }
+    if(ok){var ex=document.getElementById('rvexp_'+k);if(ex)ex.classList.add('show');}
+  }else if(it.dragdrop){
+    ok=true;
+    it.pairs.forEach(function(pair,ti){
+      var t=document.getElementById('rvddt_'+k+'_'+ti);
+      var mp=(rvDD[k]||{})[ti];
+      if(t.classList.contains('filled'))return;
+      if(mp&&mp.lv.trim()===pair.left.trim()){
+        t.classList.remove('pending');t.classList.add('filled');t.textContent='✓ '+mp.lv;
+        var li=document.getElementById('rvddi_'+k+'_'+mp.pi);
+        if(li){li.classList.remove('pending','sel','dragging');li.classList.add('matched');li.setAttribute('draggable','false');}
+      }else{
+        ok=false;
+        if(mp){t.classList.add('wrong-m');t.textContent='✗ '+mp.lv;}
+      }
+    });
+  }else if(it.type==='wireorder'){
+    ok=true;
+    it.order.forEach(function(key,i){
+      var slot=document.getElementById('rvpin_'+k+'_'+i);
+      slot.classList.remove('correct','wrong');
+      if((rvWire[k]||{})[i]===key)slot.classList.add('correct');
+      else{slot.classList.add('wrong');ok=false;}
+    });
+  }else if(it.type==='calc'){
+    ok=true;
+    it.fields.forEach(function(f){
+      var inp=document.getElementById('rvcalc_'+k+'_'+f.key);
+      var good=inp.value.trim()===it.answer[f.key];
+      inp.classList.remove('correct','wrong');
+      inp.classList.add(good?'correct':'wrong');
+      if(!good)ok=false;
+    });
+  }
+  card.classList.remove('ok','bad');
+  card.classList.add(ok?'ok':'bad');
+  if(ok){card.dataset.locked='1';mark.className='rv-mark ok';mark.textContent='✓ ถูกต้อง';}
+  else{mark.className='rv-mark bad';mark.textContent='✗ ยังไม่ถูก';}
+  return ok;
+}
+
+function rvResetWrong(s){
+  s.items.forEach(function(it,k){
+    var card=document.getElementById('rvitem_'+k);
+    if(!card||card.dataset.locked)return;
+    if(rvIsMcq(it)){
+      for(var i=0;i<it.opts.length;i++){
+        var el=document.getElementById('rvopt_'+k+'_'+i);
+        el.classList.remove('answered','correct','wrong','selected');
+      }
+      delete rvSel[k];
+    }else if(it.dragdrop){
+      it.pairs.forEach(function(pair,ti){
+        var t=document.getElementById('rvddt_'+k+'_'+ti);
+        if(t.classList.contains('filled'))return;
+        var mp=(rvDD[k]||{})[ti];
+        if(mp){var li=document.getElementById('rvddi_'+k+'_'+mp.pi);if(li)li.classList.remove('pending','sel');delete rvDD[k][ti];}
+        t.classList.remove('wrong-m','pending','drag-over');
+        t.textContent=t.dataset.answer;
+      });
+    }
+  });
+}
+
+// บันทึกคะแนน quiz/review checkpoint ลง backend (ตาราง quiz_attempts) — ยิงทุกครั้งที่กด "ตรวจคำตอบทั้งหมด"
+// ทั้งตอนผ่านและตอนยังไม่ผ่าน เพื่อเก็บประวัติจำนวนครั้งที่พยายามจริง
+function saveQuizScore(labId,quizKey,score,maxScore){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  fetch(API_BASE+'/quiz-score',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({token:getToken(),labId:labId,courseId:'netlab1',quizKey:quizKey,score:score,maxScore:maxScore})}).catch(function(){});
+}
+
+function submitReview(){
+  var s=STEPS[APP.step-1];
+  var fb=document.getElementById('cpFb');
+  var okCount=0;
+  s.items.forEach(function(it,k){if(rvGradeItem(it,k))okCount++;});
+  var total=s.items.length;
+  saveQuizScore(2,s.type+'_'+s.id,okCount,total);
+  if(okCount===total){
+    APP.wrong=0;
+    fb.textContent='✓ ถูกต้องครบทั้ง '+total+' ข้อ — จบบทเรียนแล้วครับ';
+    fb.className='checkpoint-fb ok';
+    showNextBtn();
+  }else{
+    APP.wrong++;APP.wrongSinceSave++;
+    fb.textContent='ถูก '+okCount+' จาก '+total+' ข้อ — ข้อที่ยังไม่ถูกถูกคืนกลับมาให้แก้ใหม่แล้วครับ';
+    fb.className='checkpoint-fb bad';
+    setTimeout(function(){rvResetWrong(s);},900);
+  }
+}
+
+function rvRevealAll(s){
+  s.items.forEach(function(it,k){
+    var card=document.getElementById('rvitem_'+k);
+    var mark=document.getElementById('rvmark_'+k);
+    if(card){card.classList.add('ok');card.dataset.locked='1';}
+    if(mark){mark.className='rv-mark ok';mark.textContent='✓ เฉลย';}
+    if(rvIsMcq(it)){
+      for(var i=0;i<it.opts.length;i++){
+        var el=document.getElementById('rvopt_'+k+'_'+i);
+        if(!el)continue;
+        el.classList.add('answered');
+        if(i===it.ans)el.classList.add('correct');
+      }
+      var ex=document.getElementById('rvexp_'+k);if(ex)ex.classList.add('show');
+    }else if(it.dragdrop){
+      it.pairs.forEach(function(p,ti){
+        var t=document.getElementById('rvddt_'+k+'_'+ti);
+        if(t){t.classList.add('filled');t.textContent='✓ '+p.left;}
+      });
+    }else if(it.type==='wireorder'){
+      it.order.forEach(function(key,i){
+        var slot=document.getElementById('rvpin_'+k+'_'+i);
+        if(!slot)return;
+        slot.className='wire-pin-slot filled correct';
+        slot.innerHTML='<div class="wire-chip '+WIRE_COLORS[key].cls+'" style="width:90%;height:80%;cursor:default"></div>';
+      });
+    }else if(it.type==='calc'){
+      it.fields.forEach(function(f){
+        var inp=document.getElementById('rvcalc_'+k+'_'+f.key);
+        if(!inp)return;
+        inp.value=it.answer[f.key];inp.classList.add('correct');inp.readOnly=true;
+      });
+    }
+  });
+}
+
+function renderStep(){
+  renderStepBase();
+  var s=STEPS[APP.step-1];
+  if(s&&isStepDone(s))applyReviewMode(s);
+}
+
+function renderStepBase(){
+  updateStepChip();
+  var s=STEPS[APP.step-1];
+  var wrap=document.getElementById('lessonWrap');
+  if(!s){wrap.innerHTML='';return;}
+  if(s.type==='review'||s.type==='quiz'){renderReview(s);return;}
+  if(s.type==='lesson'){
+    wrap.innerHTML='<div class="lesson-section-label">'+s.section+'</div>'
+      +'<div class="lesson-card"><div class="lesson-title">'+s.title+'</div>'
+      +'<div class="lesson-body">'+s.body+'</div>'
+      +(s.fig?'<div class="lesson-fig">'+s.fig+(s.figCap?'<div class="fig-cap">'+s.figCap+'</div>':'')+'</div>':'')
+      +'<div class="lesson-actions"><button class="btn-check" onclick="advanceStep()">เข้าใจแล้ว ถัดไป →</button></div></div>';
+  }else if(s.type==='wireorder'){
+    renderWireOrder(s);
+  }else{
+    renderCheckpoint(s);
+  }
+}
+
+// ── แบบฝึกหัดเรียงลำดับสีสาย UTP (คลิกสี แล้วคลิกตำแหน่ง Pin เพื่อวาง) ──
+var WIRE_COLORS={
+  'white-orange':{label:'ขาว/ส้ม',cls:'w-white-orange'},
+  'orange':{label:'ส้ม',cls:'w-orange'},
+  'white-green':{label:'ขาว/เขียว',cls:'w-white-green'},
+  'blue':{label:'น้ำเงิน',cls:'w-blue'},
+  'white-blue':{label:'ขาว/น้ำเงิน',cls:'w-white-blue'},
+  'green':{label:'เขียว',cls:'w-green'},
+  'white-brown':{label:'ขาว/น้ำตาล',cls:'w-white-brown'},
+  'brown':{label:'น้ำตาล',cls:'w-brown'}
+};
+var wirePlacement={}; // pinIndex(0-7) -> colorKey
+var wireSelected=null;
+
+function renderWireOrder(s){
+  var wrap=document.getElementById('lessonWrap');
+  wirePlacement={};wireSelected=null;
+  var shuffled=Object.keys(WIRE_COLORS).sort(function(){return Math.random()-.5;});
+  var html='<div class="lesson-section-label">'+s.section+(s.final?' — ทบทวนท้ายบท':'')+'</div>'
+    +'<div class="q-card"><div class="q-num">แบบฝึกหัดเรียงสาย — '+s.standard+'</div>'
+    +'<div class="q-text">'+s.title+'</div>'
+    +'<div class="wire-scenario">'+s.scenario+'</div>'
+    +'<div class="wire-pins" id="wirePins">'+s.order.map(function(_,i){
+      return '<div class="wire-pin"><div class="wire-pin-num">Pin '+(i+1)+'</div>'
+        +'<div class="wire-pin-slot" id="wirePin_'+i+'" onclick="placeWire('+i+')"></div></div>';
+    }).join('')+'</div>'
+    +'<div class="wire-pool-label">คลิกเลือกสี</div>'
+    +'<div class="wire-pool" id="wirePool">'+shuffled.map(function(k){
+      return '<div class="wire-chip-wrap"><div class="wire-chip '+WIRE_COLORS[k].cls+'" id="wireChip_'+k+'" onclick="selectWire(\''+k+'\')"></div>'
+        +'<div class="wire-chip-label">'+WIRE_COLORS[k].label+'</div></div>';
+    }).join('')+'</div>'
+    +'<div class="checkpoint-fb" id="cpFb" style="margin-top:14px"></div>'
+    +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitWireOrder()">ตรวจคำตอบ</button>'
+    +'<button class="btn-skip2" onclick="renderWireOrder(STEPS[APP.step-1])">รีเซ็ต</button></div>'
+    +'</div>';
+  wrap.innerHTML=html;
+}
+
+function selectWire(key){
+  var chip=document.getElementById('wireChip_'+key);
+  if(chip.classList.contains('placed'))return;
+  if(wireSelected===key){
+    chip.classList.remove('sel');wireSelected=null;return;
+  }
+  if(wireSelected){
+    var prev=document.getElementById('wireChip_'+wireSelected);
+    if(prev)prev.classList.remove('sel');
+  }
+  chip.classList.add('sel');
+  wireSelected=key;
+}
+
+function placeWire(pinIndex){
+  var slot=document.getElementById('wirePin_'+pinIndex);
+  // ถ้าช่องนี้มีสายอยู่แล้ว และไม่ได้เลือกสีใหม่ไว้ ให้คืนสายกลับไปที่ pool
+  if(wirePlacement[pinIndex]!=null && !wireSelected){
+    var oldKey=wirePlacement[pinIndex];
+    var oldChip=document.getElementById('wireChip_'+oldKey);
+    if(oldChip)oldChip.classList.remove('placed');
+    delete wirePlacement[pinIndex];
+    slot.className='wire-pin-slot';slot.innerHTML='';
+    return;
+  }
+  if(!wireSelected)return;
+  // ถ้าช่องนี้มีสายอื่นอยู่แล้ว คืนสายเดิมกลับ pool ก่อน
+  if(wirePlacement[pinIndex]!=null){
+    var oldChip2=document.getElementById('wireChip_'+wirePlacement[pinIndex]);
+    if(oldChip2)oldChip2.classList.remove('placed');
+  }
+  wirePlacement[pinIndex]=wireSelected;
+  var chip=document.getElementById('wireChip_'+wireSelected);
+  chip.classList.remove('sel');chip.classList.add('placed');
+  slot.className='wire-pin-slot filled';
+  slot.innerHTML='<div class="wire-chip '+WIRE_COLORS[wireSelected].cls+'" style="width:90%;height:80%;cursor:default"></div>';
+  wireSelected=null;
+}
+
+function submitWireOrder(){
+  var s=STEPS[APP.step-1];
+  var fb=document.getElementById('cpFb');
+  var allCorrect=true;
+  s.order.forEach(function(correctKey,i){
+    var slot=document.getElementById('wirePin_'+i);
+    var placed=wirePlacement[i];
+    slot.classList.remove('correct','wrong');
+    if(placed===correctKey){
+      slot.classList.add('correct');
+    }else{
+      slot.classList.add('wrong');allCorrect=false;
+    }
+  });
+  if(allCorrect){
+    fb.textContent='✓ เรียงถูกต้องทั้งหมดครับ!';fb.className='checkpoint-fb ok';
+    APP.wrong=0;
+    showNextBtn();
+  }else{
+    APP.wrong++;APP.wrongSinceSave++;
+    var msg='ยังไม่ถูกทั้งหมดครับ ช่องที่ขอบแดงคือตำแหน่งที่ผิด ลองใหม่อีกครั้ง';
+    if(APP.wrong>=3){
+      msg+=' — เฉลย: '+s.order.map(function(k){return WIRE_COLORS[k].label;}).join(' → ');
+    }
+    fb.textContent=msg;fb.className='checkpoint-fb bad';
+  }
+}
+
+function renderCheckpoint(s){
+  var wrap=document.getElementById('lessonWrap');
+  ddSel=null;ddMap={};
+  var html='<div class="lesson-section-label">'+s.section+(s.final?' — คำถามทบทวนรวม':'')+'</div>';
+  if(s.dragdrop){
+    var sh=s.pairs.slice().sort(function(){return Math.random()-.5;});
+    html+='<div class="q-card" id="qcard_cp"><div class="q-num">'+(s.final?'ทบทวนท้ายบท — Drag &amp; Drop':'Checkpoint — Drag &amp; Drop')+'</div>'
+      +'<div class="q-text">'+s.q+'</div>'
+      +'<div class="dd-hint">ลากข้อความจากคอลัมน์ซ้ายไปวางบนคู่ที่ถูกต้องทางขวา (หรือจะคลิกเลือกแล้วคลิกช่องปลายทางก็ได้)</div>'
+      +'<div class="dd-grid"><div><div class="dd-col-label">คลิกเลือก</div>'
+      +'<div class="dd-items" id="ddL_cp">'+sh.map(function(p,pi){
+        var lv=p.left.replace(/'/g,"\\'");
+        return '<div class="dd-item" id="ddi_cp_'+pi+'" draggable="true"'
+          +' ondragstart="dragStartDD(event,'+pi+',\''+lv+'\')" ondragend="dragEndDD(event)"'
+          +' onclick="selDD('+pi+',\''+lv+'\')">'+p.left+'</div>';
+      }).join('')+'</div></div>'
+      +'<div><div class="dd-col-label">จับคู่กับ</div>'
+      +'<div class="dd-items" id="ddR_cp">'+s.pairs.map(function(p,pi){
+        return '<div class="dd-target" id="ddt_cp_'+pi+'" data-answer="'+p.right+'"'
+          +' ondragover="dragOverDD(event,'+pi+')" ondragleave="dragLeaveDD('+pi+')"'
+          +' ondrop="dropOnDD(event,'+pi+')" onclick="dropDD('+pi+')">'+p.right+'</div>';
+      }).join('')+'</div></div></div>'
+      +'<div class="checkpoint-fb" id="cpFb"></div>'
+      +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitCheckpoint()">ตรวจคำตอบ</button></div>'
+      +'<div class="hint-box" id="hintBox"><div class="hint-title">เฉลย</div><div class="hint-text" id="hintText"></div></div>'
+      +'</div>';
+  }else{
+    html+='<div class="q-card" id="qcard_cp" data-ans="'+s.ans+'"><div class="q-num">'+(s.final?'ทบทวนท้ายบท':'Checkpoint')+'</div>'
+      +'<div class="q-text">'+s.q+'</div>'
+      +'<div class="q-opts">'+s.opts.map(function(o,oi){
+        return '<div class="q-opt" id="qopt_cp_'+oi+'" onclick="selOptCp('+oi+')"><div class="q-dot"></div><span>'+o+'</span></div>';
+      }).join('')+'</div>'
+      +'<div class="q-explain" id="qexpCp">'+s.exp+'</div>'
+      +'<div class="checkpoint-fb" id="cpFb"></div>'
+      +'<div class="checkpoint-actions"><button class="btn-check" onclick="submitCheckpoint()">ตรวจคำตอบ</button></div>'
+      +'</div>';
+  }
+  wrap.innerHTML=html;
+}
+
+function selOptCp(oi){
+  var card=document.getElementById('qcard_cp');if(card.dataset.answered)return;
+  var opts=card.querySelectorAll('.q-opt');
+  opts.forEach(function(el){el.classList.remove('selected');});
+  document.getElementById('qopt_cp_'+oi).classList.add('selected');
+  card.dataset.selected=oi;
+}
+
+function dragStartDD(ev,pi,value){
+  var item=document.getElementById('ddi_cp_'+pi);
+  if(item.classList.contains('matched')){ev.preventDefault();return;}
+  if(ddSel)ddSel.el.classList.remove('sel');
+  ddSel={el:item,value:value,pi:pi};
+  item.classList.add('dragging');
+  try{ev.dataTransfer.setData('text/plain',String(pi));ev.dataTransfer.effectAllowed='move';}catch(e){}
+}
+
+function dragEndDD(ev){
+  var items=document.querySelectorAll('.dd-item.dragging');
+  for(var i=0;i<items.length;i++)items[i].classList.remove('dragging');
+}
+
+function dragOverDD(ev,ti){
+  if(!ddSel)return;
+  ev.preventDefault();
+  try{ev.dataTransfer.dropEffect='move';}catch(e){}
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t&&!t.classList.contains('filled'))t.classList.add('drag-over');
+}
+
+function dragLeaveDD(ti){
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t)t.classList.remove('drag-over');
+}
+
+function dropOnDD(ev,ti){
+  ev.preventDefault();
+  var t=document.getElementById('ddt_cp_'+ti);
+  if(t)t.classList.remove('drag-over');
+  dropDD(ti);
+}
+
+function clearWrongDD(s){
+  s.pairs.forEach(function(pair,ti){
+    var target=document.getElementById('ddt_cp_'+ti);
+    if(!target||target.classList.contains('filled'))return;
+    var mp=ddMap[ti];
+    if(mp){
+      var item=document.getElementById('ddi_cp_'+mp.lpi);
+      if(item)item.classList.remove('pending','sel','dragging');
+      delete ddMap[ti];
+    }
+    target.classList.remove('wrong-m','pending','drag-over');
+    target.textContent=target.dataset.answer;
+  });
+}
+
+function selDD(pi,value){
+  var item=document.getElementById('ddi_cp_'+pi);
+  if(item.classList.contains('checked'))return;
+  if(ddSel&&ddSel.el===item){item.classList.remove('sel');ddSel=null;return;}
+  if(ddSel)ddSel.el.classList.remove('sel');
+  item.classList.add('sel');
+  ddSel={el:item,value:value,pi:pi};
+}
+
+function dropDD(ti){
+  if(!ddSel)return;
+  var target=document.getElementById('ddt_cp_'+ti);
+  Object.keys(ddMap).forEach(function(k){
+    if(ddMap[k].lpi===ddSel.pi){
+      var old=document.getElementById('ddt_cp_'+k);
+      if(old){old.classList.remove('pending');old.textContent=old.dataset.answer;}
+      delete ddMap[k];
+    }
+  });
+  ddMap[ti]={lpi:ddSel.pi,lv:ddSel.value};
+  ddSel.el.classList.remove('sel');ddSel.el.classList.add('pending');
+  target.classList.add('pending');target.textContent='→ '+ddSel.value;
+  ddSel=null;
+}
+
+function maybeShowHint(s){
+  if(APP.wrong<3)return;
+  if(s.dragdrop){
+    var hb=document.getElementById('hintBox');
+    if(hb){
+      hb.classList.add('show');
+      document.getElementById('hintText').textContent=s.pairs.map(function(p){return p.left+' → '+p.right;}).join('\n');
+    }
+  }else{
+    var exp=document.getElementById('qexpCp');
+    if(exp)exp.classList.add('show');
+  }
+}
+
+function submitCheckpoint(){
+  var s=STEPS[APP.step-1];
+  var card=document.getElementById('qcard_cp');
+  var fb=document.getElementById('cpFb');
+  if(s.dragdrop){
+    var allCorrect=true;
+    s.pairs.forEach(function(pair,ti){
+      var target=document.getElementById('ddt_cp_'+ti);
+      var mp=ddMap[ti];
+      target.classList.remove('pending','wrong-m','filled');
+      if(mp&&mp.lv.trim()===pair.left.trim()){
+        target.classList.add('filled');target.textContent='✓ '+mp.lv;
+        var lel=document.getElementById('ddi_cp_'+mp.lpi);
+        if(lel){lel.classList.remove('pending','dragging');lel.classList.add('matched');lel.setAttribute('draggable','false');}
+      }else{
+        allCorrect=false;
+        target.textContent=mp?('✗ '+mp.lv):pair.right;
+        if(mp)target.classList.add('wrong-m');
+      }
+    });
+    if(allCorrect){
+      fb.textContent='✓ ถูกต้องทั้งหมดครับ!';fb.className='checkpoint-fb ok';
+      APP.wrong=0;
+      showNextBtn();
+    }else{
+      APP.wrong++;APP.wrongSinceSave++;
+      var okCount=0;
+      s.pairs.forEach(function(p,ti){
+        var t=document.getElementById('ddt_cp_'+ti);
+        if(t&&t.classList.contains('filled'))okCount++;
+      });
+      fb.textContent='ถูก '+okCount+' จาก '+s.pairs.length+' คู่ — คู่ที่ยังไม่ถูกถูกคืนกลับไปให้ลากใหม่แล้วครับ';
+      fb.className='checkpoint-fb bad';
+      maybeShowHint(s);
+      setTimeout(function(){clearWrongDD(s);},900);
+    }
+  }else{
+    var sel=card.dataset.selected!=null&&card.dataset.selected!==''?parseInt(card.dataset.selected):-1;
+    var opts=card.querySelectorAll('.q-opt');
+    opts.forEach(function(el,i){
+      el.classList.add('answered');
+      if(i===s.ans)el.classList.add('correct');
+      else if(i===sel)el.classList.add('wrong');
+    });
+    if(sel===s.ans){
+      document.getElementById('qexpCp').classList.add('show');
+      fb.textContent='✓ ถูกต้องครับ! — อ่านคำอธิบายด้านบน แล้วกด "ถัดไป"';fb.className='checkpoint-fb ok';
+      APP.wrong=0;
+      showNextBtn();
+    }else{
+      APP.wrong++;APP.wrongSinceSave++;
+      fb.textContent='ยังไม่ถูกครับ ลองใหม่อีกครั้ง';fb.className='checkpoint-fb bad';
+      maybeShowHint(s);
+      setTimeout(function(){
+        opts.forEach(function(el){el.classList.remove('answered','correct','wrong','selected');});
+        card.dataset.answered='';
+        card.dataset.selected='';
+      },900);
+    }
+  }
+}
+
+function showNextBtn(){
+  var act=document.querySelector('.checkpoint-actions');
+  if(!act)return;
+  var last=APP.step>=STEPS.length;
+  act.innerHTML='<button class="btn-check" onclick="advanceStep()">'+(last?'จบ Lab — ดูสรุปผล →':'ถัดไป →')+'</button>';
+}
+
+function REVIEW_EXTRA(s){
+  if(s.type!=='wireorder')return;
+  s.order.forEach(function(key,i){
+    var slot=document.getElementById('wirePin_'+i);
+    if(!slot)return;
+    wirePlacement[i]=key;
+    slot.className='wire-pin-slot filled correct';
+    slot.innerHTML='<div class="wire-chip '+WIRE_COLORS[key].cls+'" style="width:90%;height:80%;cursor:default"></div>';
+    var chip=document.getElementById('wireChip_'+key);
+    if(chip)chip.classList.add('placed');
+  });
+}
+
+function isStepDone(s){return s&&APP.stepsDone.indexOf(s.id)>=0;}
+
+function isLockedInTest(){
+  var s=STEPS[APP.step-1];
+  if(!s||s.type==='lesson')return false;
+  return APP.stepsDone.indexOf(s.id)<0;
+}
+
+function flashTestLock(){
+  var fb=document.getElementById('cpFb');
+  if(!fb)return;
+  fb.textContent='ตอบคำถามข้อนี้ให้ถูกก่อนครับ ระหว่างทำแบบทดสอบจะย้อนกลับไปดูเนื้อหาไม่ได้';
+  fb.className='checkpoint-fb bad';
+}
+
+function goToStep(n){
+  if(n<1||n>STEPS.length)return;
+  if(n>APP.maxStep)return;
+  if(isLockedInTest()&&n!==APP.step){
+    flashTestLock();
+    return;
+  }
+  APP.step=n;APP.wrong=0;
+  renderStep();renderSidebar();
+  var view=document.querySelector('.lesson-view');
+  if(view)view.scrollTop=0;
+}
+
+function reviewNavHtml(){
+  var h='<div class="checkpoint-actions">';
+  if(APP.step>1)h+='<button class="btn-skip2" onclick="goToStep('+(APP.step-1)+')">← ย้อนกลับ</button>';
+  if(APP.step<STEPS.length)h+='<button class="btn-check" onclick="goToStep('+(APP.step+1)+')">ถัดไป →</button>';
+  else h+='<button class="btn-check" onclick="openLabComplete()">ดูสรุปผล Lab →</button>';
+  h+='</div><div class="review-note"><b>โหมดทบทวน</b> — ข้อนี้ทำผ่านไปแล้ว เฉลยจึงแสดงไว้ให้ ย้อนดูข้อก่อนหน้าได้จากรายการด้านซ้าย</div>';
+  return h;
+}
+
+function applyReviewMode(s){
+  var act=document.querySelector('.checkpoint-actions');
+  if(s.type==='lesson'){
+    var la=document.querySelector('.lesson-actions');
+    if(la)la.outerHTML=reviewNavHtml();
+    return;
+  }
+  if(s.type==='checkpoint'&&s.dragdrop){
+    s.pairs.forEach(function(p,ti){
+      var t=document.getElementById('ddt_cp_'+ti);
+      if(t){t.classList.add('filled');t.textContent='✓ '+p.left;}
+    });
+    var left=document.querySelectorAll('#ddL_cp .dd-item');
+    for(var i=0;i<left.length;i++)left[i].classList.add('matched');
+  }else if(s.type==='checkpoint'){
+    var card=document.getElementById('qcard_cp');
+    if(card){
+      card.dataset.answered='1';
+      var opts=card.querySelectorAll('.q-opt');
+      for(var j=0;j<opts.length;j++){
+        opts[j].classList.add('answered');
+        if(j===s.ans)opts[j].classList.add('correct');
+      }
+    }
+    var exp=document.getElementById('qexpCp');
+    if(exp)exp.classList.add('show');
+  }
+  if(s.type==='review'||s.type==='quiz'){rvRevealAll(s);}
+  REVIEW_EXTRA(s);
+  if(act)act.outerHTML=reviewNavHtml();
+}
+
+function advanceStep(){
+  var cur=STEPS[APP.step-1];
+  var already=APP.stepsDone.indexOf(cur.id)>=0;
+  if(!already)APP.stepsDone.push(cur.id);
+  if(APP.step<STEPS.length){
+    APP.step++;
+    if(APP.step>APP.maxStep)APP.maxStep=APP.step;
+    renderStep();renderSidebar();
+    if(!already)saveProgress(false);
+  }else if(already){
+    openLabComplete();
+  }else{
+    completeLab();
+  }
+}
+
+function completeLab(){
+  renderSidebar();
+  document.getElementById('labComplete').classList.add('show');
+  document.getElementById('completeChip').classList.add('show');
+  document.getElementById('nextLabChip').classList.add('show');
+  addMsg('ai','ยินดีด้วยครับ! Lab Ch.2 เสร็จสมบูรณ์!\n\nสรุป:\n• เครื่องมือเข้าสาย UTP (Crimper, Punch-down Tool, Cable Tester)\n• มาตรฐาน T568A และ T568B พร้อมฝึกเรียงลำดับสีจริงทั้งสองแบบ\n• Straight-through Cable vs Crossover Cable และเมื่อไหร่ต้องใช้แบบไหน\n• Keystone Jack และ Patch Panel ในงานติดตั้งจริง\n\nพร้อมไปคำนวณ IP Address และ Subnet ใน Lab 3 ต่อได้เลยครับ');
+  saveProgress(true);
+}
+
+function closeLabComplete(){
+  document.getElementById('labComplete').classList.remove('show');
+}
+function openLabComplete(){
+  document.getElementById('labComplete').classList.add('show');
+}
+function goNextLab(){
+  location.href='../lab03-ip-subnetting/lab3.html';
+}
+
+function resetLab(){
+  document.getElementById('labComplete').classList.remove('show');
+  document.getElementById('completeChip').classList.remove('show');
+  document.getElementById('nextLabChip').classList.remove('show');
+  APP.step=1;APP.maxStep=1;APP.stepsDone=[];APP.wrong=0;
+  STEPS.forEach(function(st){if(st.pool)st.drawn=false;});
+  APP.wrongSinceSave=0;APP.lastSaveTime=Date.now();
+  renderStep();renderSidebar();
+}
+
+function saveProgress(completed){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var now=Date.now();
+  var elapsedSec=Math.round((now-APP.lastSaveTime)/1000);
+  var payload={
+    studentId:studentId, labId:2, courseId:'netlab1', token:getToken(),
+    stepsDone:APP.stepsDone.length, totalSteps:STEPS.length,
+    wrongDelta:APP.wrongSinceSave, elapsedSec:elapsedSec, completed:!!completed
+  };
+  APP.lastSaveTime=now;APP.wrongSinceSave=0;
+  fetch(API_BASE+'/progress',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)}).catch(function(){});
+}
+
+async function loadSavedProgress(){
+  var profile=(typeof getProfile==='function')&&getProfile();
+  var studentId=profile&&profile.studentId;
+  if(!studentId)return;
+  var row;
+  try{
+    var res=await fetch(API_BASE+'/progress/'+encodeURIComponent(studentId)+'?token='+encodeURIComponent(getToken()));
+    var data=await res.json();
+    row=(data.labs||[]).filter(function(r){return r.lab_id===2&&(r.course_id==null||r.course_id==='netlab1');})[0];
+  }catch(e){return;}
+  if(!row||!row.steps_done)return;
+  var n=Math.min(row.steps_done,STEPS.length);
+  APP.stepsDone=STEPS.slice(0,n).map(function(s){return s.id;});
+  if(n>=STEPS.length){
+    APP.step=STEPS.length;
+    APP.maxStep=STEPS.length;
+    renderStep();renderSidebar();
+    document.getElementById('labComplete').classList.add('show');
+    document.getElementById('completeChip').classList.add('show');
+    document.getElementById('nextLabChip').classList.add('show');
+  }else{
+    APP.step=n+1;
+    APP.maxStep=APP.step;
+    renderStep();renderSidebar();
+  }
+}
+
+function buildSys(){
+  var s=STEPS[APP.step-1];
+  var topic=s?(s.title||s.q):'';
+  return 'Role: Networking Fundamentals Tutor (Cable Termination)\nLanguage: Thai, ใช้ครับ\nSubject: Ch.2 Cable Termination — เครื่องมือเข้าสาย UTP, มาตรฐาน T568A/T568B, Straight-through vs Crossover, Keystone Jack, Patch Panel\nRules: ตอบสั้นไม่เกิน 4 ประโยค เข้าใจง่าย ถ้าเป็นแบบฝึกหัดเรียงสายห้ามบอกลำดับสีทั้งหมดตรงๆ ให้ใบ้หลักการแทน\nUI ที่ผู้เรียนเห็นบนหน้าจอ (อ้างอิงได้เฉพาะสิ่งเหล่านี้เท่านั้น): เนื้อหาบทเรียนพร้อมภาพประกอบและตารางในหน้าปัจจุบัน | รายการหัวข้อด้านซ้าย. Lab นี้เป็นเนื้อหาทฤษฎี ไม่มีเทอร์มินัล Cisco ไม่มีแผนภาพ Topology และไม่มีตาราง IP. ห้ามอ้างถึงเอกสาร ใบงาน ไฟล์ PDF หรือหน้าจออื่นที่ไม่มีอยู่จริง\nCurrent: Step '+APP.step+'/'+STEPS.length+' — '+topic+' | Wrong: '+APP.wrong;
+}
+
+function askAboutTopic(){
+  var s=STEPS[APP.step-1];
+  var topic=s?(s.title||s.q):'';
+  quickAsk('ช่วยอธิบายเรื่อง "'+topic+'" เพิ่มเติมแบบเข้าใจง่ายหน่อยครับ');
+}
+
+function showProgressSummary(){
+  quickAsk('สรุปสิ่งที่เรียนมาแล้วในหัวข้อที่ทำเสร็จให้หน่อยครับ');
+}
+
+function addMsg(role,text){
+  var msgs=document.getElementById('messages');
+  var wrap=document.createElement('div');wrap.className='msg'+(role==='user'?' user':'');
+  var av=document.createElement('div');av.className='av '+(role==='ai'?'ai-av':'user-av');av.textContent=role==='ai'?'AI':'U';
+  var bub=document.createElement('div');bub.className='bub '+(role==='ai'?'ai-b':'user-b');bub.textContent=text;
+  wrap.appendChild(av);wrap.appendChild(bub);msgs.appendChild(wrap);msgs.scrollTop=99999;
+  APP.chatHistory=APP.chatHistory.concat([{role:role==='ai'?'assistant':'user',content:text}]).slice(-16);
+}
+
+function showTyping(){
+  var msgs=document.getElementById('messages');
+  var w=document.createElement('div');w.className='msg';w.id='typing';
+  var av=document.createElement('div');av.className='av ai-av';av.textContent='AI';
+  var d=document.createElement('div');d.className='typing-dots';
+  d.innerHTML='<span></span><span></span><span></span>';
+  w.appendChild(av);w.appendChild(d);msgs.appendChild(w);msgs.scrollTop=99999;
+}
+function hideTyping(){var t=document.getElementById('typing');if(t)t.remove();}
+
+async function callAI(msg,sys){
+  var res=await fetch(API_BASE+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages:APP.chatHistory.slice(-8).concat([{role:'user',content:msg}]),
+    system:sys||buildSys(),max_tokens:150})});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return (await res.json()).content||'ขออภัยครับ';
+}
+
+async function sendChat(){
+  if(isBusy)return;
+  var inp=document.getElementById('chatIn');
+  var msg=inp.value.trim();if(!msg)return;
+  inp.value='';isBusy=true;document.getElementById('sendBtn').disabled=true;
+  addMsg('user',msg);showTyping();
+  try{var r=await callAI(msg);hideTyping();addMsg('ai',r);}
+  catch(e){hideTyping();addMsg('ai',e.message);}
+  finally{isBusy=false;document.getElementById('sendBtn').disabled=false;}
+}
+
+function quickAsk(msg){document.getElementById('chatIn').value=msg;sendChat();}
+
+async function checkHealth(){
+  var pill=document.getElementById('aiStatus'),dot=document.getElementById('aiDot');
+  try{
+    var res=await fetch(API_BASE+'/health',{signal:AbortSignal.timeout(5000)});
+    var d=await res.json();
+    if(d.model_ready){
+      pill.className='ai-pill ai-on';dot.classList.add('pulse');
+      document.getElementById('aiStatusText').textContent='AI พร้อม';
+      document.getElementById('chatDot').style.background='var(--green)';
+      var m=d.model||(d.models&&d.models.default)||'';
+      if(m)document.getElementById('modelTag').textContent=m.split('/').pop();
+    }else{throw new Error();}
+  }catch(e){
+    pill.className='ai-pill ai-off';dot.classList.remove('pulse');
+    document.getElementById('aiStatusText').textContent='AI ออฟไลน์';
+    document.getElementById('chatDot').style.background='var(--red)';
+  }
+}
+</script>
+</body>
+</html>
+

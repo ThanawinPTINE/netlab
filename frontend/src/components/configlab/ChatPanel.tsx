@@ -79,7 +79,7 @@ export default function ChatPanel({ messages, isTyping, isBusy, aiOnline, modelT
             if (e.key === 'Enter' && !isBusy) send();
           }}
         />
-        <button className="send-btn" onClick={send} disabled={isBusy}>
+        <button aria-label="ส่งคำถาม" className="send-btn" onClick={send} disabled={isBusy}>
           {'↑'}
         </button>
       </div>

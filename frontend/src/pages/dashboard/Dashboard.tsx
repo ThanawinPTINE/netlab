@@ -190,7 +190,7 @@ function DashboardInner() {
         <div className="hero-bg">
           <img src="/assets/topic-images/hero-network-dashboard.png" alt="" />
         </div>
-        <div className="page-title">Dashboard</div>
+        <h1 className="page-title">Dashboard</h1>
         <div className="page-sub">ภาพรวมการเรียนของคุณในรายวิชา Network Engineering Laboratory I</div>
       </div>
 

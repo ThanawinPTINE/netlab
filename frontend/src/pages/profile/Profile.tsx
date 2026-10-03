@@ -13,7 +13,7 @@ function ProfileInner() {
 
   return (
     <>
-      <div className="topbar">
+      <header className="topbar">
         <a className="brand" href="/index.html">
           NET<span>Lab</span>
         </a>
@@ -22,7 +22,7 @@ function ProfileInner() {
         <div className="topbar-right">
           <ThemeToggle />
         </div>
-      </div>
+      </header>
 
       <div className="wrap">
         <div className="profile-card">
@@ -34,7 +34,7 @@ function ProfileInner() {
               <div className="profile-pic-fallback">{initials(profile.name)}</div>
             )}
           </div>
-          <div className="profile-name">{displayName}</div>
+          <h1 className="profile-name">{displayName}</h1>
           <div className="profile-email">{profile.email || '—'}</div>
         </div>
 

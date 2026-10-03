@@ -41,7 +41,7 @@ function CourseInner() {
 
   return (
     <>
-      <div className="topbar">
+      <header className="topbar">
         <a className="brand" href="/index.html">
           NET<span>Lab</span>
         </a>
@@ -57,7 +57,7 @@ function CourseInner() {
           </div>
           <ThemeToggle />
         </div>
-      </div>
+      </header>
 
       <div className="hero">
         <div className="hero-bg">
@@ -65,7 +65,7 @@ function CourseInner() {
         </div>
         <div className="overview">
           <span className="ov-tag">รายวิชาปฏิบัติการ</span>
-          <div className="ov-title">Network Engineering Laboratory I</div>
+          <h1 className="ov-title">Network Engineering Laboratory I</h1>
           <div className="ov-desc">
             การฝึกปฏิบัติการ การรับส่งสารสนเทศ การสื่อสารข้อมูล การกำหนดค่าต่าง ๆ ให้กับอุปกรณ์เราเตอร์ การกำหนดค่าโปรโตคอลเลือกเส้นทาง ได้แก่ Static
             route default route rip ospf eigrp เรื่องอื่น ๆ ที่สัมพันธ์กับเนื้อหาวิชาทางด้านเทคโนโลยีเครือข่าย

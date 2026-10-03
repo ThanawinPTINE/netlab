@@ -72,7 +72,7 @@ function LabsInner() {
         <div className="hero-inner">
           <div className="hero-content">
             <div className="hero-eyebrow">Faculty of Engineering</div>
-            <div className="hero-title">Network Engineering Lab</div>
+            <h1 className="hero-title">Network Engineering Lab</h1>
             <div className="hero-sub">Cisco IOS พร้อม AI Tutor ฝึกปฏิบัติตลอดหลักสูตร 2 รายวิชา</div>
           </div>
         </div>

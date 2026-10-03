@@ -14,7 +14,7 @@ export interface LabTopbarProps {
  * and the two mobile panel toggles. Styling comes from the page's own CSS. */
 export default function LabTopbar({ labNumberBadge, breadcrumbChapter, aiOnline, aiStatusText, onToggleSidebar, onToggleChat }: LabTopbarProps) {
   return (
-    <div className="topbar">
+    <header className="topbar">
       <button className="mobile-toggle" onClick={onToggleSidebar} title="Steps">
         {'☰'}
       </button>
@@ -43,6 +43,6 @@ export default function LabTopbar({ labNumberBadge, breadcrumbChapter, aiOnline,
           {'💬'}
         </button>
       </div>
-    </div>
+    </header>
   );
 }

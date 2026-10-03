@@ -41,6 +41,9 @@ export default function PcConfigModal({
           {pcId ? `${pcId} — IP Configuration` : 'IP Configuration'}
         </div>
         <div className="pc-modal-sub">{sub}</div>
+        <div className="pc-modal-note">
+          กรอกตามค่าที่โจทย์กำหนดไว้ในกล่อง “สิ่งที่ต้องทำตอนนี้”
+        </div>
         <label className="pc-field-label" htmlFor="pcIpInput">
           IP Address
         </label>
@@ -49,7 +52,7 @@ export default function PcConfigModal({
           id="pcIpInput"
           autoComplete="off"
           spellCheck={false}
-          placeholder="เช่น 192.168.1.10"
+          placeholder="xxx.xxx.xxx.xxx"
           value={ip}
           onChange={(e) => onChangeIp(e.target.value)}
         />
@@ -61,7 +64,7 @@ export default function PcConfigModal({
           id="pcMaskInput"
           autoComplete="off"
           spellCheck={false}
-          placeholder="เช่น 255.255.255.0"
+          placeholder="xxx.xxx.xxx.xxx"
           value={mask}
           onChange={(e) => onChangeMask(e.target.value)}
         />
@@ -73,7 +76,7 @@ export default function PcConfigModal({
           id="pcGwInput"
           autoComplete="off"
           spellCheck={false}
-          placeholder="เช่น 192.168.1.1"
+          placeholder="xxx.xxx.xxx.xxx"
           value={gateway}
           onChange={(e) => onChangeGateway(e.target.value)}
         />

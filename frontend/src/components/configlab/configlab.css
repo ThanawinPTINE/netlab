@@ -148,7 +148,13 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 .pc-modal-backdrop.show{display:flex}
 .pc-modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:var(--space-6);width:340px;max-width:90vw;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .pc-modal-title{font-size:var(--step-lg);font-weight:700;letter-spacing:-0.01em;margin-bottom:4px}
-.pc-modal-sub{font-size:var(--step-xs);color:var(--text3);margin-bottom:var(--space-4)}
+.pc-modal-sub{font-size:var(--step-xs);color:var(--text3);margin-bottom:var(--space-2)}
+/* The field placeholders show the shape of an address, not a value — the
+   mask placeholder used to read 255.255.255.0, which is the answer in every
+   lab. This line points at where the real values are stated instead. */
+.pc-modal-note{font-size:var(--step-xs);color:var(--text2);background:var(--panel2);
+  border:1px solid var(--border);border-radius:7px;padding:8px 11px;
+  margin-bottom:var(--space-4);line-height:1.6}
 .pc-field-label{display:block;font-size:var(--step-xs);color:var(--text2);font-weight:600;margin:var(--space-3) 0 5px}
 .pc-field-input{width:100%;font-family:var(--mono);font-size:var(--step-base);padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel2);color:var(--text);outline:none}
 .pc-field-input:focus{border-color:var(--cyan-d)}

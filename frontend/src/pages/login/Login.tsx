@@ -68,17 +68,17 @@ export default function Login() {
 
   return (
     <>
-      <div className="login-topbar">
+      <header className="login-topbar">
         <a className="brand" href="/index.html">
           NET<span>Lab</span>
         </a>
-      </div>
+      </header>
 
       <div className="login-card">
         <div className="login-logo">
           NET<span>Lab</span>
         </div>
-        <div className="login-title">Sign In</div>
+        <h1 className="login-title">Sign In</h1>
         <div className="login-sub">Sign in with your student email to start your Lab</div>
 
         <div className="login-actions">

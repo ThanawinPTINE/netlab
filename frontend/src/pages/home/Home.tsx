@@ -59,9 +59,9 @@ export default function Home() {
         </div>
         <div className="hero-inner">
           <div className="hero-content">
-            <div className="hero-title">
+            <h1 className="hero-title">
               NET<span style={{ color: 'var(--cyan)' }}>Lab</span> for INE
-            </div>
+            </h1>
             <div className="hero-sub">
               ระบบนี้ช่วยลดช่องว่างความรู้พื้นฐาน ให้ผู้เรียนฝึกปฏิบัติได้ทุกที่ทุกเวลาผ่านเว็บเบราว์เซอร์
               ยกระดับการเรียนการสอนวิชา Network Engineering Lab ให้มีประสิทธิภาพมากขึ้น

@@ -18,7 +18,7 @@ const LINKS: NavLink[] = [
  * theme.js was dead code in every live page, so it's not ported. */
 export default function TopNav({ active }: { active: 'Home' | 'Lab' | 'Dashboard' | 'none' }) {
   const [open, setOpen] = useState(false);
-  const navRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function TopNav({ active }: { active: 'Home' | 'Lab' | 'Dashboard
   }, [open]);
 
   return (
-    <div className="topbar topbar-main">
+    <header className="topbar topbar-main">
       <div className="topbar-left">
         <button
           ref={btnRef}
@@ -55,19 +55,19 @@ export default function TopNav({ active }: { active: 'Home' | 'Lab' | 'Dashboard
           NET<span>Lab</span>
         </a>
       </div>
-      <div ref={navRef} className={`nav-links${open ? ' open' : ''}`} id="navLinks">
+      <nav ref={navRef} className={`nav-links${open ? ' open' : ''}`} id="navLinks" aria-label="เมนูหลัก">
         {LINKS.map((l) => (
           <a key={l.href} className={`nav-link${l.label === active ? ' active' : ''}`} href={l.href}>
             {l.label}
           </a>
         ))}
-      </div>
+      </nav>
       <div className="topbar-right">
         <div id="authSlot">
           <AuthNav />
         </div>
         <ThemeToggle />
       </div>
-    </div>
+    </header>
   );
 }

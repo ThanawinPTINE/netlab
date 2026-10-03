@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional
-import httpx, os, re, logging
+import httpx, os, re, logging, sqlite3
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from google.oauth2 import id_token as google_id_token
@@ -73,9 +73,11 @@ class ProgressUpdate(BaseModel):
     stepsDone: int = Field(ge=0)
     totalSteps: int = Field(ge=0)
     wrongDelta: int = Field(default=0, ge=0)
+    hintsDelta: int = Field(default=0, ge=0)   # hint presses since the last save, not a running total
     elapsedSec: int = Field(default=0, ge=0, le=3600)  # one /progress ping never covers more than an hour
     completed: bool = False
     courseId: str = "netlab1"  # disambiguates lab_id across courses (Network Eng. Lab I vs II)
+    difficulty: str = "basic"  # basic | medium | hard — part of progress's key, see db.DIFFICULTIES
 
     # db.py's CHECK(steps_done <= total_steps) would otherwise surface as a 500
     @model_validator(mode="after")
@@ -284,7 +286,14 @@ async def auth_google(req: GoogleAuthRequest):
 
     name = payload.get("name") or email
     picture = payload.get("picture")
-    db.upsert_user(student_id, email, name, picture)
+    try:
+        db.upsert_user(student_id, email, name, picture)
+    except sqlite3.IntegrityError:
+        # users.email is UNIQUE, so an email already bound to a different
+        # student_id fails here. Login is the worst place to surface a raw 500,
+        # and the student can do nothing about it on their own.
+        log.error(f"upsert_user conflict: student_id={student_id} email={email}")
+        raise HTTPException(409, detail="อีเมลนี้ถูกผูกกับรหัสนักศึกษาอื่นในระบบแล้ว กรุณาติดต่อผู้สอน")
 
     return {
         "ok": True,
@@ -303,20 +312,26 @@ async def save_progress(req: ProgressUpdate):
     token_student_id = require_student(req.token)
     if token_student_id != req.studentId:
         raise HTTPException(403, detail="studentId ไม่ตรงกับ session token")
+    if req.difficulty not in db.DIFFICULTIES:
+        raise HTTPException(400, detail="difficulty ต้องเป็น %s" % ", ".join(db.DIFFICULTIES))
     db.upsert_progress(
         token_student_id, req.labId, req.stepsDone, req.totalSteps,
         req.wrongDelta, req.elapsedSec, req.completed,
-        course_id=req.courseId,
+        course_id=req.courseId, difficulty=req.difficulty, hints_used=req.hintsDelta,
     )
     return {"ok": True}
 
 @app.get("/progress/{student_id}")
-async def read_progress(student_id: str, token: str, course_id: str | None = None):
+async def read_progress(student_id: str, token: str, course_id: str | None = None,
+                        difficulty: str | None = None):
     token_student_id = require_student(token)
     if token_student_id != student_id:
         raise HTTPException(403, detail="token ไม่ตรงกับ studentId ที่ขอดู")
+    if difficulty is not None and difficulty not in db.DIFFICULTIES:
+        raise HTTPException(400, detail="difficulty ต้องเป็น %s" % ", ".join(db.DIFFICULTIES))
     return {
-        "labs": db.get_progress_for_student(student_id, course_id=course_id),
+        "labs": db.get_progress_for_student(student_id, course_id=course_id,
+                                            difficulty=difficulty),
         "weeklyActivity": db.get_weekly_activity(student_id),
     }
 

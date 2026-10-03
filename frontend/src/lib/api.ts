@@ -55,6 +55,13 @@ function endSessionIfRejected(res: Response | null) {
 }
 
 // ─── /progress ───────────────────────────────────────────────────
+
+// Difficulty is part of progress's primary key on the server (db.DIFFICULTIES).
+// Semester 2's scope item 1.2 adds Basic/Medium/Hard; until the picker exists
+// every call sends this one value, so turning the levels on is a change here
+// rather than at each call site.
+export const DIFFICULTY = 'basic';
+
 export interface ProgressUpdatePayload {
   token: string;
   studentId: string;
@@ -62,16 +69,26 @@ export interface ProgressUpdatePayload {
   stepsDone: number;
   totalSteps: number;
   wrongDelta?: number;
+  hintsDelta?: number; // hint presses since the last save, not a running total
   elapsedSec?: number;
   completed?: boolean;
   courseId?: string;
+  difficulty?: string;
 }
 
 export async function saveProgress(payload: ProgressUpdatePayload): Promise<{ ok: boolean }> {
   const res = await fetch(`${API_BASE}/progress`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ courseId: 'netlab1', wrongDelta: 0, elapsedSec: 0, completed: false, ...payload }),
+    body: JSON.stringify({
+      courseId: 'netlab1',
+      difficulty: DIFFICULTY,
+      wrongDelta: 0,
+      hintsDelta: 0,
+      elapsedSec: 0,
+      completed: false,
+      ...payload,
+    }),
   });
   endSessionIfRejected(res);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -82,7 +99,17 @@ export async function saveProgress(payload: ProgressUpdatePayload): Promise<{ ok
 // convention as every labN.html's pagehide handler.
 export function saveProgressBeacon(payload: ProgressUpdatePayload): boolean {
   const body = new Blob(
-    [JSON.stringify({ courseId: 'netlab1', wrongDelta: 0, elapsedSec: 0, completed: false, ...payload })],
+    [
+      JSON.stringify({
+        courseId: 'netlab1',
+        difficulty: DIFFICULTY,
+        wrongDelta: 0,
+        hintsDelta: 0,
+        elapsedSec: 0,
+        completed: false,
+        ...payload,
+      }),
+    ],
     { type: 'application/json' },
   );
   return navigator.sendBeacon(`${API_BASE}/progress`, body);
@@ -91,9 +118,11 @@ export function saveProgressBeacon(payload: ProgressUpdatePayload): boolean {
 export interface ProgressRow {
   course_id: string;
   lab_id: number;
+  difficulty: string;
   steps_done: number;
   total_steps: number;
   wrong_count: number;
+  hints_used: number;
   time_spent_sec: number;
   completed: number; // 0 | 1, as returned by SQLite
   updated_at: string;
@@ -113,9 +142,13 @@ export async function getProgress(
   studentId: string,
   token: string,
   courseId?: string,
+  difficulty?: string,
 ): Promise<ProgressResponse> {
   const qs = new URLSearchParams({ token });
   if (courseId) qs.set('course_id', courseId);
+  // Omitted by default: a lab can hold one row per level once the picker ships,
+  // and callers that want a single row per lab should ask for one level.
+  if (difficulty) qs.set('difficulty', difficulty);
   const res = await fetch(`${API_BASE}/progress/${encodeURIComponent(studentId)}?${qs}`);
   endSessionIfRejected(res);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);

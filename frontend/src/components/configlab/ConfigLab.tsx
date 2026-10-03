@@ -74,6 +74,7 @@ interface AppState {
   chatHistory: { role: 'user' | 'assistant' | 'system'; content: string }[];
   cmdIdx: number;
   wrongSinceSave: number;
+  hintsSinceSave: number;
   lastSaveTime: number;
 }
 
@@ -138,6 +139,7 @@ function ConfigLabInner(props: ConfigLabProps) {
     chatHistory: [],
     cmdIdx: 0,
     wrongSinceSave: 0,
+    hintsSinceSave: 0,
     lastSaveTime: Date.now(),
   });
   const [, bump] = useReducer((x: number) => x + 1, 0);
@@ -245,6 +247,7 @@ function ConfigLabInner(props: ConfigLabProps) {
         stepsDone: appRef.current.stepsDone.length,
         totalSteps: steps.length,
         wrongDelta: appRef.current.wrongSinceSave,
+        hintsDelta: appRef.current.hintsSinceSave,
         elapsedSec,
         completed: false,
       });
@@ -335,15 +338,21 @@ function ConfigLabInner(props: ConfigLabProps) {
       stepsDone: appRef.current.stepsDone.length,
       totalSteps: steps.length,
       wrongDelta: appRef.current.wrongSinceSave,
+      hintsDelta: appRef.current.hintsSinceSave,
       elapsedSec,
       completed,
     };
     appRef.current.lastSaveTime = now;
     appRef.current.wrongSinceSave = 0;
+    appRef.current.hintsSinceSave = 0;
     apiSaveProgress(payload).catch(() => {});
   }
 
   function showHint() {
+    // Counted separately from wrongSinceSave: a student can press hint and still
+    // answer correctly first try, so wrong_count cannot stand in for the quota
+    // semester 2's difficulty levels put on hints.
+    appRef.current.hintsSinceSave++;
     setHintVisible(true);
   }
   function hideHint() {
@@ -394,6 +403,7 @@ function ConfigLabInner(props: ConfigLabProps) {
       chatHistory: appRef.current.chatHistory,
       cmdIdx: 0,
       wrongSinceSave: 0,
+      hintsSinceSave: 0,
       lastSaveTime: Date.now(),
     };
     setPcValues({});

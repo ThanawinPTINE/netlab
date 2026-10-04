@@ -205,6 +205,13 @@ export async function sendChatMessage(payload: ChatRequestPayload): Promise<Chat
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ courseId: 'netlab1', max_tokens: 150, ...payload }),
   });
+  // /chat now requires a session token, so a guest gets 401 here. That is not a
+  // dead session — deliberately no endSessionIfRejected(), which would bounce
+  // them to a sign-in they cannot complete on a LAN address. Say what happened
+  // instead of surfacing "HTTP 401" in a chat bubble.
+  if (res.status === 401) {
+    throw new Error('AI Tutor ใช้ได้เฉพาะผู้ที่เข้าสู่ระบบด้วยอีเมลมหาวิทยาลัย — ส่วนอื่นของ Lab ยังใช้ได้ตามปกติ');
+  }
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }

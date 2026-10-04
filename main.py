@@ -188,7 +188,9 @@ async def call_openrouter(
     system: str,
     max_tokens: int,
     model: str,
-) -> str:
+) -> tuple[str, str]:
+    """Returns (content, model_that_answered). The second value is not always
+    the model asked for — see the fallbacks below."""
     if not OPENROUTER_API_KEY:
         raise HTTPException(500, detail="OPENROUTER_API_KEY not set in .env")
 
@@ -212,6 +214,7 @@ async def call_openrouter(
         r.raise_for_status()
         data = r.json()
         content = data["choices"][0]["message"]["content"]
+        answered_by = model
 
         # Reasoning-capable models (deepseek-v4-flash, qwen3-32b) spend the
         # budget on an internal <reasoning> field before writing content, so a
@@ -233,8 +236,13 @@ async def call_openrouter(
             r3 = await client.post(OPENROUTER_URL, json=payload, headers=headers)
             r3.raise_for_status()
             content = r3.json()["choices"][0]["message"]["content"]
+            answered_by = MODEL_DEFAULT
 
-        return content
+        # The model that produced these words, which is not always the one that
+        # was asked. Returning only the text is what let ai_chat_logs record a
+        # model that had answered nothing, and made every latency figure drawn
+        # from it describe the wrong model.
+        return content, answered_by
 
 # ─── Helper: extract student ID from email local-part ──────
 def extract_student_id(local_part: str) -> Optional[str]:
@@ -348,6 +356,17 @@ async def save_quiz_score(req: QuizScoreRequest):
 # ─── Endpoint: /chat ───────────────────────────────────────
 @app.post("/chat")
 async def chat(req: ChatRequest):
+    # Every call spends our OpenRouter credit, so it has to belong to a signed-in
+    # student. There was no check here at all: on localhost that cost nothing,
+    # but deploy/nginx-netlab.conf publishes /api/, and an unauthenticated proxy
+    # to a paid model is the kind of thing that gets found by scanners within
+    # days. CORS does not help — it only restrains browsers, not curl.
+    #
+    # Consequence worth knowing: LAN guest mode can no longer use the tutor. A
+    # guest has no token by design (Google cannot authorise a raw private IP as
+    # an origin), and that mode exists only for showing classmates the labs on
+    # the same Wi-Fi. The labs themselves still work for them.
+    student_id = require_student(req.token)
     system_prompt = req.system or SYSTEM_PROMPT
     wrong_count   = extract_wrong_count(system_prompt)
     task          = req.task_type or detect_task(system_prompt, req.messages)
@@ -367,7 +386,6 @@ async def chat(req: ChatRequest):
 
     log.info(f"task={task} model={model} wrong={wrong_count} tokens={max_tokens}")
 
-    student_id = session.verify_token(req.token or "")  # None for guests — chat still works, just not logged to a student
     last_user_msg = next((m.content for m in reversed(req.messages) if m.role == "user"), "")
 
     def log_it(reply: str, used_model: str):
@@ -381,11 +399,13 @@ async def chat(req: ChatRequest):
             log.warning(f"log_chat failed: {e}")
 
     try:
-        reply = await call_openrouter(messages, system_prompt, max_tokens, model)
-        log_it(reply, model)
+        reply, answered_by = await call_openrouter(messages, system_prompt, max_tokens, model)
+        if answered_by != model:
+            log.warning(f"asked {model}, answered by {answered_by} — student waited for both")
+        log_it(reply, answered_by)
         return {
             "content": reply,
-            "model": model,
+            "model": answered_by,
             "task": task,
             "done": True,
         }
@@ -393,9 +413,9 @@ async def chat(req: ChatRequest):
         # fallback ไป MODEL_FAST ถ้า timeout
         log.warning(f"Timeout {model} → fallback {MODEL_FAST}")
         try:
-            reply = await call_openrouter(messages, system_prompt, 80, MODEL_FAST)
-            log_it(reply, MODEL_FAST)
-            return {"content": reply, "model": MODEL_FAST, "task": task, "done": True}
+            reply, answered_by = await call_openrouter(messages, system_prompt, 80, MODEL_FAST)
+            log_it(reply, answered_by)
+            return {"content": reply, "model": answered_by, "task": task, "done": True}
         except Exception as e2:
             raise HTTPException(504, detail=f"Timeout: {str(e2)}")
     except httpx.HTTPStatusError as e:

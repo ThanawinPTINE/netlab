@@ -52,6 +52,47 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const isQuizLike = (s: TheoryStep) => s.type === 'quiz' || s.type === 'review';
+/** Anything that is graded. isLockedInTest() draws the same line. */
+const isTest = (s: TheoryStep) => s.type !== 'lesson';
+
+/** Failed attempts before the step closes and the student is sent back to read.
+ *  Lower than the config labs' reveal threshold of 4 on purpose: there the
+ *  fourth attempt earned the answer, here the third earns a second reading, and
+ *  a third strike is enough frustration to act on. */
+const WRONG_BEFORE_REREAD = 3;
+/** How long the step stays shut. Long enough to actually re-read the lesson
+ *  rather than bounce straight back. */
+const REREAD_MS = 5 * 60 * 1000;
+
+const cooldownKey = (labId: number, stepId: number | string) =>
+  `netlab-reread-${labId}-${stepId}`;
+
+/** Deadline for a step, or 0. Kept in localStorage so a reload does not clear
+ *  it; a cleared browser store bypasses it, as with any client-side gate. */
+function cooldownUntil(labId: number, stepId: number | string): number {
+  try {
+    const v = Number(localStorage.getItem(cooldownKey(labId, stepId)) || 0);
+    return Number.isFinite(v) && v > Date.now() ? v : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function startCooldown(labId: number, stepId: number | string): number {
+  const until = Date.now() + REREAD_MS;
+  try {
+    localStorage.setItem(cooldownKey(labId, stepId), String(until));
+  } catch {
+    /* private window or storage full — the in-memory deadline still holds for
+       this tab, which is the common case */
+  }
+  return until;
+}
+
+export function formatRemaining(ms: number): string {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+}
 
 function TheoryLabInner(props: TheoryLabProps) {
   const { labId, labNumberBadge, breadcrumbChapter, docTitle, steps, welcomeMsg, completeTitle, completeSub, completeChatSummary, nextLabHref, systemPromptPrefix } =
@@ -80,6 +121,30 @@ function TheoryLabInner(props: TheoryLabProps) {
 
   const app = appRef.current;
   const cur = steps[app.step - 1];
+
+  // `now` ticks only while a step is cooling down, so the countdown updates and
+  // the step reopens on its own without the student reloading.
+  const [now, setNow] = useState(Date.now());
+  const [rereadFor, setRereadFor] = useState<TheoryStep | null>(null);
+  const anyCooling = steps.some((s) => cooldownUntil(labId, s.id) > 0);
+  useEffect(() => {
+    if (!anyCooling) return;
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, [anyCooling]);
+
+  /** Remaining wait for a step, in ms. Reads `now` so it re-renders each tick. */
+  function waitLeft(s: TheoryStep): number {
+    void now;
+    const until = cooldownUntil(labId, s.id);
+    return until ? until - Date.now() : 0;
+  }
+
+  /** The lesson this test came from — the one to send them back to. */
+  function lessonBefore(index: number): number {
+    for (let i = index - 1; i >= 0; i--) if (steps[i].type === 'lesson') return i + 1;
+    return 1;
+  }
 
   /* ── review pool ── */
   function poolOf(s: TheoryStep): TheoryItem[] {
@@ -243,6 +308,15 @@ function TheoryLabInner(props: TheoryLabProps) {
         a.step = n + 1;
         a.maxStep = a.step;
       }
+      // Restoring put them on the next step, which may be the very one a
+      // re-read wait has closed. Landing there means sitting on a step that
+      // cannot be answered while isLockedInTest() also refuses to let them
+      // leave — so move to the lesson, which is where the wait intends them.
+      const landed = steps[a.step - 1];
+      if (landed && isTest(landed) && cooldownUntil(labId, landed.id) > 0) {
+        setRereadFor(landed);
+        a.step = lessonBefore(a.step - 1);
+      }
       setViewKey((k) => k + 1);
       bump();
     })();
@@ -261,6 +335,11 @@ function TheoryLabInner(props: TheoryLabProps) {
     const a = appRef.current;
     if (n < 1 || n > steps.length || n > a.maxStep) return;
     if (isLockedInTest() && n !== a.step) {
+      setLockFlash((x) => x + 1);
+      return;
+    }
+    // Still inside the re-read wait for that step.
+    if (waitLeft(steps[n - 1]) > 0) {
       setLockFlash((x) => x + 1);
       return;
     }
@@ -335,7 +414,24 @@ function TheoryLabInner(props: TheoryLabProps) {
     bumpWrong: () => {
       appRef.current.wrong++;
       appRef.current.wrongSinceSave++;
-      return appRef.current.wrong;
+      const w = appRef.current.wrong;
+      // Every graded view reports failures through here, so one check covers
+      // mcq, drag-drop, wireorder, calc, quiz and the end-of-chapter review.
+      const s = steps[appRef.current.step - 1];
+      if (s && isTest(s) && w >= WRONG_BEFORE_REREAD && !isDone(s)) {
+        startCooldown(labId, s.id);
+        setRereadFor(s);
+        appRef.current.wrong = 0;
+        const back = lessonBefore(appRef.current.step - 1);
+        // Moved by the system, so this bypasses the in-test navigation freeze
+        // rather than going through goToStep().
+        appRef.current.step = back;
+        setViewKey((k) => k + 1);
+        setNow(Date.now());
+        bump();
+        if (lessonViewRef.current) lessonViewRef.current.scrollTop = 0;
+      }
+      return w;
     },
     resetWrong: () => {
       appRef.current.wrong = 0;
@@ -419,7 +515,8 @@ function TheoryLabInner(props: TheoryLabProps) {
                         : s.final
                           ? 'ทบทวนท้ายบท'
                           : 'Checkpoint';
-              const clickable = i + 1 <= app.maxStep && !lockedNow;
+              const left = waitLeft(s);
+              const clickable = i + 1 <= app.maxStep && !lockedNow && left <= 0;
               return (
                 <div key={s.id}>
                   {showLabel && <div className="sb-label">{s.section}</div>}
@@ -430,7 +527,9 @@ function TheoryLabInner(props: TheoryLabProps) {
                     <div className={'step-num ' + (done ? 'sn-done' : isCur ? 'sn-active' : 'sn-next')}>{done ? '✓' : i + 1}</div>
                     <div className="step-info">
                       <div className="step-title">{title}</div>
-                      <div className="step-sub">{sub}</div>
+                      <div className="step-sub">
+                        {left > 0 ? `เปิดอีกครั้งใน ${formatRemaining(left)}` : sub}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -466,7 +565,19 @@ function TheoryLabInner(props: TheoryLabProps) {
                   </div>
                 )}
               </div>
-              <div className="lesson-wrap">{renderStepView()}</div>
+              <div className="lesson-wrap">
+                {rereadFor && waitLeft(rereadFor) > 0 && (
+                  <div className="reread-notice" role="status">
+                    <b>ลองมาแล้ว {WRONG_BEFORE_REREAD} ครั้ง — กลับมาอ่านเนื้อหาอีกรอบก่อนครับ</b>
+                    <span>
+                      “{rereadFor.title || rereadFor.section}” จะเปิดให้ทำอีกครั้งใน{' '}
+                      <b>{formatRemaining(waitLeft(rereadFor))}</b> ระหว่างนี้อ่านหัวข้ออื่นได้ตามปกติ
+                      และถาม AI Tutor ได้ แต่จะไม่เฉลยคำตอบให้
+                    </span>
+                  </div>
+                )}
+                {renderStepView()}
+              </div>
               <LabCompleteModal
                 open={labCompleteOpen}
                 title={completeTitle}

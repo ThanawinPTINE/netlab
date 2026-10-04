@@ -406,6 +406,15 @@ async def chat(req: ChatRequest):
     # Plain models keep the small budget the task needs, so hints stay short.
     if is_reasoning_model(model):
         max_tokens = max(max_tokens, 2000)
+    # Labs 1-3 are the theory labs: no terminal, no commands. inject_hint_guard
+    # reads "Wrong: N" out of the prompt and, past the threshold, tells the tutor
+    # it may now give the full command — so those labs inherited a rule written
+    # for labs 4-11, and what it actually released was a quiz answer. They handle
+    # a struggling student by closing the step and sending them back to the
+    # lesson for five minutes instead, which that reveal would undercut.
+    THEORY_LABS = (1, 2, 3)
+    if req.labId in THEORY_LABS:
+        wrong_count = min(wrong_count, 3)
     system_prompt = inject_hint_guard(system_prompt, wrong_count)
 
     messages = [{"role": m.role, "content": m.content} for m in req.messages]

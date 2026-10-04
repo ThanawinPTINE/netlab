@@ -262,3 +262,19 @@ body{font-size:var(--step-base);height:100vh;display:flex;flex-direction:column;
 .w-white-blue{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#3b82f6 5px,#3b82f6 10px)}
 .w-brown{background:#92400e}
 .w-white-brown{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#92400e 5px,#92400e 10px)}
+
+/* Shown when three failed attempts closed a graded step and sent the student
+   back here to read. Amber is DESIGN.md's caution role — nothing has gone
+   wrong, they simply have to wait before trying again. */
+.reread-notice{
+  display:flex;flex-direction:column;gap:5px;
+  margin-bottom:var(--space-5);
+  padding:var(--space-3) var(--space-4);
+  background:var(--amber-wash);
+  border:1px solid var(--amber);
+  border-radius:10px;
+  font-size:var(--step-sm);
+  color:var(--text2);
+  line-height:1.7;
+}
+.reread-notice b{color:var(--text);font-weight:700}

@@ -49,3 +49,16 @@ body{min-height:100vh}
   .road-sub{display:none}
   .topbar .crumb{display:none}
 }
+
+/* Shown when a lab page bounces someone here for opening a locked lab by URL.
+   Amber is the caution role in DESIGN.md — this is not an error, the student
+   simply arrived early. */
+.locked-notice{
+  margin:var(--space-4) var(--space-6) 0;
+  padding:11px var(--space-4);
+  background:var(--amber-wash);
+  border:1px solid var(--amber);
+  border-radius:9px;
+  color:var(--text);
+  font-size:var(--step-sm);
+}

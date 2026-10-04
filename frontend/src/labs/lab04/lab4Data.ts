@@ -484,7 +484,11 @@ export const STEPS: Step[] = [
     commands: [
       {
         mode: 'exec-priv',
-        pat: tracerouteBasicPat('192.168.20.(10|1)'),
+        // .10 only. Accepting .1 as well let the student trace to R2's own
+        // interface and call the step done, which verifies the router is up —
+        // not that PC-B is reachable, which is what this step is for. Both the
+        // answer and cmdHint above say .10.
+        pat: tracerouteBasicPat('192.168.20.10'),
         next: 'exec-priv',
         pr: 'R1#',
         adv: true,

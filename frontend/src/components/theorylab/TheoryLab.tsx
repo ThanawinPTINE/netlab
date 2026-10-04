@@ -15,6 +15,7 @@ import LabCompleteModal from '../configlab/LabCompleteModal';
 import { CalcView, CheckpointView, LessonView, ReviewView, WireOrderView, type StepCtx } from './StepViews';
 import './theorylab.css';
 import { clickable as kbd } from '../../lib/clickable';
+import { buildLabsFromProgress } from '../../data/labMeta';
 
 export interface TheoryLabProps {
   labId: number;
@@ -218,6 +219,13 @@ function TheoryLabInner(props: TheoryLabProps) {
       let row;
       try {
         const data = await apiGetProgress(studentId, token, 'netlab1');
+        // The Roadmap greys out a locked lab; nothing stopped anyone opening it
+        // by URL. Same rule, same data, no extra request.
+        const mine = buildLabsFromProgress(data.labs || []).find((l) => l.n === labId);
+        if (mine?.status === 'locked') {
+          window.location.replace('/course.html?locked=' + labId);
+          return;
+        }
         row = (data.labs || []).find((r) => r.lab_id === labId);
       } catch {
         return;
@@ -300,6 +308,22 @@ function TheoryLabInner(props: TheoryLabProps) {
     drawnRef.current = {};
     setViewKey((k) => k + 1);
     bump();
+    // Without this the reset lived only in this tab: reloading restored the old
+    // progress from the server and the restart silently undid itself.
+    if (studentId && token) {
+      apiSaveProgress({
+        token,
+        studentId,
+        labId,
+        courseId: 'netlab1',
+        stepsDone: 0,
+        totalSteps: steps.length,
+        wrongDelta: 0,
+        elapsedSec: 0,
+        completed: false,
+        reset: true,
+      }).catch(() => {});
+    }
   }
 
   const ctx: StepCtx = {

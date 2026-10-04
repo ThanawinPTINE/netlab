@@ -81,13 +81,26 @@ class ProgressUpdate(BaseModel):
     elapsedSec: int = Field(default=0, ge=0, le=3600)  # one /progress ping never covers more than an hour
     completed: bool = False
     courseId: str = "netlab1"  # disambiguates lab_id across courses (Network Eng. Lab I vs II)
-    difficulty: str = "basic"  # basic | medium | hard — part of progress's key, see db.DIFFICULTIES
+    difficulty: str = "basic"
+    reset: bool = False        # student restarted this lab: clear `completed`  # basic | medium | hard — part of progress's key, see db.DIFFICULTIES
 
     # db.py's CHECK(steps_done <= total_steps) would otherwise surface as a 500
     @model_validator(mode="after")
     def _steps_within_total(self):
         if self.stepsDone > self.totalSteps:
             raise ValueError("stepsDone must not exceed totalSteps")
+        return self
+
+    # The token proves who is calling, not that the work was done — the body is
+    # still whatever the page chose to send, and a crafted request could mark a
+    # lab complete at step 3 of 26. The server cannot replay a lab to check, but
+    # it can refuse the one claim that contradicts itself.
+    @model_validator(mode="after")
+    def _completed_means_all_steps(self):
+        if self.completed and self.stepsDone < self.totalSteps:
+            raise ValueError("completed requires stepsDone == totalSteps")
+        if self.reset and self.completed:
+            raise ValueError("reset and completed cannot both be true")
         return self
 
 
@@ -336,6 +349,7 @@ async def save_progress(req: ProgressUpdate):
         token_student_id, req.labId, req.stepsDone, req.totalSteps,
         req.wrongDelta, req.elapsedSec, req.completed,
         course_id=req.courseId, difficulty=req.difficulty, hints_used=req.hintsDelta,
+        reset=req.reset,
     )
     return {"ok": True}
 
@@ -422,10 +436,14 @@ async def chat(req: ChatRequest):
             "done": True,
         }
     except httpx.TimeoutException:
-        # fallback ไป MODEL_FAST ถ้า timeout
-        log.warning(f"Timeout {model} → fallback {MODEL_FAST}")
+        # Retry on MODEL_DEFAULT, not MODEL_FAST. MODEL_FAST is the hint model,
+        # which the 4 Oct 2026 measurement found returns empty 8 times in 10 —
+        # so a timeout used to be answered by handing the request to the model
+        # least likely to answer it, and the student waited through both.
+        # MODEL_DEFAULT is also where call_openrouter's own fallback lands.
+        log.warning(f"Timeout {model} → retry on {MODEL_DEFAULT}")
         try:
-            reply, answered_by = await call_openrouter(messages, system_prompt, 80, MODEL_FAST)
+            reply, answered_by = await call_openrouter(messages, system_prompt, 150, MODEL_DEFAULT)
             log_it(reply, answered_by)
             return {"content": reply, "model": answered_by, "task": task, "done": True}
         except Exception as e2:

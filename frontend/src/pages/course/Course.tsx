@@ -60,6 +60,7 @@ function CourseInner() {
       <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
       </header>
       <main id="main" tabIndex={-1}>
+      <LockedNotice />
 
       <div className="hero">
         <div className="hero-bg">
@@ -152,6 +153,18 @@ function CourseInner() {
       </div>
       </main>
     </>
+  );
+}
+
+/** A lab page sends anyone who opens a locked lab by URL back here with
+ *  ?locked=N. Without a word of explanation the redirect just looks broken. */
+function LockedNotice() {
+  const n = new URLSearchParams(window.location.search).get('locked');
+  if (!n) return null;
+  return (
+    <div className="locked-notice" role="status">
+      ยังเปิด Lab {n} ไม่ได้ครับ — ต้องเรียน Lab ก่อนหน้าให้จบก่อน
+    </div>
   );
 }
 

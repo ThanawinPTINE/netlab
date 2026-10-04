@@ -7,10 +7,16 @@
 // any other deployment (CLAUDE.md "Frontend pages call the backend via API_BASE").
 // The page's own protocol is kept so an https deployment doesn't call http://…/api
 // and get blocked as mixed content.
+// window.location.host, not .hostname: .hostname drops the port, so a page
+// opened from another machine on the LAN at 192.168.1.5:5500 asked
+// http://192.168.1.5/api — port 80, where nothing listens — and every call
+// failed. .host keeps the port, which the Vite dev server then proxies to :8000
+// (see vite.config.ts). In production nginx serves on the default port, so
+// .host carries none and the URL is unchanged.
 export const API_BASE =
   window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8000'
-    : `${window.location.protocol}//${window.location.hostname}/api`;
+    : `${window.location.protocol}//${window.location.host}/api`;
 
 // ─── /auth/google ────────────────────────────────────────────────
 export interface AuthProfile {
@@ -74,6 +80,7 @@ export interface ProgressUpdatePayload {
   completed?: boolean;
   courseId?: string;
   difficulty?: string;
+  reset?: boolean; // student restarted the lab — the server clears `completed`
 }
 
 export async function saveProgress(payload: ProgressUpdatePayload): Promise<{ ok: boolean }> {

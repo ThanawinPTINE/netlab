@@ -247,12 +247,16 @@ def get_user(student_id):
 
 # ─── Progress / activity ────────────────────────────────────
 def upsert_progress(student_id, lab_id, steps_done, total_steps, wrong_count, elapsed_sec, completed,
-                     course_id=DEFAULT_COURSE_ID, difficulty=DEFAULT_DIFFICULTY, hints_used=0):
+                     course_id=DEFAULT_COURSE_ID, difficulty=DEFAULT_DIFFICULTY, hints_used=0,
+                     reset=False):
     """`wrong_count`, `elapsed_sec` and `hints_used` are deltas the server adds to
     the stored totals; `steps_done`/`total_steps` are absolute. `difficulty` is
     part of the key, so each level keeps its own row and its own history."""
     if difficulty not in DIFFICULTIES:
         raise ValueError("unknown difficulty: %r" % (difficulty,))
+    # `completed` is sticky on an ordinary save — finishing a lab once stays
+    # true. A reset is the one case that clears it, because a row reporting no
+    # steps done and still finished contradicts itself.
     now = _now_iso()
     today = datetime.now(LOCAL_TZ).strftime("%Y-%m-%d")
     with _connect() as conn:
@@ -268,7 +272,7 @@ def upsert_progress(student_id, lab_id, steps_done, total_steps, wrong_count, el
                     completed=?, updated_at=?
                 WHERE student_id=? AND course_id=? AND lab_id=? AND difficulty=?
             """, (steps_done, total_steps, wrong_count, hints_used, elapsed_sec,
-                  1 if completed else existing["completed"], now,
+                  1 if completed else (0 if reset else existing["completed"]), now,
                   student_id, course_id, lab_id, difficulty))
         else:
             conn.execute("""

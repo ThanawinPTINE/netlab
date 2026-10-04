@@ -1,9 +1,9 @@
 """
 NETLab AI Backend — FastAPI + OpenRouter API
-Model routing:
-  hint/เร็ว  → deepseek/deepseek-v4-flash
-  chat       → google/gemini-2.5-flash
-  fallback   → qwen/qwen3-32b (ผิดเยอะ หรือคำถามยาก)
+
+Model routing is decided by select_model() and the three MODEL_* keys in .env.
+The names are deliberately not repeated here: a docstring listing them drifts
+the moment .env changes, and then states the wrong thing with confidence.
 """
 
 from fastapi import FastAPI, HTTPException
@@ -18,7 +18,11 @@ from google.auth.transport import requests as google_requests
 import db
 import session
 
-load_dotenv("/opt/qoslab/.env")  # prod path — เซิร์ฟเวอร์จริงยังใช้โฟลเดอร์นี้อยู่ ไม่เปลี่ยนตาม rename นี้
+# Legacy path from an earlier project name. Nothing reads it today: NETLab has
+# never been deployed, and deploy/DEPLOY.md puts the server at /opt/netlab. Kept
+# only so a machine still holding the old file keeps working — the .env beside
+# main.py, loaded next, is what actually applies.
+load_dotenv("/opt/qoslab/.env")
 load_dotenv()  # fallback: .env ข้าง main.py เอง (สำหรับรัน local/Windows)
 
 # ─── Config ────────────────────────────────────────────────
@@ -177,10 +181,16 @@ def is_reasoning_model(model: str) -> bool:
 # ─── Helper: select model ──────────────────────────────────
 def select_model(task: str, wrong_count: int) -> str:
     if wrong_count >= 4:
-        return MODEL_FALLBACK   # qwen3-32b —똑똑สุด ใช้ตอนผิดเยอะ
+        return MODEL_FALLBACK   # ฉลาดที่สุด ใช้ตอนผิดเยอะ
     if task == "hint":
-        return MODEL_FAST       # deepseek — เร็วสุด ใช้ตอบ hint
-    return MODEL_DEFAULT        # gemini-2.5-flash — สมดุล ใช้ทั่วไป
+        # Named "fast" after the model first chosen for it. Measured 4 Oct 2026
+        # on the Lab 5 hint prompt, deepseek-v4-flash comes back empty 8 times in
+        # 10 — the budget goes on its internal reasoning — so the request falls
+        # through to MODEL_DEFAULT and the student waits about 9 seconds for an
+        # answer that model would have given in about 1.2. Fixing that means a
+        # different MODEL_FAST in .env, not a change here.
+        return MODEL_FAST
+    return MODEL_DEFAULT        # ใช้ทั่วไป
 
 # ─── Core: call OpenRouter ─────────────────────────────────
 async def call_openrouter(
@@ -375,9 +385,11 @@ async def chat(req: ChatRequest):
     # Reasoning models spend tokens on an internal <reasoning> field before
     # writing the answer, so the task budget alone truncates them mid-thought
     # and content comes back null (finish_reason "length"). Measured on the
-    # tutor hint prompt: deepseek-v4-flash produced nothing at 900/1200/1600
-    # and only answered at 2000. Give any such model real headroom — and give
-    # plain models the small budget the task actually needs, so hints stay short.
+    # tutor hint prompt deepseek-v4-flash produced nothing at 900/1200/1600 and
+    # answered at 2000, which is where this number came from. The 4 Oct 2026
+    # measurement found it returns empty 8 times in 10 even at 2000, so treat
+    # this as headroom that helps some models rather than a fix for that one.
+    # Plain models keep the small budget the task needs, so hints stay short.
     if is_reasoning_model(model):
         max_tokens = max(max_tokens, 2000)
     system_prompt = inject_hint_guard(system_prompt, wrong_count)

@@ -133,7 +133,9 @@ function TheoryLabInner(props: TheoryLabProps) {
     setIsTyping(true);
     try {
       const res = await sendChatMessage({
-        messages: appRef.current.chatHistory.slice(-8).concat([{ role: 'user', content: text }]),
+        // addMsg('user', text) above already appended this to chatHistory;
+        // concatenating it again sent the same question to the model twice.
+        messages: appRef.current.chatHistory.slice(-8),
         system: buildSys(),
         max_tokens: 150,
         token: studentId ? token : null,

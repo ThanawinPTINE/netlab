@@ -592,9 +592,15 @@ function ConfigLabInner(props: ConfigLabProps) {
     );
   }
 
-  async function callAI(msg: string, sys?: string): Promise<string> {
+  /** `inHistory` says whether addMsg() has already put `msg` into chatHistory.
+   *  The chat box has — the student typed it and it is on screen — so appending
+   *  it again sent the same question to the model twice. The terminal's hint
+   *  prompt has not: it is built internally and never shown, so it still needs
+   *  to be appended. */
+  async function callAI(msg: string, sys?: string, inHistory = false): Promise<string> {
+    const recent = appRef.current.chatHistory.slice(-8);
     const res = await sendChatMessage({
-      messages: appRef.current.chatHistory.slice(-8).concat([{ role: 'user', content: msg }]),
+      messages: inHistory ? recent : recent.concat([{ role: 'user', content: msg }]),
       system: sys || buildSys(),
       max_tokens: 150,
       token: studentId ? token : null,
@@ -609,7 +615,7 @@ function ConfigLabInner(props: ConfigLabProps) {
     addMsg('user', text);
     setIsTyping(true);
     try {
-      const r = await callAI(text);
+      const r = await callAI(text, undefined, true);
       setIsTyping(false);
       addMsg('ai', r);
     } catch (e) {

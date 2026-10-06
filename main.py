@@ -28,7 +28,11 @@ load_dotenv()  # fallback: .env ข้าง main.py เอง (สำหรั�
 # ─── Config ────────────────────────────────────────────────
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 MODEL_DEFAULT      = os.getenv("MODEL_DEFAULT",  "google/gemini-2.5-flash")
-MODEL_FAST         = os.getenv("MODEL_FAST",     "deepseek/deepseek-v4-flash")
+# Was deepseek-v4-flash. Measured 4 Oct 2026 on the Lab 5 hint prompt it came
+# back empty 8 times in 10 — the budget went on its internal reasoning — so
+# every hint cost a wasted round trip before falling through to MODEL_DEFAULT:
+# about 9 seconds for an answer gemini gives in about 1.2.
+MODEL_FAST         = os.getenv("MODEL_FAST",     "google/gemini-2.5-flash")
 MODEL_FALLBACK     = os.getenv("MODEL_FALLBACK", "qwen/qwen3-32b")
 ALLOWED_ORIGINS    = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 GOOGLE_CLIENT_ID   = os.getenv("GOOGLE_CLIENT_ID", "")
@@ -196,12 +200,10 @@ def select_model(task: str, wrong_count: int) -> str:
     if wrong_count >= 4:
         return MODEL_FALLBACK   # ฉลาดที่สุด ใช้ตอนผิดเยอะ
     if task == "hint":
-        # Named "fast" after the model first chosen for it. Measured 4 Oct 2026
-        # on the Lab 5 hint prompt, deepseek-v4-flash comes back empty 8 times in
-        # 10 — the budget goes on its internal reasoning — so the request falls
-        # through to MODEL_DEFAULT and the student waits about 9 seconds for an
-        # answer that model would have given in about 1.2. Fixing that means a
-        # different MODEL_FAST in .env, not a change here.
+        # Hints are short and wanted immediately, so this is the quickest model
+        # rather than the cleverest. It is the same model as MODEL_DEFAULT since
+        # 6 Oct 2026 — see the note where MODEL_FAST is read — and stays a
+        # separate key so the two can diverge again without touching this.
         return MODEL_FAST
     return MODEL_DEFAULT        # ใช้ทั่วไป
 

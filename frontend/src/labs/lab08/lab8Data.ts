@@ -540,8 +540,8 @@ export const PRETEST: PretestQuestion[] = [
     id: 'q1',
     type: 'mcq',
     q: 'EIGRP เป็น Routing Protocol ประเภทไหน?',
-    opts: ['Distance Vector ล้วนๆ เหมือน RIP', 'Advanced Distance Vector (Hybrid) ผสมแนวคิด Link-State', 'Link-State ล้วนๆ เหมือน OSPF', 'Path-Vector เหมือน BGP'],
-    ans: 1,
+    opts: ['Advanced Distance Vector (Hybrid) ผสมแนวคิด Link-State', 'Distance Vector ล้วนๆ เหมือน RIP', 'Link-State ล้วนๆ เหมือน OSPF', 'Path-Vector เหมือน BGP'],
+    ans: 0,
     exp: 'EIGRP เป็น Advanced Distance Vector (บางตำราเรียก Hybrid) ใช้แนวคิด Distance Vector เป็นหลัก แต่เพิ่มกลไกแบบ Link-State เช่น DUAL algorithm และ Topology Table เพื่อคำนวณเส้นทางสำรองไว้ล่วงหน้า ทำให้ Converge เร็วกว่า RIP มาก',
   },
   {

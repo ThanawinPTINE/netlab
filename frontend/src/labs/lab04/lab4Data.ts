@@ -503,8 +503,8 @@ export const PRETEST: PretestQuestion[] = [
     id: 'q1',
     type: 'mcq',
     q: 'คำสั่ง hostname มีไว้ทำอะไร?',
-    opts: ['เปลี่ยน IP Address ของอุปกรณ์', 'ตั้งชื่ออุปกรณ์เพื่อให้แยกแยะได้ในเครือข่าย', 'เปิด/ปิด interface', 'ตั้งรหัสผ่าน'],
-    ans: 1,
+    opts: ['ตั้งชื่ออุปกรณ์เพื่อให้แยกแยะได้ในเครือข่าย', 'เปลี่ยน IP Address ของอุปกรณ์', 'เปิด/ปิด interface', 'ตั้งรหัสผ่าน'],
+    ans: 0,
     exp: 'hostname ใช้ตั้งชื่อเรียกอุปกรณ์ (เช่น hostname R1) ช่วยให้ผู้ดูแลระบบแยกแยะอุปกรณ์แต่ละตัวได้ง่ายเวลาดู prompt หรือ log',
   },
   {
@@ -519,8 +519,8 @@ export const PRETEST: PretestQuestion[] = [
     id: 'q3',
     type: 'mcq',
     q: 'ทำไมควรใช้ SSH แทน Telnet ในการเข้าถึงอุปกรณ์ระยะไกล?',
-    opts: ['SSH เร็วกว่า Telnet', 'SSH เข้ารหัสข้อมูลที่รับส่ง ส่วน Telnet ส่งเป็น plain text', 'Telnet ใช้ได้แค่ในเครือข่ายภายในเท่านั้น', 'ไม่มีความแตกต่างกัน'],
-    ans: 1,
+    opts: ['SSH เร็วกว่า Telnet', 'Telnet ใช้ได้แค่ในเครือข่ายภายในเท่านั้น', 'SSH เข้ารหัสข้อมูลที่รับส่ง ส่วน Telnet ส่งเป็น plain text', 'ไม่มีความแตกต่างกัน'],
+    ans: 2,
     exp: 'SSH (Secure Shell) เข้ารหัสข้อมูลทั้งหมดรวมถึง username/password ขณะที่ Telnet ส่งข้อมูลแบบ plain text ทำให้ถูกดักจับ (sniff) ได้ง่าย จึงควรปิด Telnet และใช้ SSH แทน',
   },
   {

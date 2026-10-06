@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import type { DragDropQuestion, PretestQuestion } from '../../types/configLab';
 import { clickable } from '../../lib/clickable';
+import { shuffledOrders } from '../../lib/shuffle';
 
 export interface DdSelection {
   qi: number;
@@ -36,6 +38,13 @@ export default function Pretest({
   onSkip,
   onGoLab,
 }: PretestProps) {
+  // One order per question, fixed for this attempt — recomputing on every
+  // render would shuffle the options while the student is reading them.
+  const optOrders = useMemo(
+    () => shuffledOrders(pretest.map((q) => (q.type === 'mcq' ? q.opts.length : 0))),
+    [pretest],
+  );
+
   return (
     <>
       <div id="pretestContent">
@@ -47,7 +56,8 @@ export default function Pretest({
                 <div className="q-num">คำถามที่ {qi + 1}</div>
                 <div className="q-text">{q.q}</div>
                 <div className="q-opts">
-                  {q.opts.map((o, oi) => {
+                  {(optOrders[qi] ?? q.opts.map((_, i) => i)).map((oi) => {
+                    const o = q.opts[oi];
                     const cls = ['q-opt'];
                     if (a.answered) {
                       cls.push('answered');

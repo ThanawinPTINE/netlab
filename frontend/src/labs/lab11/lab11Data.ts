@@ -594,8 +594,8 @@ export const PRETEST: PretestQuestion[] = [
     id: 'q2',
     type: 'mcq',
     q: 'ในคำสั่ง neighbor 172.30.2.2 remote-as 200 (ตั้งบน R1 ซึ่งอยู่ AS100) เลข 200 หมายถึงอะไร?',
-    opts: ['AS Number ของ R1 เอง', 'AS Number ของ Router เพื่อนบ้าน (R2) ที่กำลังจะผูก Neighbor ด้วย', 'หมายเลข Process ID ของ BGP', 'หมายเลข Port ที่ใช้เชื่อมต่อ'],
-    ans: 1,
+    opts: ['AS Number ของ R1 เอง', 'หมายเลข Port ที่ใช้เชื่อมต่อ', 'หมายเลข Process ID ของ BGP', 'AS Number ของ Router เพื่อนบ้าน (R2) ที่กำลังจะผูก Neighbor ด้วย'],
+    ans: 3,
     exp: 'remote-as ในคำสั่ง neighbor ต้องระบุ AS Number ของ "ฝั่งตรงข้าม" เสมอ ไม่ใช่ของตัวเอง — นี่คือจุดที่มือใหม่สับสนบ่อยที่สุด เพราะ AS ของตัวเองถูกประกาศไปแล้วตอนพิมพ์ router bgp [asn] ก่อนหน้านี้ ถ้าใส่ remote-as ผิดเป็นเลข AS ของตัวเอง Session จะไม่มีทาง Established (มองว่าเป็น iBGP ผิดประเภท)',
   },
   {
@@ -603,12 +603,12 @@ export const PRETEST: PretestQuestion[] = [
     type: 'mcq',
     q: 'ทำไมหลังจากตั้งค่า BGP บน R1 เพียงฝั่งเดียว (ยังไม่ได้ตั้งที่ R2) คำสั่ง show ip bgp summary จึงเห็น Neighbor อยู่ในสถานะ Active แทนที่จะไม่เห็นอะไรเลยเหมือน OSPF/EIGRP?',
     opts: [
-      'เพราะ BGP มี Bug ทำงานผิดปกติ',
       'เพราะ BGP ใช้ TCP (Unicast) เชื่อมต่อโดยตรงตาม IP ที่ระบุ จึงพยายามเชื่อมต่อซ้ำๆ (state Active) แม้อีกฝั่งยังไม่ตอบ ต่างจาก OSPF/EIGRP ที่ใช้ Multicast Hello ซึ่งจะไม่ปรากฏอะไรเลยถ้าไม่มีใครตอบ',
+      'เพราะ BGP มี Bug ทำงานผิดปกติ',
       'เพราะลืมพิมพ์ no shutdown',
       'เพราะ AS Number ไม่ตรงกัน',
     ],
-    ans: 1,
+    ans: 0,
     exp: 'BGP สร้าง Session ผ่าน TCP Port 179 แบบ Unicast ตรงไปยัง IP ที่ระบุใน neighbor command เสมอ ไม่ว่าอีกฝั่งจะตอบหรือไม่ — Router จึงพยายามเชื่อมต่อซ้ำเรื่อยๆ (แสดงเป็น State "Active") จนกว่าอีกฝั่งจะตั้งค่า neighbor กลับมาหาตัวเองด้วย Session ถึงจะเปลี่ยนเป็น "Established" — นี่คือความแตกต่างสำคัญจาก IGP ที่ discover เพื่อนบ้านอัตโนมัติผ่าน Multicast',
   },
   {

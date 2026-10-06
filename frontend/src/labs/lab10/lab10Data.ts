@@ -688,11 +688,11 @@ export const PRETEST: PretestQuestion[] = [
     q: 'Route Redistribution คืออะไร?',
     opts: [
       'การเพิ่ม Bandwidth ให้ Interface',
-      'กระบวนการแปลงและส่งต่อ Route ที่เรียนรู้จาก Routing Protocol หนึ่ง ไปประกาศใน Routing Protocol อีกตัวหนึ่ง',
       'การสำรอง Router ID ไว้ล่วงหน้า',
+      'กระบวนการแปลงและส่งต่อ Route ที่เรียนรู้จาก Routing Protocol หนึ่ง ไปประกาศใน Routing Protocol อีกตัวหนึ่ง',
       'การเข้ารหัส Routing Update',
     ],
-    ans: 1,
+    ans: 2,
     exp: 'Redistribution คือการที่ Router ตัวหนึ่ง (ซึ่งรัน 2 Protocol พร้อมกัน เรียกว่า ASBR — Autonomous System Boundary Router) นำ Route ที่เรียนรู้มาจาก Protocol A มาประกาศต่อใน Protocol B เพื่อให้ Network ที่ใช้คนละ Protocol กันมองเห็นเส้นทางถึงกันได้ — ในแล็บนี้ R2 ทำหน้าที่นี้ระหว่าง OSPF (ฝั่ง R1) กับ EIGRP (ฝั่ง R3)',
   },
   {
@@ -701,11 +701,11 @@ export const PRETEST: PretestQuestion[] = [
     q: 'เพราะเหตุใดคำสั่ง redistribute eigrp 100 subnets ฝั่ง OSPF จึงต้องมีคำว่า "subnets" ต่อท้ายเสมอ?',
     opts: [
       'เพื่อความสวยงามของคำสั่งเท่านั้น ไม่มีผลจริง',
-      'ถ้าไม่ใส่ subnets, OSPF จะดึงมาแค่ major network แบบ classful เท่านั้น — subnet ที่ไม่ตรง classful boundary (เช่น 172.25.3.0/24 ที่เป็นส่วนหนึ่งของ Class B เดิม) จะถูกข้ามไปเงียบๆ',
-      'เพื่อเปลี่ยน Router ID ของ Router',
       'เพื่อบังคับให้ใช้ Area 0 เท่านั้น',
+      'เพื่อเปลี่ยน Router ID ของ Router',
+      'ถ้าไม่ใส่ subnets, OSPF จะดึงมาแค่ major network แบบ classful เท่านั้น — subnet ที่ไม่ตรง classful boundary (เช่น 172.25.3.0/24 ที่เป็นส่วนหนึ่งของ Class B เดิม) จะถูกข้ามไปเงียบๆ',
     ],
-    ans: 1,
+    ans: 3,
     exp: 'OSPF ค่า Default ของคำสั่ง redistribute จะดึงมาเฉพาะ Route ที่เป็น Classful Network เท่านั้น หากไม่ใส่ subnets ต่อท้าย Route ที่ถูก Subnet มาแล้ว (เกือบทุก Route ในโลกจริง) จะไม่ถูกดึงเข้ามาเลย โดยไม่มี Error แจ้งเตือนใดๆ — เป็นสาเหตุอันดับ 1 ที่ทำให้ Redistribution "ดูเหมือนไม่ทำงาน" ทั้งที่ config ถูกต้องแล้ว',
   },
   {
@@ -713,12 +713,12 @@ export const PRETEST: PretestQuestion[] = [
     type: 'mcq',
     q: 'ทำไมคำสั่ง redistribute ospf 2 metric 10000 100 255 1 1500 ฝั่ง EIGRP ต้องระบุตัวเลข Metric เอง 5 ค่า ทั้งที่ redistribute ฝั่ง OSPF ไม่ต้องระบุ?',
     opts: [
-      'เพราะ EIGRP รองรับ Router น้อยกว่า OSPF',
       'เพราะ EIGRP ใช้ Composite Metric (Bandwidth, Delay, Reliability, Load, MTU) ซึ่งคำนวณจาก Protocol อื่นโดยอัตโนมัติไม่ได้ จึงต้องกำหนด Seed Metric เริ่มต้นให้เอง',
+      'เพราะ EIGRP รองรับ Router น้อยกว่า OSPF',
       'เพราะเป็นข้อบังคับของ Cisco IOS เวอร์ชันใหม่เท่านั้น',
       'เพราะ EIGRP ไม่รองรับ Redistribution จริงๆ ต้องใส่ค่าหลอกไว้',
     ],
-    ans: 1,
+    ans: 0,
     exp: 'EIGRP ใช้ Metric แบบ Composite ที่รวม Bandwidth + Delay + Reliability + Load + MTU เข้าด้วยกัน ซึ่งเป็นค่าเฉพาะของ EIGRP เอง — เมื่อดึง Route จาก Protocol อื่น (เช่น OSPF ที่ใช้ Cost) เข้ามา EIGRP ไม่มีทางแปลงค่า Cost เป็น Composite Metric ได้เอง จึงบังคับให้ผู้ดูแลระบบกำหนด Seed Metric เริ่มต้นตรงนี้เสมอ ไม่งั้น Redistribute จะไม่สำเร็จ',
   },
   {

@@ -3,6 +3,7 @@ import type { TheoryItem, TheoryStep } from '../../types/theoryLab';
 import DragMatch, { clearWrongMatch, emptyMatch, gradeMatch, revealMatch, shuffledIndices, type MatchState } from './DragMatch';
 import WirePins, { WIRE_COLORS, emptyWire, gradeWire, revealWire, shuffledWireKeys, type WireState } from './WirePins';
 import { clickable } from '../../lib/clickable';
+import { shuffledOrder } from '../../lib/shuffle';
 
 /* Lesson bodies, figures, explanations and calc scenarios are trusted, static
    course content written as HTML — rendered as-is, exactly like the vanilla pages. */
@@ -114,6 +115,9 @@ export function LessonView({ step, ctx }: { step: TheoryStep; ctx: StepCtx }) {
 
 /* ── single checkpoint (MCQ or drag-drop) ── */
 export function CheckpointView({ step, ctx }: { step: TheoryStep; ctx: StepCtx }) {
+  // Fixed for this attempt: recomputing per render would reorder the
+  // options while the student is reading them.
+  const [optOrder] = useState(() => shuffledOrder((step.opts || []).length));
   const [fb, setFb] = useState<Fb>(null);
   const [passed, setPassed] = useState(false);
   useLockFlash(ctx.lockFlash, setFb);
@@ -196,7 +200,8 @@ export function CheckpointView({ step, ctx }: { step: TheoryStep; ctx: StepCtx }
         <div className="q-num">{step.final ? 'ทบทวนท้ายบท' : 'Checkpoint'}</div>
         <div className="q-text">{step.q}</div>
         <div className="q-opts">
-          {opts.map((o, oi) => {
+          {optOrder.map((oi) => {
+            const o = opts[oi];
             const cls = ['q-opt'];
             if (sel === oi && !graded) cls.push('selected');
             if (graded) {
@@ -382,6 +387,8 @@ export function ReviewView({
   ctx: StepCtx;
   onScore: (ok: number, total: number) => void;
 }) {
+  // One order per drawn item, fixed for this attempt.
+  const [itemOrders] = useState(() => items.map((it) => shuffledOrder((it.opts || []).length)));
   const reveal = ctx.reviewMode;
   const [leftOrders] = useState(() => items.map((it) => shuffledIndices(it.pairs?.length || 0)));
   const [poolOrders] = useState(() => items.map(() => shuffledWireKeys()));
@@ -506,7 +513,8 @@ export function ReviewView({
               {isMcq(it) && (
                 <>
                   <div className="q-opts">
-                    {(it.opts || []).map((o, oi) => {
+                    {(itemOrders[k] ?? (it.opts || []).map((_, i) => i)).map((oi) => {
+                      const o = (it.opts || [])[oi];
                       const graded = !!mcqGraded[k];
                       const cls = ['q-opt'];
                       if (sel[k] === oi) cls.push('selected');

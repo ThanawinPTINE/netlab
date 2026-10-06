@@ -116,6 +116,7 @@ function TheoryLabInner(props: TheoryLabProps) {
   const [isBusy, setIsBusy] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const lessonViewRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
   /** review/quiz items drawn for this run, per step id — cleared on resetLab so a retake redraws */
   const drawnRef = useRef<Record<number, TheoryItem[]>>({});
 
@@ -331,6 +332,14 @@ function TheoryLabInner(props: TheoryLabProps) {
     if (!s || s.type === 'lesson') return false;
     return !isDone(s);
   }
+  /** Every view is keyed by step, so changing step unmounts whatever the
+   * student had focused and focus drops to <body> — the next Tab then starts
+   * from the top of the page again. Put it on <main> instead, which is where
+   * the skip link lands too, so one Tab reaches the new step's first control. */
+  function resetView() {
+    mainRef.current?.focus({ preventScroll: true });
+    if (lessonViewRef.current) lessonViewRef.current.scrollTop = 0;
+  }
   function goToStep(n: number) {
     const a = appRef.current;
     if (n < 1 || n > steps.length || n > a.maxStep) return;
@@ -347,7 +356,7 @@ function TheoryLabInner(props: TheoryLabProps) {
     a.wrong = 0;
     setViewKey((k) => k + 1);
     bump();
-    if (lessonViewRef.current) lessonViewRef.current.scrollTop = 0;
+    resetView();
   }
   function completeLab() {
     bump();
@@ -366,7 +375,7 @@ function TheoryLabInner(props: TheoryLabProps) {
       if (a.step > a.maxStep) a.maxStep = a.step;
       setViewKey((k) => k + 1);
       bump();
-      if (lessonViewRef.current) lessonViewRef.current.scrollTop = 0;
+      resetView();
       if (!already) saveProgress(false);
     } else if (already) {
       setLabCompleteOpen(true);
@@ -429,7 +438,7 @@ function TheoryLabInner(props: TheoryLabProps) {
         setViewKey((k) => k + 1);
         setNow(Date.now());
         bump();
-        if (lessonViewRef.current) lessonViewRef.current.scrollTop = 0;
+        resetView();
       }
       return w;
     },
@@ -470,6 +479,7 @@ function TheoryLabInner(props: TheoryLabProps) {
 
   return (
     <>
+      <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
       <LabTopbar
         labNumberBadge={labNumberBadge}
         breadcrumbChapter={breadcrumbChapter}
@@ -494,7 +504,7 @@ function TheoryLabInner(props: TheoryLabProps) {
       />
 
       <div className="main">
-        <div className={'sidebar' + (sidebarMobileOpen ? ' mobile-open' : '')}>
+        <nav className={'sidebar' + (sidebarMobileOpen ? ' mobile-open' : '')} aria-label="ขั้นตอนของบทเรียน">
           <div className="sb-section">
             {steps.map((s, i) => {
               const showLabel = s.section !== lastSection;
@@ -545,9 +555,9 @@ function TheoryLabInner(props: TheoryLabProps) {
               <div className="prog-fill" style={{ width: pct + '%' }} />
             </div>
           </div>
-        </div>
+        </nav>
 
-        <div className="center">
+        <main id="main" className="center" tabIndex={-1} ref={mainRef}>
           <div className="content-area">
             <div className="lesson-view" ref={lessonViewRef}>
               <div className="lesson-status">
@@ -592,7 +602,7 @@ function TheoryLabInner(props: TheoryLabProps) {
               />
             </div>
           </div>
-        </div>
+        </main>
 
         <ChatPanel
           messages={messages}

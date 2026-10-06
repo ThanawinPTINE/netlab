@@ -12,7 +12,7 @@ export default function Sidebar({ steps, stepsDone, currentStep, mobileOpen }: S
   let lastRouter = '';
 
   return (
-    <div className={'sidebar' + (mobileOpen ? ' mobile-open' : '')} id="sidebarPanel">
+    <nav className={'sidebar' + (mobileOpen ? ' mobile-open' : '')} id="sidebarPanel" aria-label="ขั้นตอนของแลป">
       <div className="sb-section">
         {steps.map((s, i) => {
           const showLabel = s.router !== lastRouter;
@@ -42,6 +42,6 @@ export default function Sidebar({ steps, stepsDone, currentStep, mobileOpen }: S
           <div className="prog-fill" style={{ width: pct + '%' }} />
         </div>
       </div>
-    </div>
+    </nav>
   );
 }

@@ -193,6 +193,7 @@ function ConfigLabInner(props: ConfigLabProps) {
   const [pcPinged, setPcPinged] = useState<Record<string, TermLine[]>>({});
 
   const termInputRef = useRef<HTMLInputElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
   const cmdHistoryRef = useRef<string[]>([]);
   const histIdxRef = useRef(-1);
   const histDraftRef = useRef('');
@@ -440,7 +441,10 @@ function ConfigLabInner(props: ConfigLabProps) {
 
   function switchTab(t: 'pretest' | 'lab' | 'iptab') {
     setActiveTab(t);
+    // The tab's own control is about to be hidden, so focus has to go somewhere:
+    // the terminal for the lab tab, <main> otherwise, rather than to <body>.
     if (t === 'lab') window.setTimeout(() => termInputRef.current?.focus(), 100);
+    else mainRef.current?.focus({ preventScroll: true });
   }
 
   // ── terminal input handling ──
@@ -939,6 +943,7 @@ function ConfigLabInner(props: ConfigLabProps) {
 
   return (
     <>
+      <a className="skip-link" href="#main">ข้ามไปเนื้อหาหลัก</a>
       <LabTopbar
         labNumberBadge={labNumberBadge}
         breadcrumbChapter={breadcrumbChapter}
@@ -977,7 +982,7 @@ function ConfigLabInner(props: ConfigLabProps) {
       <div className="main">
         <Sidebar steps={steps} stepsDone={appRef.current.stepsDone} currentStep={appRef.current.step} mobileOpen={sidebarMobileOpen} />
 
-        <div className="center">
+        <main id="main" className="center" tabIndex={-1} ref={mainRef}>
           <div className="content-area">
             <div className={'view' + (activeTab === 'pretest' ? ' active' : '')}>
               <div className="pretest-wrap">
@@ -1065,7 +1070,7 @@ function ConfigLabInner(props: ConfigLabProps) {
               />
             </div>
           </div>
-        </div>
+        </main>
 
         <ChatPanel
           messages={messages}

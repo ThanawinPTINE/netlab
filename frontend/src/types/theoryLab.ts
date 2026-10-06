@@ -52,4 +52,9 @@ export interface TheoryStep extends Omit<TheoryItem, 'type'> {
   items?: TheoryItem[];
   pool?: TheoryItem[];
   fromQuizzes?: boolean;
+  /** How many questions to draw from `pool`. Left out, the draw takes one per
+   * topic, which is what the end-of-chapter review wants (one per section). A
+   * section quiz has a single topic, so it has to say how many it wants or it
+   * would shrink to one question. */
+  pick?: number;
 }

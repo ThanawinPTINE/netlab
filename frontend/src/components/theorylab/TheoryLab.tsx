@@ -150,10 +150,15 @@ function TheoryLabInner(props: TheoryLabProps) {
   /* ── review pool ── */
   function poolOf(s: TheoryStep): TheoryItem[] {
     let pool = (s.pool || []).slice();
-    if (s.fromQuizzes) steps.forEach((st) => st.type === 'quiz' && st.items && (pool = pool.concat(st.items)));
+    // A quiz gate's bank counts towards the chapter review too, so adding a
+    // question to any gate widens the review automatically.
+    if (s.fromQuizzes) steps.forEach((st) => st.type === 'quiz' && (pool = pool.concat(st.pool || st.items || [])));
     return pool;
   }
-  /** one random question per topic, then shuffled — a retake is a real retest */
+  /** Random questions drawn from the pool, spread evenly over its topics and
+   * then shuffled, so a retake is a real retest and two students sitting
+   * together are not answering the same paper. `pick` says how many; without it
+   * the draw takes one per topic, which is the chapter review's shape. */
   function draw(s: TheoryStep): TheoryItem[] {
     const all = poolOf(s);
     if (!all.length) return s.items || [];
@@ -167,7 +172,16 @@ function TheoryLabInner(props: TheoryLabProps) {
       }
       byTopic[t].push(it);
     });
-    return shuffle(order.map((t) => byTopic[t][Math.floor(Math.random() * byTopic[t].length)]));
+    // Shuffle each topic's bank, then round-robin off the end: random without
+    // replacement, and no topic gets a second question until every topic has one.
+    const banks = order.map((t) => shuffle(byTopic[t].slice()));
+    const want = Math.min(s.pick || order.length, all.length);
+    const picked: TheoryItem[] = [];
+    for (let i = 0; picked.length < want && banks.some((b) => b.length); i++) {
+      const b = banks[i % banks.length];
+      if (b.length) picked.push(b.pop() as TheoryItem);
+    }
+    return shuffle(picked);
   }
   function itemsOf(s: TheoryStep): TheoryItem[] {
     if (!(s.pool || s.fromQuizzes)) return s.items || [];
@@ -177,6 +191,7 @@ function TheoryLabInner(props: TheoryLabProps) {
   function countOf(s: TheoryStep): number {
     if (drawnRef.current[s.id]) return drawnRef.current[s.id].length;
     if (s.items && s.items.length && !(s.pool || s.fromQuizzes)) return s.items.length;
+    if (s.pick) return Math.min(s.pick, poolOf(s).length);
     const topics = new Set(poolOf(s).map((it) => it.topic || 'อื่นๆ'));
     return topics.size;
   }
